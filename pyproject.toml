@@ -1,16 +1,37 @@
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
 [project]
 name = "qiskit-addon-opt-mapper"
 version = "0.1.0"
-description = "An addon for optimization problems, providing various utilities and enhancements."
-authors = [{ name="Atsushi Matsuo", email="matsuoa@jp.ibm.com" },
-           { name="Daniel J. Egger", email="deg@zurich.ibm.com"},
-           { name="Elena Peña Tapia", email="ept@zurich.ibm.com"},
-           { name="Stefan Wörner", email="wor@zurich.ibm.com"}]
 readme = "README.md"
+description = "An addon for optimization problem modeling, providing various utilities and enhancements."
+
 license = "Apache-2.0"
 license-files = ["LICENSE.txt"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
 requires-python = ">=3.10"
-dependencies = []
+
+dependencies = [
+    "numpy>=1.23",
+    "cvxpy>=1.7.3",
+    "qiskit>=1.2, <3",
+]
 
 [project.optional-dependencies]
 cplex = ["cplex; (python_version < '3.13' and platform_system != 'Darwin') or (python_version < '3.12' and platform_system == 'Darwin')"]
@@ -18,31 +39,154 @@ cvx = ["cvxpy"]
 matplotlib = ["matplotlib"]
 gurobi = ["gurobipy"]
 
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+dynamic = [
+    "qiskit-addon-opt-mapper[cplex,cvx,matplotlib,gurobi]",
+]
+dev = [
+    "qiskit-addon-opt-mapper[test,doctest,nbtest,lint,docs]",
+    "tox>=4.4.3",
+]
+basetest = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-subtests>=0.13",
+    "qiskit-opt-mapper[dynamic]",
+]
+test = [
+    "qiskit-addon-opt-mapper[basetest]",
+]
+doctest = [
+    "qiskit-addon-opt-mapper[basetest,notebook-dependencies]",
+    "pytest-doctestplus>=1.2.1",
+]
+nbtest = [
+    "qiskit-addon-opt-mapper[basetest]",
+    "nbmake>=1.5.0",
+]
+style = [
+    "ruff==0.12.11",
+    "nbqa>=1.8.5",
+    "typos>=1.20.0",
+]
+lint = [
+    "qiskit-addon-opt-mapper[style]",
+    "mypy==1.17.1",
+    "pylint==3.3.8",
+    "reno>=4.1",
+    "toml>=0.9.6",
+]
+notebook-dependencies = [
+    "qiskit-addon-opt-mapper",
+    "rustworkx[graphviz]>=0.15",
+    "matplotlib",
+    "ipywidgets",
+    "pylatexenc",
+]
+docs = [
+    "qiskit-addon-opt-mapper[doctest]",
+    "qiskit-sphinx-theme~=2.0.0",
+    "jupyter-sphinx",
+    "sphinx-design",
+    "sphinx-autodoc-typehints",
+    "sphinx-copybutton",
+    "sphinx_reredirects",
+    "nbsphinx>=0.9.4",
+    "reno>=4.1",
+]
 
-[tool.black]
-line-length = 100
-target-version = ["py311"]
+[tool.coverage.run]
+branch = true
+parallel = true
 
-[tool.setuptools]
-packages = ["qiskit_addon_opt_mapper"]
-py-modules = ["__init__"] # dash, not underscore
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+
+[tool.hatch.build.targets.wheel]
+only-include = [
+    "qiskit_addon_opt_mapper",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.mypy]
+python_version = 3.10
+show_error_codes = true
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pylint.main]
+py-version = "3.10"
+
+[tool.pylint."messages control"]
+disable = ["all"]
+enable = [
+    "reimported",
+    "no-else-raise",
+    "redefined-argument-from-local",
+    "redefined-builtin",
+    "raise-missing-from",
+    "cyclic-import",
+    "unused-argument",
+    "attribute-defined-outside-init",
+    "no-else-return",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["./qiskit_addon_opt_mapper/", "./test/"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+src = ["qiskit_addon_opt_mapper", "test"]
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [
-  "E",   # pycodestyle
-  "F",   # pyflakes
-  "I",   # isort-equivalent
-  "B",   # flake8-bugbear
-  "C4",  # flake8-comprehensions
+    "I",   # isort
+    "E",   # pycodestyle
+    "W",   # pycodestyle
+    "D",   # pydocstyle
+    "F",   # pyflakes
+    "RUF", # ruff
+    "UP",  # pyupgrade
+    "SIM", # flake8-simplify
+    "B",   # flake8-bugbear
+    "A",   # flake8-builtins
 ]
-ignore = ["B905"]  # zip() without an explicit strict= parameter
+ignore = [
+    "E501", # line too long
+]
 
-[tool.ruff.lint.isort]
-known-first-party = ["qiskit_addon_opt_mapper"]
+[tool.ruff.lint.pylint]
+max-args = 6
+
+[tool.ruff.lint.extend-per-file-ignores]
+"test/**.py" = [
+    "D",  # pydocstyle
+]
+"docs/**/*" = [
+    "E402", # module level import not at top of file
+    "D",    # pydocstyle
+]
+
+[tool.ruff.lint.flake8-copyright]
+notice-rgx = """
+# This code is a Qiskit project.
+#
+# \\(C\\) Copyright IBM \\d{4}((,\\s)\\d{4})*\\.
+#
+# This code is licensed under the Apache License, Version 2\\.0\\. You may
+# obtain a copy of this license in the LICENSE\\.txt file in the root directory
+# of this source tree or at http\\:\\/\\/www\\.apache\\.org\\/licenses\\/LICENSE\\-2\\.0\\.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals\\.
+"""
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.typos.default.extend-words]
