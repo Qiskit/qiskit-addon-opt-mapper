@@ -1,4 +1,4 @@
-# This code is part of a Qiskit project.
+# This code is a Qiskit project.
 #
 # (C) Copyright IBM 2025.
 #
@@ -43,7 +43,7 @@ class GraphOptimizationApplication(OptimizationApplication):
             self._graph = copy.deepcopy(graph)
         elif isinstance(graph, nx.Graph):
             self._graph = self._from_networkx(graph)
-        elif isinstance(graph, (np.ndarray, list)):
+        elif isinstance(graph, np.ndarray | list):
             nx_graph = nx.Graph(graph)
             self._graph = self._from_networkx(nx_graph)
         else:

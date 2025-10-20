@@ -1,4 +1,4 @@
-# This code is part of a Qiskit project.
+# This code is a Qiskit project.
 #
 # (C) Copyright IBM 2025.
 #
@@ -708,7 +708,7 @@ class OptimizationProblem:
         Returns:
             The corresponding variable.
         """
-        if isinstance(i, (int, np.integer)):
+        if isinstance(i, int | np.integer):
             return self.variables[i]
         else:
             return self.variables[self._variables_index[i]]

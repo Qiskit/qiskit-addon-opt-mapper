@@ -1,4 +1,4 @@
-# This code is part of a Qiskit project.
+# This code is a Qiskit project.
 #
 # (C) Copyright IBM 2025.
 #
@@ -89,7 +89,7 @@ class OptimizationApplication(ABC):
                 x[i] = k % 2
                 k >>= 1
             return x
-        elif isinstance(state_vector, (OrderedDict, dict)):
+        elif isinstance(state_vector, OrderedDict | dict):
             # get the binary string with the largest count
             binary_string = max(state_vector.items(), key=lambda kv: kv[1])[0]
             x = np.asarray([int(y) for y in reversed(list(binary_string))])

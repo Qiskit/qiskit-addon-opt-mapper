@@ -1,4 +1,4 @@
-# This code is part of a Qiskit project.
+# This code is a Qiskit project.
 #
 # (C) Copyright IBM 2025.
 #
@@ -138,7 +138,7 @@ class HigherOrderExpression(OptimizationProblemElement):
             self._coeffs = acc
 
         # --- ndarray / list ---
-        elif isinstance(coefficients, (ndarray, list)):
+        elif isinstance(coefficients, ndarray | list):
             arr = np.array(coefficients, dtype=float)
             if arr.ndim < 3:
                 raise ValueError(f"order must be >= 3, got ndim={arr.ndim}")

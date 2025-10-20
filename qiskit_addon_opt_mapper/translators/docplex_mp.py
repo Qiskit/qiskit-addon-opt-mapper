@@ -1,4 +1,4 @@
-# This code is part of a Qiskit project.
+# This code is a Qiskit project.
 #
 # (C) Copyright IBM 2025.
 #
@@ -288,9 +288,9 @@ class _FromDocplexMp:
         right_expr = constraint.get_right_expr()
         # for linear constraints we may get an instance of Var instead of expression,
         # e.g. x + y = z
-        if not isinstance(left_expr, (Expr, Var)):
+        if not isinstance(left_expr, Expr | Var):
             raise OptimizationError(f"Unsupported expression: {left_expr} {type(left_expr)}")
-        if not isinstance(right_expr, (Expr, Var)):
+        if not isinstance(right_expr, Expr | Var):
             raise OptimizationError(f"Unsupported expression: {right_expr} {type(right_expr)}")
         if constraint.sense not in self._sense_dict:
             raise OptimizationError(f"Unsupported constraint sense: {constraint}")
@@ -312,9 +312,9 @@ class _FromDocplexMp:
     ) -> tuple[dict[str, float], dict[tuple[str, str], float], str, float]:
         left_expr = constraint.get_left_expr()
         right_expr = constraint.get_right_expr()
-        if not isinstance(left_expr, (Expr, Var)):
+        if not isinstance(left_expr, Expr | Var):
             raise OptimizationError(f"Unsupported expression: {left_expr} {type(left_expr)}")
-        if not isinstance(right_expr, (Expr, Var)):
+        if not isinstance(right_expr, Expr | Var):
             raise OptimizationError(f"Unsupported expression: {right_expr} {type(right_expr)}")
         if constraint.sense not in self._sense_dict:
             raise OptimizationError(f"Unsupported constraint sense: {constraint}")
@@ -440,7 +440,7 @@ def from_docplex_mp(model: Model, indicator_big_m: float | None = None) -> Optim
                 # Notice that NotEqualConstraint is a subclass of Docplex's LinearConstraint,
                 # but it cannot be handled by optimization.
                 raise OptimizationError(f"Unsupported constraint: {constraint}")
-        elif not isinstance(constraint, (QuadraticConstraint, IndicatorConstraint)):
+        elif not isinstance(constraint, QuadraticConstraint | IndicatorConstraint):
             raise OptimizationError(f"Unsupported constraint: {constraint}")
 
     return _FromDocplexMp(model).quadratic_program(indicator_big_m)
