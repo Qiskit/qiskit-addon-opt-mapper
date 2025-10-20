@@ -37,7 +37,7 @@ class OptimizationApplication(ABC):
     @abstractmethod
     def interpret(self, result: np.ndarray):
         """Convert the calculation result of the problem
-        (:class:`~qiskit_addon_opt_mapper.algorithms.SolverResult` or a binary array using
+        (:class:`~qiskit_addon_opt_mapper.solvers.SolverResult` or a binary array using
         np.ndarray) to the answer of the problem in an easy-to-understand format.
 
         Args:

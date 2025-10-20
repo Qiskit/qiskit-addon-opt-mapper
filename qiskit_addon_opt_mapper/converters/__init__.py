@@ -19,7 +19,7 @@ Optimization converters (:mod:`qiskit_addon_opt_mapper.converters`)
 This is a set of converters having `convert` functionality to go between different representations
 of a given :class:`~qiskit_addon_opt_mapper.problems.QuadraticProgram` and to `interpret` a given
 result for the problem, based on the original problem before conversion, to return an appropriate
-:class:`~qiskit_addon_opt_mapper.algorithms.SolverResult`.
+:class:`~qiskit_addon_opt_mapper.solvers.SolverResult`.
 
 Base class for converters
 -------------------------

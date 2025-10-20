@@ -72,7 +72,7 @@ class SolverResult:
 
     Examples:
         >>> from qiskit_addon_opt_mapper import OptimizationProblem
-        >>> from qiskit_addon_opt_mapper.algorithms import CplexOptimizer
+        >>> from qiskit_addon_opt_mapper.solvers import CplexSolver
         >>> problem = OptimizationProblem()
         >>> _ = problem.binary_var('x1')
         >>> _ = problem.binary_var('x2')
@@ -80,7 +80,7 @@ class SolverResult:
         >>> problem.minimize(linear={'x1': 1, 'x2': -2, 'x3': 3})
         >>> print([var.name for var in problem.variables])
         ['x1', 'x2', 'x3']
-        >>> optimizer = CplexOptimizer()
+        >>> optimizer = CplexSolver()
         >>> result = optimizer.solve(problem)
         >>> print(result.variable_names)
         ['x1', 'x2', 'x3']
