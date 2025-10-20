@@ -13,8 +13,8 @@
 """An application class for Traveling salesman problem (TSP)."""
 from typing import Dict, List, Optional, Union
 
-import rustworkx as rx
 import numpy as np
+import rustworkx as rx
 from docplex.mp.model import Model
 
 from qiskit_addon_opt_mapper.exceptions import OptimizationError
@@ -126,14 +126,6 @@ class Tsp(GraphOptimizationApplication):
             alpha=0.5,
             edge_color="tab:red",
         )
-        # nx.draw_networkx_edges(
-        #     self._graph,
-        #     pos,
-        #     edgelist=self._edgelist(x),
-        #     width=8,
-        #     alpha=0.5,
-        #     edge_color="tab:red",
-        # )
 
     def _edgelist(self, x: np.ndarray):
         # Arrange route and return the list of the edges for the edge list of nx.draw_networkx_edges

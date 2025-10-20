@@ -12,13 +12,13 @@
 
 """An abstract class for graph optimization application classes."""
 
-from abc import abstractmethod
 import copy
+from abc import abstractmethod
 from typing import Dict, List, Optional, Union
 
 import networkx as nx
-import rustworkx as rx
 import numpy as np
+import rustworkx as rx
 
 import qiskit_addon_opt_mapper.optionals as _optionals
 

@@ -40,10 +40,10 @@ Classical Solvers
 
 """
 
-from .solver import OptimizationSolver, SolverResult, SolverResultStatus
 from .cplex_solver import CplexSolver
 from .gurobi_solver import GurobiSolver
 from .scipy_milp_solver import ScipyMilpSolver
+from .solver import OptimizationSolver, SolverResult, SolverResultStatus
 
 __all__ = [
     "CplexSolver",

@@ -14,7 +14,6 @@
 import random
 
 import networkx as nx
-import rustworkx as rx
 import numpy as np
 
 from qiskit_addon_opt_mapper import OptimizationProblem
@@ -335,7 +334,7 @@ class TestVehicleRouting(OptimizationTestCase):
         graph = vehicle_routing.graph
         for i, node in enumerate(graph.nodes()):
             self.assertEqual(tuple(node["pos"]), tuple(self.graph.nodes[i]["pos"]))
-        for i, edge in enumerate(graph.edge_list()):
+        for edge in graph.edge_list():
             self.assertEqual(
                 graph.get_edge_data(edge[0], edge[1]), self.graph.edges[edge]["weight"]
             )

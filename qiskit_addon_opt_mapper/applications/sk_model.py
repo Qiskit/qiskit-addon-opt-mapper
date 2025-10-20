@@ -15,8 +15,8 @@
 from typing import List, Optional, Union
 
 import networkx as nx
-import rustworkx as rx
 import numpy as np
+import rustworkx as rx
 from docplex.mp.model import Model
 
 from ..problems.optimization_problem import OptimizationProblem

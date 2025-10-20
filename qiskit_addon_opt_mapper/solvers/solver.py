@@ -131,7 +131,8 @@ class SolverResult:
         else:
             if len(x) != len(variables):
                 raise OptimizationError(
-                    f"Inconsistent size of variable values (x) and variables. x: size {len(x)} {x}, "
+                    f"Inconsistent size of variable values (x) and variables. "
+                    f"x: size {len(x)} {x}, "
                     f"variables: size {len(variables)} {[v.name for v in variables]}"
                 )
             self._x = np.asarray(x)
@@ -235,7 +236,8 @@ class SolverResult:
         """Returns the objective function value.
 
         Returns:
-            The function value corresponding to the objective function value found in the optimization.
+            The function value corresponding to the objective function value 
+            found in the optimization.
         """
         return self._fval
 

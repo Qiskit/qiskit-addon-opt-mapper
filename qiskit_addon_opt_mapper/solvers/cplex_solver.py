@@ -12,19 +12,14 @@
 
 """The CPLEX solver wrapped to be used within the qiskit addon."""
 
-from __future__ import annotations
-
 from typing import Any
 from warnings import warn
 
+import qiskit_addon_opt_mapper.optionals as _optionals
 from qiskit_addon_opt_mapper.problems.optimization_problem import OptimizationProblem
 from qiskit_addon_opt_mapper.translators import to_docplex_mp
-import qiskit_addon_opt_mapper.optionals as _optionals
-from .solver import (
-    OptimizationSolver,
-    SolverResult,
-    SolverResultStatus,
-)
+
+from .solver import OptimizationSolver, SolverResult, SolverResultStatus
 
 
 @_optionals.HAS_CPLEX.require_in_instance
@@ -125,7 +120,7 @@ class CplexSolver(OptimizationSolver):
         sol = mod.solve(log_output=self._disp, cplex_parameters=self._cplex_parameters)
         if sol is None:
             # no solution is found
-            warn("CPLEX cannot solve the model")
+            warn("CPLEX cannot solve the model", stacklevel=2)
             x = [0.0] * mod.number_of_variables
             return SolverResult(
                 x=x,

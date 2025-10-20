@@ -15,7 +15,10 @@
 import unittest
 
 from qiskit_addon_opt_mapper import OptimizationProblem
-from qiskit_addon_opt_mapper.converters import LinearInequalityToPenalty, OptimizationProblemToQubo
+from qiskit_addon_opt_mapper.converters import (
+    LinearInequalityToPenalty,
+    OptimizationProblemToQubo,
+)
 from qiskit_addon_opt_mapper.problems import Constraint
 
 from ..optimization_test_case import OptimizationTestCase

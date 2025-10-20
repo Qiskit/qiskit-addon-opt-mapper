@@ -12,7 +12,9 @@
 
 """The Gurobi solver wrapped to be used within the addon."""
 
+
 import qiskit_addon_opt_mapper.optionals as _optionals
+
 from ..exceptions import OptimizationError
 from ..problems import OptimizationProblem
 from ..translators.gurobipy import to_gurobipy

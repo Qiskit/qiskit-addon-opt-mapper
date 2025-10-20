@@ -17,15 +17,15 @@ from warnings import warn
 import numpy as np
 
 from qiskit_addon_opt_mapper import INFINITY
-from qiskit_addon_opt_mapper.solvers.solver import (
-    OptimizationSolver,
-    SolverResult,
-    SolverResultStatus,
-)
 from qiskit_addon_opt_mapper.problems.optimization_problem import (
     ConstraintSense,
     OptimizationProblem,
     VarType,
+)
+from qiskit_addon_opt_mapper.solvers.solver import (
+    OptimizationSolver,
+    SolverResult,
+    SolverResultStatus,
 )
 
 
@@ -164,7 +164,7 @@ class ScipyMilpSolver(OptimizationSolver):
         )
 
         if raw_result.x is None:
-            warn("scipy.milp cannot solve the model. See `raw_results` for details.")
+            warn("scipy.milp cannot solve the model. See `raw_results` for details.", stacklevel=2)
             x = [0.0] * problem.get_num_vars()
             status = SolverResultStatus.FAILURE
         else:

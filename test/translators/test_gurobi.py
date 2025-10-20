@@ -15,12 +15,13 @@
 import unittest
 from os import path
 from tempfile import TemporaryDirectory
-from test.optimization_test_case import OptimizationTestCase
 
 import qiskit_addon_opt_mapper.optionals as _optionals
 from qiskit_addon_opt_mapper.exceptions import OptimizationError
 from qiskit_addon_opt_mapper.problems import Constraint, OptimizationProblem
 from qiskit_addon_opt_mapper.translators.gurobipy import from_gurobipy, to_gurobipy
+
+from ..optimization_test_case import OptimizationTestCase
 
 
 class TestGurobiTranslator(OptimizationTestCase):

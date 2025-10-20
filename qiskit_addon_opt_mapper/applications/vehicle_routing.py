@@ -17,8 +17,8 @@ import random
 from typing import Dict, List, Optional, Union
 
 import networkx as nx
-import rustworkx as rx
 import numpy as np
+import rustworkx as rx
 from docplex.mp.model import Model
 
 from qiskit_addon_opt_mapper.problems.optimization_problem import OptimizationProblem
@@ -160,7 +160,6 @@ class VehicleRouting(GraphOptimizationApplication):
         import matplotlib as mpl
 
         route_list = self.interpret(result)
-        # nx.draw(self._graph, with_labels=True, pos=pos)
         rx.visualization.mpl_draw(
             self._graph,
             edge_list=self._edgelist(route_list),
@@ -172,25 +171,13 @@ class VehicleRouting(GraphOptimizationApplication):
             edge_cmap=mpl.colormaps["plasma"],
         )
 
-        # nx.draw_networkx_edges(
-        #     self._graph,
-        #     pos,
-        #     edgelist=self._edgelist(route_list),
-        #     width=8,
-        #     alpha=0.5,
-        #     edge_color=self._edge_color(route_list),
-        #     edge_cmap=mpl.colormaps["plasma"],
-        # )
-
     def _edgelist(self, route_list: List[List[List[int]]]):
         # Arrange route_list and return the list of the edges for the edge list of
-        # nx.draw_networkx_edges
         return [edge for k in range(len(route_list)) for edge in route_list[k]]
 
     def _edge_color(self, route_list: List[List[List[int]]]):
         # Arrange route_list and return the list of the colors of each route
-        # for edge_color of nx.draw_networkx_edges
-        return [k / len(route_list) for k in range(len(route_list)) for edge in route_list[k]]
+        return [k / len(route_list) for k in range(len(route_list)) for _ in route_list[k]]
 
     @property
     def num_vehicles(self) -> int:

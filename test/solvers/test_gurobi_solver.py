@@ -13,16 +13,17 @@
 """Test Gurobi Solver"""
 
 import unittest
-from test.optimization_test_case import OptimizationTestCase
 
-from ddt import data, ddt
 import numpy as np
-from docplex.mp.model_reader import ModelReader
+from ddt import data, ddt
 from docplex.mp.model import Model
+from docplex.mp.model_reader import ModelReader
 
 import qiskit_addon_opt_mapper.optionals as _optionals
 from qiskit_addon_opt_mapper.solvers import GurobiSolver
 from qiskit_addon_opt_mapper.translators import from_docplex_mp
+
+from ..optimization_test_case import OptimizationTestCase
 
 
 @ddt

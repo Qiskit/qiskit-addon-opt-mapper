@@ -16,7 +16,10 @@ from docplex.mp.model import Model
 
 from qiskit_addon_opt_mapper.exceptions import OptimizationError
 from qiskit_addon_opt_mapper.problems import Constraint, OptimizationProblem
-from qiskit_addon_opt_mapper.translators.docplex_mp import from_docplex_mp, to_docplex_mp
+from qiskit_addon_opt_mapper.translators.docplex_mp import (
+    from_docplex_mp,
+    to_docplex_mp,
+)
 
 from ..optimization_test_case import OptimizationTestCase
 

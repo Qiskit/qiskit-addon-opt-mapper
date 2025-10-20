@@ -15,8 +15,8 @@
 
 from typing import Dict, List, Optional
 
-import networkx as nx
 import numpy as np
+import rustworkx as rx
 from docplex.mp.model import Model
 
 from qiskit_addon_opt_mapper.problems.optimization_problem import OptimizationProblem
@@ -68,7 +68,9 @@ class Maxcut(GraphOptimizationApplication):
             pos: The positions of nodes
         """
         x = self._result_to_x(result)
-        nx.draw(self._graph, node_color=self._node_color(x), pos=pos, with_labels=True)
+        rx.visualization.mpl_draw(
+            self._graph, node_color=self._node_colors(x), pos=pos, with_labels=True
+        )
 
     def interpret(self, result: np.ndarray) -> List[List[int]]:
         """Interpret a result as two lists of node indices

@@ -16,20 +16,21 @@ from typing import List, Optional, Union, cast
 
 import numpy as np
 
+from ..exceptions import OptimizationError
+from ..problems.optimization_problem import OptimizationProblem
+from .equality_to_penalty import EqualityToPenalty
 from .flip_problem_sense import MaximizeToMinimize
 from .inequality_to_equality import InequalityToEquality
 from .integer_to_binary import IntegerToBinary
 from .linear_inequality_to_penalty import LinearInequalityToPenalty
-from .spin_to_binary import SpinToBinary
-from ..exceptions import OptimizationError
-from ..problems.optimization_problem import OptimizationProblem
-from .equality_to_penalty import EqualityToPenalty
 from .optimization_problem_converter import OptimizationProblemConverter
+from .spin_to_binary import SpinToBinary
 
 
 class OptimizationProblemToQubo(OptimizationProblemConverter):
-    """Convert a given optimization problem in quadratic form into a QUBO problem by converting variables to binary
-    and eliminating constraints. An optimization problem in quadratic form is a problem with quadratic objective function
+    """Convert a given optimization problem in quadratic form into a QUBO problem by 
+    converting variables to binary and eliminating constraints. An optimization problem in 
+    quadratic form is a problem with quadratic objective function
     and linear constraints. A QUBO is a problem with quadratic objective function and no
     constraints. This combines several converters: `IntegerToBinary`, `InequalityToPenalty`,
     `InequalityToEquality`, `EqualityToPenalty`, and `MaximizeToMinimize`.
