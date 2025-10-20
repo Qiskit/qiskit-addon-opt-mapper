@@ -207,9 +207,9 @@ class OptimizationProblem:
             key_format = "{}"
         else:
             key_format = ""
-        return self._add_variables(
-            1, lowerbound, upperbound, vartype, name, key_format, internal
-        )[1][0]
+        return self._add_variables(1, lowerbound, upperbound, vartype, name, key_format, internal)[
+            1
+        ][0]
 
     def _add_variables(  # pylint: disable=too-many-positional-arguments
         self,
@@ -223,9 +223,7 @@ class OptimizationProblem:
     ) -> tuple[list[str], list[Variable]]:
         """Add variables."""
         if isinstance(keys, int) and keys < 1:
-            raise OptimizationError(
-                f"Cannot create non-positive number of variables: {keys}"
-            )
+            raise OptimizationError(f"Cannot create non-positive number of variables: {keys}")
         if not name:
             name = "x"
         if "@" in name and not internal:
@@ -235,9 +233,7 @@ class OptimizationProblem:
             )
 
         if "{{}}" in key_format:
-            raise OptimizationError(
-                f"Formatter cannot contain nested substitutions: {key_format}"
-            )
+            raise OptimizationError(f"Formatter cannot contain nested substitutions: {key_format}")
         if key_format.count("{}") > 1:
             raise OptimizationError(
                 f"Formatter cannot contain more than one substitution: {key_format}"
@@ -313,9 +309,7 @@ class OptimizationProblem:
         """
         return dict(
             zip(
-                *self._add_variables(
-                    keys, lowerbound, upperbound, vartype, name, key_format
-                ),
+                *self._add_variables(keys, lowerbound, upperbound, vartype, name, key_format),
                 strict=False,
             )
         )
@@ -353,9 +347,7 @@ class OptimizationProblem:
             OptimizationError: if `key_format` has more than one substitution or a
                                      nested substitution.
         """
-        return self._add_variables(
-            keys, lowerbound, upperbound, vartype, name, key_format
-        )[1]
+        return self._add_variables(keys, lowerbound, upperbound, vartype, name, key_format)[1]
 
     def continuous_var(
         self,
@@ -378,9 +370,7 @@ class OptimizationProblem:
         Raises:
             OptimizationError: if the variable name is already occupied.
         """
-        return self._add_variable(
-            lowerbound, upperbound, Variable.Type.CONTINUOUS, name
-        )
+        return self._add_variable(lowerbound, upperbound, Variable.Type.CONTINUOUS, name)
 
     def continuous_var_dict(  # pylint: disable=too-many-positional-arguments
         self,
@@ -626,9 +616,7 @@ class OptimizationProblem:
             OptimizationError: if `key_format` has more than one substitution or a
                                      nested substitution.
         """
-        return self._var_list(
-            keys, lowerbound, upperbound, Variable.Type.INTEGER, name, key_format
-        )
+        return self._var_list(keys, lowerbound, upperbound, Variable.Type.INTEGER, name, key_format)
 
     def spin_var(self, name: str | None = None) -> Variable:
         """Adds a spin variable to the optimization program.
@@ -824,9 +812,7 @@ class OptimizationProblem:
         """
         if name:
             if name in self.linear_constraints_index:
-                raise OptimizationError(
-                    f"Linear constraint's name already exists: {name}"
-                )
+                raise OptimizationError(f"Linear constraint's name already exists: {name}")
             self._check_name(name, "Linear constraint")
         else:
             k = self.get_num_linear_constraints()
@@ -836,9 +822,7 @@ class OptimizationProblem:
         self.linear_constraints_index[name] = len(self.linear_constraints)
         if linear is None:
             linear = {}
-        constraint = LinearConstraint(
-            self, name, linear, Constraint.Sense.convert(sense), rhs
-        )
+        constraint = LinearConstraint(self, name, linear, Constraint.Sense.convert(sense), rhs)
         self.linear_constraints.append(constraint)
         return constraint
 
@@ -891,10 +875,7 @@ class OptimizationProblem:
         self,
         linear: ndarray | spmatrix | list[float] | dict[int | str, float] = None,
         quadratic: (
-            ndarray
-            | spmatrix
-            | list[list[float]]
-            | dict[tuple[int | str, int | str], float]
+            ndarray | spmatrix | list[list[float]] | dict[tuple[int | str, int | str], float]
         ) = None,
         sense: str | ConstraintSense = "<=",
         rhs: float = 0.0,
@@ -927,9 +908,7 @@ class OptimizationProblem:
         """
         if name:
             if name in self.quadratic_constraints_index:
-                raise OptimizationError(
-                    f"Quadratic constraint name already exists: {name}"
-                )
+                raise OptimizationError(f"Quadratic constraint name already exists: {name}")
             self._check_name(name, "Quadratic constraint")
         else:
             k = self.get_num_quadratic_constraints()
@@ -988,10 +967,7 @@ class OptimizationProblem:
         self,
         linear: ndarray | spmatrix | list[float] | dict[int | str, float] = None,
         quadratic: (
-            ndarray
-            | spmatrix
-            | list[list[float]]
-            | dict[tuple[int | str, int | str], float]
+            ndarray | spmatrix | list[list[float]] | dict[tuple[int | str, int | str], float]
         ) = None,
         higher_order: dict[int, CoeffLike] | None = None,
         sense: str | ConstraintSense = "<=",
@@ -1018,9 +994,7 @@ class OptimizationProblem:
         # Handle constraint name
         if name:
             if name in self.higher_order_constraints_index:
-                raise OptimizationError(
-                    f"Higher-order constraint name already exists: {name}"
-                )
+                raise OptimizationError(f"Higher-order constraint name already exists: {name}")
             self._check_name(name, "Higher-order constraint")
         else:
             k = self.get_num_higher_order_constraints()
@@ -1064,9 +1038,7 @@ class OptimizationProblem:
         if isinstance(i, int):
             return self._higher_order_constraints[i]
         else:
-            return self._higher_order_constraints[
-                self._higher_order_constraints_index[i]
-            ]
+            return self._higher_order_constraints[self._higher_order_constraints_index[i]]
 
     def get_num_higher_order_constraints(self) -> int:
         """Returns the number of higher-order constraints.
@@ -1145,10 +1117,7 @@ class OptimizationProblem:
         constant: float = 0.0,
         linear: ndarray | spmatrix | list[float] | dict[int | str, float] = None,
         quadratic: (
-            ndarray
-            | spmatrix
-            | list[list[float]]
-            | dict[tuple[int | str, int | str], float]
+            ndarray | spmatrix | list[list[float]] | dict[tuple[int | str, int | str], float]
         ) = None,
         higher_order: CoeffLike | dict[int, CoeffLike] | None = None,
     ) -> None:
@@ -1167,10 +1136,7 @@ class OptimizationProblem:
         constant: float = 0.0,
         linear: ndarray | spmatrix | list[float] | dict[int | str, float] = None,
         quadratic: (
-            ndarray
-            | spmatrix
-            | list[list[float]]
-            | dict[tuple[int | str, int | str], float]
+            ndarray | spmatrix | list[list[float]] | dict[tuple[int | str, int | str], float]
         ) = None,
         higher_order: CoeffLike | dict[int, CoeffLike] | None = None,
     ) -> None:
@@ -1329,10 +1295,7 @@ class OptimizationProblem:
             if (
                 (constraint.sense == ConstraintSense.LE and lhs > constraint.rhs)
                 or (constraint.sense == ConstraintSense.GE and lhs < constraint.rhs)
-                or (
-                    constraint.sense == ConstraintSense.EQ
-                    and not isclose(lhs, constraint.rhs)
-                )
+                or (constraint.sense == ConstraintSense.EQ and not isclose(lhs, constraint.rhs))
             ):
                 violated_constraints.append(constraint)
 
@@ -1341,10 +1304,7 @@ class OptimizationProblem:
             if (
                 (constraint.sense == ConstraintSense.LE and lhs > constraint.rhs)
                 or (constraint.sense == ConstraintSense.GE and lhs < constraint.rhs)
-                or (
-                    constraint.sense == ConstraintSense.EQ
-                    and not isclose(lhs, constraint.rhs)
-                )
+                or (constraint.sense == ConstraintSense.EQ and not isclose(lhs, constraint.rhs))
             ):
                 violated_constraints.append(constraint)
 

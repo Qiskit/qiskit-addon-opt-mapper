@@ -52,9 +52,7 @@ class OptimizationTestCase(unittest.TestCase, ABC):
         # is set.
         if os.getenv("LOG_LEVEL"):
             # Set up formatter.
-            log_fmt = (
-                f"{cls.__name__}.%(funcName)s:%(levelname)s:%(asctime)s:" " %(message)s"
-            )
+            log_fmt = f"{cls.__name__}.%(funcName)s:%(levelname)s:%(asctime)s: %(message)s"
             formatter = logging.Formatter(log_fmt)
 
             # Set up the file handler.

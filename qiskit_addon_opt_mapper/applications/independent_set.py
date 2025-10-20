@@ -89,6 +89,4 @@ class IndependentSet(GraphOptimizationApplication):
         # Return a list of strings for draw.
         # Color a node with red when the corresponding variable is 1.
         # Otherwise color it with dark gray.
-        return [
-            "r" if x[node] == 1 else "darkgrey" for node in self._graph.node_indices()
-        ]
+        return ["r" if x[node] == 1 else "darkgrey" for node in self._graph.node_indices()]

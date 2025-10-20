@@ -12,7 +12,6 @@
 
 """An application class for the vertex cover."""
 
-
 import numpy as np
 import rustworkx as rx
 from docplex.mp.model import Model

@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Flip problem sense tests."""
+
 import unittest
 
 from qiskit_addon_opt_mapper import OptimizationProblem

@@ -41,20 +41,14 @@ def to_ising(optimization_problem: OptimizationProblem) -> tuple[SparsePauliOp, 
         OptimizationError: If constraints exist in the problem.
     """
     # if constraints exist, raise an error
-    if (
-        optimization_problem.linear_constraints
-        or optimization_problem.quadratic_constraints
-    ):
+    if optimization_problem.linear_constraints or optimization_problem.quadratic_constraints:
         raise OptimizationError(
             "There must be no constraint in the problem. "
             "You can use `OptimizationProblemToQubo` converter "
             "to convert constraints to penalty terms of the objective function."
         )
 
-    if (
-        optimization_problem.get_num_vars()
-        == optimization_problem.get_num_binary_vars()
-    ):
+    if optimization_problem.get_num_vars() == optimization_problem.get_num_binary_vars():
         # if all variables are binary variables
         # initialize Hamiltonian.
         num_vars = optimization_problem.get_num_vars()
@@ -125,9 +119,7 @@ def to_ising(optimization_problem: OptimizationProblem) -> tuple[SparsePauliOp, 
                         pauli_list.append(SparsePauliOp(Pauli((z_p, zero)), weight))
                 offset += coef * sense / (2 ** (degree))
 
-    elif (
-        optimization_problem.get_num_vars() == optimization_problem.get_num_spin_vars()
-    ):
+    elif optimization_problem.get_num_vars() == optimization_problem.get_num_spin_vars():
         # if all variables are spin variables
         # initialize Hamiltonian.
         num_vars = optimization_problem.get_num_vars()
@@ -154,7 +146,6 @@ def to_ising(optimization_problem: OptimizationProblem) -> tuple[SparsePauliOp, 
             i,
             j,
         ), coef in optimization_problem.objective.quadratic.to_dict().items():
-
             if i == j:
                 offset += coef * sense
             else:

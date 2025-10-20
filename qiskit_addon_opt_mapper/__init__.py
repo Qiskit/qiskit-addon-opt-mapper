@@ -17,7 +17,6 @@ Optimization Add-on module (:mod:`qiskit_addon_opt_mapper`)
 ===========================================================
 """
 
-
 from .exceptions import AlgorithmError, OptimizationError
 from .infinity import INFINITY
 from .problems.optimization_problem import OptimizationProblem

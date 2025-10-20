@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """An application class for the clique."""
+
 import networkx as nx
 import numpy as np
 import rustworkx as rx
@@ -31,9 +32,7 @@ class Clique(GraphOptimizationApplication):
         <https://en.wikipedia.org/wiki/Clique_(graph_theory)>`_
     """
 
-    def __init__(
-        self, graph: nx.Graph | np.ndarray | list, size: int | None = None
-    ) -> None:
+    def __init__(self, graph: nx.Graph | np.ndarray | list, size: int | None = None) -> None:
         """Init method.
 
         Args:

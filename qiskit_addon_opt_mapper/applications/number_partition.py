@@ -11,7 +11,6 @@
 # that they have been altered from the originals.
 """An application class for the number partitioning."""
 
-
 import numpy as np
 from docplex.mp.model import Model
 
@@ -51,8 +50,7 @@ class NumberPartition(OptimizationApplication):
         mdl = Model(name="Number partitioning")
         x = {i: mdl.binary_var(name=f"x_{i}") for i in range(len(self._number_set))}
         mdl.add_constraint(
-            mdl.sum(num * (-2 * x[i] + 1) for i, num in enumerate(self._number_set))
-            == 0
+            mdl.sum(num * (-2 * x[i] + 1) for i, num in enumerate(self._number_set)) == 0
         )
         op = from_docplex_mp(mdl)
         return op

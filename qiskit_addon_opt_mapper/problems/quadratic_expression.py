@@ -31,10 +31,7 @@ class QuadraticExpression(OptimizationProblemElement):
         self,
         optimization_problem: Any,
         coefficients: (
-            ndarray
-            | spmatrix
-            | list[list[float]]
-            | dict[tuple[str | int, str | int], float]
+            ndarray | spmatrix | list[list[float]] | dict[tuple[str | int, str | int], float]
         ),
     ) -> None:
         """Creates a new quadratic expression.
@@ -86,10 +83,7 @@ class QuadraticExpression(OptimizationProblemElement):
     def _coeffs_to_dok_matrix(
         self,
         coefficients: (
-            ndarray
-            | spmatrix
-            | list[list[float]]
-            | dict[tuple[str | int, str | int], float]
+            ndarray | spmatrix | list[list[float]] | dict[tuple[str | int, str | int], float]
         ),
     ) -> dok_matrix:
         """Maps given coefficients to a dok_matrix.
@@ -142,9 +136,7 @@ class QuadraticExpression(OptimizationProblemElement):
                 coeffs[i, j] = value
             coefficients = coeffs
         else:
-            raise OptimizationError(
-                f"Unsupported format for coefficients: {coefficients}"
-            )
+            raise OptimizationError(f"Unsupported format for coefficients: {coefficients}")
         return self._triangle_matrix(coefficients)
 
     @staticmethod
@@ -172,10 +164,7 @@ class QuadraticExpression(OptimizationProblemElement):
     def coefficients(
         self,
         coefficients: (
-            ndarray
-            | spmatrix
-            | list[list[float]]
-            | dict[tuple[str | int, str | int], float]
+            ndarray | spmatrix | list[list[float]] | dict[tuple[str | int, str | int], float]
         ),
     ) -> None:
         """Sets the coefficients of the quadratic expression.
@@ -195,11 +184,7 @@ class QuadraticExpression(OptimizationProblemElement):
         Returns:
             An array with the coefficients corresponding to the quadratic expression.
         """
-        coeffs = (
-            self._symmetric_matrix(self._coefficients)
-            if symmetric
-            else self._coefficients
-        )
+        coeffs = self._symmetric_matrix(self._coefficients) if symmetric else self._coefficients
         return coeffs.toarray()
 
     def to_dict(
@@ -217,11 +202,7 @@ class QuadraticExpression(OptimizationProblemElement):
         Returns:
             An dictionary with the coefficients corresponding to the quadratic expression.
         """
-        coeffs = (
-            self._symmetric_matrix(self._coefficients)
-            if symmetric
-            else self._coefficients
-        )
+        coeffs = self._symmetric_matrix(self._coefficients) if symmetric else self._coefficients
         if use_name:
             return {
                 (
@@ -269,9 +250,7 @@ class QuadraticExpression(OptimizationProblemElement):
         # return the result
         return val
 
-    def _cast_as_array(
-        self, x: ndarray | list | dict[str | int, float]
-    ) -> dok_matrix | np.ndarray:
+    def _cast_as_array(self, x: ndarray | list | dict[str | int, float]) -> dok_matrix | np.ndarray:
         """Converts input to an array if it is a dictionary or list."""
         if isinstance(x, dict):
             x_aux = np.zeros(self.optimization_problem.get_num_vars())

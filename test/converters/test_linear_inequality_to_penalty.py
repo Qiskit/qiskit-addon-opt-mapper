@@ -192,13 +192,9 @@ class TestLinearInequalityToPenalty(OptimizationTestCase):
             op.minimize(linear=linear, quadratic=quadratic)
 
             linear_constraint = {"x": 1, "w": 1}
-            op.linear_constraint(
-                linear_constraint, Constraint.Sense.GE, 1, "P(1-x-w+xw)"
-            )
+            op.linear_constraint(linear_constraint, Constraint.Sense.GE, 1, "P(1-x-w+xw)")
             linear_constraint = {"y": 1, "z": 1}
-            op.linear_constraint(
-                linear_constraint, Constraint.Sense.GE, 1, "P(1-y-z+yz)"
-            )
+            op.linear_constraint(linear_constraint, Constraint.Sense.GE, 1, "P(1-y-z+yz)")
             linear_constraint = {"y": 2, "z": 1}
             op.linear_constraint(linear_constraint, Constraint.Sense.EQ, 1, "None 1")
             quadratic_constraint = {("x", "x"): -2, ("y", "w"): 1}
@@ -460,9 +456,7 @@ class TestLinearInequalityToPenalty(OptimizationTestCase):
         op.integer_var(name="x", lowerbound=1, upperbound=3)
         op.integer_var(name="y", lowerbound=-1, upperbound=4)
         op.integer_var(name="z", lowerbound=-5, upperbound=-1)
-        op.maximize(
-            quadratic={(0, 0): 1, (0, 1): 1, (0, 2): 1, (1, 1): 1, (1, 2): 1, (2, 2): 1}
-        )
+        op.maximize(quadratic={(0, 0): 1, (0, 1): 1, (0, 2): 1, (1, 1): 1, (1, 2): 1, (2, 2): 1})
         lip = LinearInequalityToPenalty()
         self.assertEqual(lip._auto_define_penalty(op), 103)
         op = OptimizationProblem()
@@ -508,9 +502,7 @@ class TestLinearInequalityToPenalty(OptimizationTestCase):
             self.assertEqual(op2.get_num_quadratic_constraints(), 0)
             obj = op2.objective
             self.assertEqual(obj.constant, 0)
-            self.assertDictEqual(
-                obj.linear.to_dict(use_name=True), {"x": 21, "y": 1, "z": 1}
-            )
+            self.assertDictEqual(obj.linear.to_dict(use_name=True), {"x": 21, "y": 1, "z": 1})
             self.assertDictEqual(
                 obj.quadratic.to_dict(use_name=True),
                 {("x", "z"): 20, ("y", "z"): 20, ("q", "q"): -1},
@@ -534,9 +526,7 @@ class TestLinearInequalityToPenalty(OptimizationTestCase):
             self.assertEqual(op2.get_num_quadratic_constraints(), 0)
             obj = op2.objective
             self.assertEqual(obj.constant, 0)
-            self.assertDictEqual(
-                obj.linear.to_dict(use_name=True), {"x": -19, "y": 1, "z": 1}
-            )
+            self.assertDictEqual(obj.linear.to_dict(use_name=True), {"x": -19, "y": 1, "z": 1})
             self.assertDictEqual(
                 obj.quadratic.to_dict(use_name=True),
                 {("x", "z"): -20, ("y", "z"): -20, ("q", "q"): -1},
@@ -560,9 +550,7 @@ class TestLinearInequalityToPenalty(OptimizationTestCase):
             self.assertEqual(op2.get_num_quadratic_constraints(), 0)
             obj = op2.objective
             self.assertEqual(obj.constant, 60)
-            self.assertDictEqual(
-                obj.linear.to_dict(use_name=True), {"x": -39, "y": -19, "z": -39}
-            )
+            self.assertDictEqual(obj.linear.to_dict(use_name=True), {"x": -39, "y": -19, "z": -39})
             self.assertDictEqual(
                 obj.quadratic.to_dict(use_name=True),
                 {("x", "z"): 20, ("y", "z"): 20, ("q", "q"): -1},
@@ -586,9 +574,7 @@ class TestLinearInequalityToPenalty(OptimizationTestCase):
             self.assertEqual(op2.get_num_quadratic_constraints(), 0)
             obj = op2.objective
             self.assertEqual(obj.constant, -60)
-            self.assertDictEqual(
-                obj.linear.to_dict(use_name=True), {"x": 41, "y": 21, "z": 41}
-            )
+            self.assertDictEqual(obj.linear.to_dict(use_name=True), {"x": 41, "y": 21, "z": 41})
             self.assertDictEqual(
                 obj.quadratic.to_dict(use_name=True),
                 {("x", "z"): -20, ("y", "z"): -20, ("q", "q"): -1},

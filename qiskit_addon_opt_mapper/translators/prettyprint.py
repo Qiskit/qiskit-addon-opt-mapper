@@ -121,9 +121,7 @@ def expr2str(
     constant: float = 0.0,
     linear: LinearExpression | None = None,
     quadratic: QuadraticExpression | None = None,
-    higher_order: (
-        HigherOrderExpression | dict[int, HigherOrderExpression] | None
-    ) = None,
+    higher_order: (HigherOrderExpression | dict[int, HigherOrderExpression] | None) = None,
     truncate: int = 0,
     suffix: str = "",
     wrap: int = 0,
@@ -247,16 +245,12 @@ def prettyprint(optimization_problem: OptimizationProblem, wrap: int = 80) -> st
             for cst in optimization_problem.linear_constraints:
                 _check_name(cst.name, "Linear constraint")
                 suffix = f"{cst.sense.label} {_int_if_close(cst.rhs)}  '{cst.name}'\n"
-                buf.write(
-                    expr2str(linear=cst.linear, suffix=suffix, wrap=wrap, indent=4)
-                )
+                buf.write(expr2str(linear=cst.linear, suffix=suffix, wrap=wrap, indent=4))
         if num_quad_csts > 0:
             buf.write(f"\n  Quadratic constraints ({num_quad_csts})\n")
             for cst2 in optimization_problem.quadratic_constraints:
                 _check_name(cst2.name, "Quadratic constraint")
-                suffix = (
-                    f"{cst2.sense.label} {_int_if_close(cst2.rhs)}  '{cst2.name}'\n"
-                )
+                suffix = f"{cst2.sense.label} {_int_if_close(cst2.rhs)}  '{cst2.name}'\n"
                 buf.write(
                     expr2str(
                         linear=cst2.linear,
@@ -273,9 +267,7 @@ def prettyprint(optimization_problem: OptimizationProblem, wrap: int = 80) -> st
 
             for csth in optimization_problem.higher_order_constraints:
                 _check_name(csth.name, "Higher-order constraint")
-                suffix = (
-                    f"{csth.sense.label} {_int_if_close(csth.rhs)}  '{csth.name}'\n"
-                )
+                suffix = f"{csth.sense.label} {_int_if_close(csth.rhs)}  '{csth.name}'\n"
 
                 buf.write(
                     expr2str(

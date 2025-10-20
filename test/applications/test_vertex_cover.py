@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """Test VertexCover class"""
+
 import unittest
 
 import networkx as nx

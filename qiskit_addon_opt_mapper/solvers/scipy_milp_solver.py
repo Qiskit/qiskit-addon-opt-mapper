@@ -109,12 +109,8 @@ class ScipyMilpSolver(OptimizationSolver):
             else:
                 integrality.append(1)
 
-        lower_bounds = [
-            _conv_inf(variable.lowerbound) for variable in problem.variables
-        ]
-        upper_bounds = [
-            _conv_inf(variable.upperbound) for variable in problem.variables
-        ]
+        lower_bounds = [_conv_inf(variable.lowerbound) for variable in problem.variables]
+        upper_bounds = [_conv_inf(variable.upperbound) for variable in problem.variables]
         bounds = Bounds(lb=lower_bounds, ub=upper_bounds)
 
         lower_bounds = []

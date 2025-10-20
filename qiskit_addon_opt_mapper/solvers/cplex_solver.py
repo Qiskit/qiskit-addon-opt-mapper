@@ -38,9 +38,7 @@ class CplexSolver(OptimizationSolver):
         >>> if optimizer: result = optimizer.solve(problem)
     """
 
-    def __init__(
-        self, disp: bool = False, cplex_parameters: dict[str, Any] | None = None
-    ) -> None:
+    def __init__(self, disp: bool = False, cplex_parameters: dict[str, Any] | None = None) -> None:
         """Initializes the CplexSolver.
 
         Args:

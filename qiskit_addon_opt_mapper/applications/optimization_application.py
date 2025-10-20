@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 
 """An abstract class for optimization application classes."""
+
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 

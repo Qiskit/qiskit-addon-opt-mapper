@@ -138,8 +138,7 @@ class SolverResult:
                 )
             self._x = np.asarray(x)
             self._variables_dict = {
-                name: val.item()
-                for name, val in zip(self._variable_names, self._x, strict=False)
+                name: val.item() for name, val in zip(self._variable_names, self._x, strict=False)
             }
 
         self._fval = fval
@@ -148,15 +147,11 @@ class SolverResult:
         if samples:
             sum_prob = np.sum([e.probability for e in samples])
             if not np.isclose(sum_prob, 1.0):
-                logger.debug(
-                    "The sum of probability of samples is not close to 1: %f", sum_prob
-                )
+                logger.debug("The sum of probability of samples is not close to 1: %f", sum_prob)
             self._samples = samples
         else:
             self._samples = [
-                SolutionSample(
-                    x=cast(np.ndarray, x), fval=fval, status=status, probability=1.0
-                )
+                SolutionSample(x=cast(np.ndarray, x), fval=fval, status=status, probability=1.0)
             ]
 
     def __repr__(self) -> str:
@@ -206,9 +201,7 @@ class SolverResult:
             return self._x[key]
         if isinstance(key, str):
             return self._variables_dict[key]
-        raise TypeError(
-            f"Integer or string key required, instead {type(key)}({key}) provided."
-        )
+        raise TypeError(f"Integer or string key required, instead {type(key)}({key}) provided.")
 
     def get_correlations(self) -> np.ndarray:
         """Get <Zi x Zj> correlation matrix from the samples.
@@ -393,15 +386,11 @@ class OptimizationSolver(ABC):
         """
         is_feasible = problem.is_feasible(x)
 
-        return (
-            SolverResultStatus.SUCCESS if is_feasible else SolverResultStatus.INFEASIBLE
-        )
+        return SolverResultStatus.SUCCESS if is_feasible else SolverResultStatus.INFEASIBLE
 
     @staticmethod
     def _prepare_converters(
-        converters: (
-            OptimizationProblemConverter | list[OptimizationProblemConverter] | None
-        ),
+        converters: (OptimizationProblemConverter | list[OptimizationProblemConverter] | None),
         penalty: float | None = None,
     ) -> list[OptimizationProblemConverter]:
         """Prepare a list of converters from the input.
@@ -426,14 +415,11 @@ class OptimizationSolver(ABC):
         elif isinstance(converters, OptimizationProblemConverter):
             return [converters]
         elif isinstance(converters, list) and all(
-            isinstance(converter, OptimizationProblemConverter)
-            for converter in converters
+            isinstance(converter, OptimizationProblemConverter) for converter in converters
         ):
             return converters
         else:
-            raise TypeError(
-                "`converters` must all be of the OptimizationProblemConverter type"
-            )
+            raise TypeError("`converters` must all be of the OptimizationProblemConverter type")
 
     @staticmethod
     def _convert(
@@ -462,17 +448,13 @@ class OptimizationSolver(ABC):
 
     @staticmethod
     def _check_converters(
-        converters: (
-            OptimizationProblemConverter | list[OptimizationProblemConverter] | None
-        ),
+        converters: (OptimizationProblemConverter | list[OptimizationProblemConverter] | None),
     ) -> list[OptimizationProblemConverter]:
         if converters is None:
             converters = []
         if not isinstance(converters, list):
             converters = [converters]
-        if not all(
-            isinstance(conv, OptimizationProblemConverter) for conv in converters
-        ):
+        if not all(isinstance(conv, OptimizationProblemConverter) for conv in converters):
             raise TypeError(f"Invalid object of converters: {converters}")
         return converters
 
@@ -600,9 +582,7 @@ class OptimizationSolver(ABC):
             for bitstr, sampling_probability in probabilities.items():
                 # add the bitstring, if the sampling probability exceeds the threshold
                 if sampling_probability >= min_probability:
-                    solutions.append(
-                        generate_solution(bitstr, qubo, sampling_probability)
-                    )
+                    solutions.append(generate_solution(bitstr, qubo, sampling_probability))
 
         elif isinstance(eigenvector, Statevector):
             probabilities = eigenvector.probabilities()
@@ -612,9 +592,7 @@ class OptimizationSolver(ABC):
                 # add the i-th state if the sampling probability exceeds the threshold
                 if sampling_probability >= min_probability:
                     bitstr = f"{i:b}".rjust(num_qubits, "0")
-                    solutions.append(
-                        generate_solution(bitstr, qubo, sampling_probability)
-                    )
+                    solutions.append(generate_solution(bitstr, qubo, sampling_probability))
 
         elif isinstance(eigenvector, dict):
             # When eigenvector is a dict, square the values since the values are normalized.
@@ -624,9 +602,7 @@ class OptimizationSolver(ABC):
             for bitstr, sampling_probability in probabilities.items():
                 # add the bitstring, if the sampling probability exceeds the threshold
                 if sampling_probability >= min_probability:
-                    solutions.append(
-                        generate_solution(bitstr, qubo, sampling_probability)
-                    )
+                    solutions.append(generate_solution(bitstr, qubo, sampling_probability))
 
         elif isinstance(eigenvector, np.ndarray):
             num_qubits = int(np.log2(eigenvector.size))
@@ -636,9 +612,7 @@ class OptimizationSolver(ABC):
                 # add the i-th state if the sampling probability exceeds the threshold
                 if sampling_probability >= min_probability:
                     bitstr = f"{i:b}".rjust(num_qubits, "0")
-                    solutions.append(
-                        generate_solution(bitstr, qubo, sampling_probability)
-                    )
+                    solutions.append(generate_solution(bitstr, qubo, sampling_probability))
 
         else:
             raise TypeError(

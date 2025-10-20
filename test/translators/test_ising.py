@@ -52,9 +52,7 @@ class TestIsingTranslator(OptimizationTestCase):
             q_p.binary_var(name="y")
             q_p.minimize(linear={"x": 1}, quadratic={("x", "y"): 1})
             op, offset = to_ising(q_p)
-            op_ref = SparsePauliOp.from_list(
-                [("ZI", -0.25), ("IZ", -0.75), ("ZZ", 0.25)]
-            )
+            op_ref = SparsePauliOp.from_list([("ZI", -0.25), ("IZ", -0.75), ("ZZ", 0.25)])
             np.testing.assert_allclose(op.to_matrix(), op_ref.to_matrix())
             self.assertAlmostEqual(offset, 0.75)
 
@@ -66,9 +64,7 @@ class TestIsingTranslator(OptimizationTestCase):
             q_p.binary_var(name="y")
             q_p.maximize(linear={"x": 1}, quadratic={("x", "y"): 1})
             op, offset = to_ising(q_p)
-            op_ref = SparsePauliOp.from_list(
-                [("ZI", 0.25), ("IZ", 0.75), ("ZZ", -0.25)]
-            )
+            op_ref = SparsePauliOp.from_list([("ZI", 0.25), ("IZ", 0.75), ("ZZ", -0.25)])
             np.testing.assert_allclose(op.to_matrix(), op_ref.to_matrix())
             self.assertAlmostEqual(offset, -0.75)
 
@@ -81,9 +77,7 @@ class TestIsingTranslator(OptimizationTestCase):
             q_p = OptimizationProblem("test")
             q_p.binary_var(name="x")
             q_p.binary_var(name="y")
-            q_p.minimize(
-                constant=1, linear={"x": -2, "y": -2}, quadratic={("x", "y"): 4}
-            )
+            q_p.minimize(constant=1, linear={"x": -2, "y": -2}, quadratic={("x", "y"): 4})
             op, offset = to_ising(q_p)
             op_ref = SparsePauliOp.from_list([("ZZ", 1.0)])
             np.testing.assert_allclose(op.to_matrix(), op_ref.to_matrix())
@@ -95,9 +89,7 @@ class TestIsingTranslator(OptimizationTestCase):
             q_p = OptimizationProblem("test")
             q_p.binary_var(name="x")
             q_p.binary_var(name="y")
-            q_p.maximize(
-                constant=1, linear={"x": -2, "y": -2}, quadratic={("x", "y"): 4}
-            )
+            q_p.maximize(constant=1, linear={"x": -2, "y": -2}, quadratic={("x", "y"): 4})
             op, offset = to_ising(q_p)
             op_ref = SparsePauliOp.from_list([("ZZ", -1.0)])
             np.testing.assert_allclose(op.to_matrix(), op_ref.to_matrix())

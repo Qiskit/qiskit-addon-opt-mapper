@@ -89,9 +89,7 @@ def substitute_variables(
             # substitute i <- v
             i_2 = optimization_problem.get_variable(i).name
             if i_2 in subs:
-                raise OptimizationError(
-                    f"Cannot substitute the same variable twice: {i} <- {v}"
-                )
+                raise OptimizationError(f"Cannot substitute the same variable twice: {i} <- {v}")
             subs[i_2] = SubstitutionExpression(const=v)
 
     if variables:
@@ -102,17 +100,14 @@ def substitute_variables(
             i_2 = optimization_problem.get_variable(i).name
             j_2 = optimization_problem.get_variable(j).name
             if i_2 == j_2:
-                raise OptimizationError(
-                    f"Cannot substitute the same variable: {i} <- {j} {v}"
-                )
+                raise OptimizationError(f"Cannot substitute the same variable: {i} <- {j} {v}")
             if i_2 in subs:
                 raise OptimizationError(
                     f"Cannot substitute the same variable twice: {i} <- {j} {v}"
                 )
             if j_2 in subs:
                 raise OptimizationError(
-                    "Cannot substitute by variable that gets substituted itself: "
-                    f"{i} <- {j} {v}"
+                    f"Cannot substitute by variable that gets substituted itself: {i} <- {j} {v}"
                 )
             subs[i_2] = SubstitutionExpression(variable=j_2, coeff=v)
 
@@ -281,9 +276,7 @@ class _SubstituteVariables:
         )
 
         constant = obj.constant + const
-        lin_expr = LinearExpression(
-            optimization_problem=self._dst, coefficients=lin if lin else {}
-        )
+        lin_expr = LinearExpression(optimization_problem=self._dst, coefficients=lin if lin else {})
         quad_expr = QuadraticExpression(
             optimization_problem=self._dst, coefficients=quad if quad else {}
         )
@@ -323,9 +316,7 @@ class _SubstituteVariables:
                 )
             else:
                 if not self._feasible(lin_cst.sense, rhs):
-                    logger.warning(
-                        "constraint %s is infeasible due to substitution", lin_cst.name
-                    )
+                    logger.warning("constraint %s is infeasible due to substitution", lin_cst.name)
                     feasible = False
         return feasible
 
@@ -351,14 +342,10 @@ class _SubstituteVariables:
                 lin_names = {c.name for c in self._dst.linear_constraints}
                 while name in lin_names:
                     name = "_" + name
-                self._dst.linear_constraint(
-                    name=name, linear=lin, sense=quad_cst.sense, rhs=rhs
-                )
+                self._dst.linear_constraint(name=name, linear=lin, sense=quad_cst.sense, rhs=rhs)
             else:
                 if not self._feasible(quad_cst.sense, rhs):
-                    logger.warning(
-                        "constraint %s is infeasible due to substitution", quad_cst.name
-                    )
+                    logger.warning("constraint %s is infeasible due to substitution", quad_cst.name)
                     feasible = False
         return feasible
 
@@ -392,14 +379,10 @@ class _SubstituteVariables:
                 lin_names = {c.name for c in self._dst.linear_constraints}
                 while name in lin_names:
                     name = "_" + name
-                self._dst.linear_constraint(
-                    name=name, linear=lin, sense=ho_cst.sense, rhs=rhs
-                )
+                self._dst.linear_constraint(name=name, linear=lin, sense=ho_cst.sense, rhs=rhs)
             else:
                 if not self._feasible(ho_cst.sense, rhs):
-                    logger.warning(
-                        "constraint %s is infeasible due to substitution", ho_cst.name
-                    )
+                    logger.warning("constraint %s is infeasible due to substitution", ho_cst.name)
                     feasible = False
         return feasible
 

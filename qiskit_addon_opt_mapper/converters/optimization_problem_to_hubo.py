@@ -138,21 +138,14 @@ class OptimizationProblemToHubo(OptimizationProblemConverter):
         compatible_with_integer_slack = True
         for l_constraint in problem.linear_constraints:
             linear = l_constraint.linear.to_dict()
-            if any(
-                isinstance(coef, float) and not coef.is_integer()
-                for coef in linear.values()
-            ):
+            if any(isinstance(coef, float) and not coef.is_integer() for coef in linear.values()):
                 compatible_with_integer_slack = False
         for q_constraint in problem.quadratic_constraints:
             linear = q_constraint.linear.to_dict()
             quadratic = q_constraint.quadratic.to_dict()
             if any(
-                isinstance(coef, float) and not coef.is_integer()
-                for coef in quadratic.values()
-            ) or any(
-                isinstance(coef, float) and not coef.is_integer()
-                for coef in linear.values()
-            ):
+                isinstance(coef, float) and not coef.is_integer() for coef in quadratic.values()
+            ) or any(isinstance(coef, float) and not coef.is_integer() for coef in linear.values()):
                 compatible_with_integer_slack = False
 
         for constraint in problem.higher_order_constraints:
