@@ -11,8 +11,9 @@
 # that they have been altered from the originals.
 
 
-"""
-Optimization problems (:mod:`qiskit_addon_opt_mapper.problems`)
+"""Optimization problem model elements.
+
+Optimization problems (:mod:`qiskit_addon_opt_mapper.problems`).
 ===========================================================
 
 .. currentmodule:: qiskit_addon_opt_mapper.problems
@@ -57,16 +58,16 @@ from .variable import Variable, VarType
 
 __all__ = [
     "Constraint",
-    "LinearExpression",
-    "LinearConstraint",
-    "QuadraticExpression",
-    "QuadraticConstraint",
-    "OptimizationObjective",
-    "ObjSense",
-    "HigherOrderExpression",
     "HigherOrderConstraint",
+    "HigherOrderExpression",
+    "LinearConstraint",
+    "LinearExpression",
+    "ObjSense",
+    "OptimizationObjective",
     "OptimizationProblem",
     "OptimizationProblemElement",
-    "Variable",
+    "QuadraticConstraint",
+    "QuadraticExpression",
     "VarType",
+    "Variable",
 ]

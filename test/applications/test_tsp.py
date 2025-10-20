@@ -16,7 +16,6 @@ import unittest
 
 import networkx as nx
 import numpy as np
-
 from qiskit_addon_opt_mapper import OptimizationProblem
 from qiskit_addon_opt_mapper.applications.tsp import Tsp
 from qiskit_addon_opt_mapper.problems import Constraint, OptimizationObjective, VarType
@@ -32,11 +31,16 @@ class TestTsp(OptimizationTestCase):
         random.seed(123)
         low = 0
         high = 100
-        pos = {i: (random.randint(low, high), random.randint(low, high)) for i in range(4)}
-        self.graph = nx.random_geometric_graph(4, np.hypot(high - low, high - low) + 1, pos=pos)
+        pos = {
+            i: (random.randint(low, high), random.randint(low, high)) for i in range(4)
+        }
+        self.graph = nx.random_geometric_graph(
+            4, np.hypot(high - low, high - low) + 1, pos=pos
+        )
         for w, v in self.graph.edges:
             delta = [
-                self.graph.nodes[w]["pos"][i] - self.graph.nodes[v]["pos"][i] for i in range(2)
+                self.graph.nodes[w]["pos"][i] - self.graph.nodes[v]["pos"][i]
+                for i in range(2)
             ]
             self.graph.edges[w, v]["weight"] = np.rint(np.hypot(delta[0], delta[1]))
 
@@ -60,7 +64,9 @@ class TestTsp(OptimizationTestCase):
         self.assertEqual(obj.constant, 0)
         self.assertDictEqual(obj.linear.to_dict(), {})
         for edge, val in obj.quadratic.to_dict().items():
-            self.assertEqual(val, self.graph.edges[edge[0] // 4, edge[1] // 4]["weight"])
+            self.assertEqual(
+                val, self.graph.edges[edge[0] // 4, edge[1] // 4]["weight"]
+            )
 
         # Test constraint
         lin = op.linear_constraints
@@ -75,7 +81,9 @@ class TestTsp(OptimizationTestCase):
         for i in range(4):
             self.assertEqual(lin[4 + i].sense, Constraint.Sense.EQ)
             self.assertEqual(lin[4 + i].rhs, 1)
-            self.assertEqual(lin[4 + i].linear.to_dict(), {i: 1, 4 + i: 1, 8 + i: 1, 12 + i: 1})
+            self.assertEqual(
+                lin[4 + i].linear.to_dict(), {i: 1, 4 + i: 1, 8 + i: 1, 12 + i: 1}
+            )
 
     def test_interpret(self):
         """Test interpret"""
@@ -99,7 +107,9 @@ class TestTsp(OptimizationTestCase):
     def test_parse_tsplib_format(self):
         """Test tsplib format parser"""
         # test_tsplib is eli51.tsp from http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/
-        reference_file_name = self.get_resource_path("test_tsplib.tsp", "applications/resources")
+        reference_file_name = self.get_resource_path(
+            "test_tsplib.tsp", "applications/resources"
+        )
         tsp = Tsp.parse_tsplib_format(reference_file_name)
         graph = tsp.graph
         self.assertEqual(graph.num_nodes(), 51)
@@ -184,7 +194,9 @@ class TestTspCustomGraph(OptimizationTestCase):
 
         # Test position constraints (each position filled once)
         for position in range(5):
-            self.assertEqual(linear_constraints[5 + position].sense, Constraint.Sense.EQ)
+            self.assertEqual(
+                linear_constraints[5 + position].sense, Constraint.Sense.EQ
+            )
             self.assertEqual(linear_constraints[5 + position].rhs, 1)
             self.assertEqual(
                 linear_constraints[5 + position].linear.to_dict(),
@@ -224,7 +236,9 @@ class TestTspCustomGraph(OptimizationTestCase):
         expected_constraints = (
             5  # node constraints
             + 5  # position constraints
-            + len(non_edges) * 2 * 5  # non-edge constraints (2 per non-edge per position)
+            + len(non_edges)
+            * 2
+            * 5  # non-edge constraints (2 per non-edge per position)
         )
         self.assertEqual(len(linear_constraints), expected_constraints)
 

@@ -10,9 +10,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""
-Optimization problem translators (:mod:`qiskit_addon_opt_mapper.translators`)
-======================================================================
+"""Translators.
+
+Optimization problem translators (:mod:`qiskit_addon_opt_mapper.translators`).
+==============================================================================
 
 .. currentmodule:: qiskit_addon_opt_mapper.translators
 

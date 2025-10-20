@@ -10,9 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""
-Additional optional constants.
-"""
+"""Additional optional constants."""
 
 from qiskit.utils import LazyImportTester
 

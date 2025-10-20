@@ -12,7 +12,7 @@
 
 """Quadratic Constraint."""
 
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 from numpy import ndarray
 from scipy.sparse import spmatrix
@@ -32,13 +32,13 @@ class QuadraticConstraint(Constraint):
         self,
         optimization_problem: Any,
         name: str,
-        linear: Union[ndarray, spmatrix, List[float], Dict[Union[str, int], float]],
-        quadratic: Union[
-            ndarray,
-            spmatrix,
-            List[List[float]],
-            Dict[Tuple[Union[int, str], Union[int, str]], float],
-        ],
+        linear: ndarray | spmatrix | list[float] | dict[str | int, float],
+        quadratic: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[str | int, str | int], float]
+        ),
         sense: ConstraintSense,
         rhs: float,
     ) -> None:
@@ -68,16 +68,16 @@ class QuadraticConstraint(Constraint):
     @linear.setter
     def linear(
         self,
-        linear: Union[ndarray, spmatrix, List[float], Dict[Union[str, int], float]],
+        linear: ndarray | spmatrix | list[float] | dict[str | int, float],
     ) -> None:
         """Sets the linear expression corresponding to the left-hand-side of the constraint.
+
         The coefficients can either be given by an array, a (sparse) 1d matrix, a list or a
         dictionary.
 
         Args:
             linear: The linear coefficients of the left-hand-side.
         """
-
         self._linear = LinearExpression(self.optimization_problem, linear)
 
     @property
@@ -92,14 +92,15 @@ class QuadraticConstraint(Constraint):
     @quadratic.setter
     def quadratic(
         self,
-        quadratic: Union[
-            ndarray,
-            spmatrix,
-            List[List[float]],
-            Dict[Tuple[Union[int, str], Union[int, str]], float],
-        ],
+        quadratic: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[str | int, str | int], float]
+        ),
     ) -> None:
         """Sets the quadratic expression corresponding to the left-hand-side of the constraint.
+
         The coefficients can either be given by an array, a (sparse) matrix, a list or a
         dictionary.
 
@@ -108,11 +109,12 @@ class QuadraticConstraint(Constraint):
         """
         self._quadratic = QuadraticExpression(self.optimization_problem, quadratic)
 
-    def evaluate(self, x: Union[ndarray, List, Dict[Union[int, str], float]]) -> float:
+    def evaluate(self, x: ndarray | list | dict[str | int, float]) -> float:
         """Evaluate the left-hand-side of the constraint.
 
         Args:
             x: The values of the variables to be evaluated.
+
 
         Returns:
             The left-hand-side of the constraint given the variable values.
@@ -120,13 +122,17 @@ class QuadraticConstraint(Constraint):
         return self.linear.evaluate(x) + self.quadratic.evaluate(x)
 
     def __repr__(self):
+        """Repr. for QuadraticConstraint."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import DEFAULT_TRUNCATE, expr2str
 
-        lhs = expr2str(linear=self.linear, quadratic=self.quadratic, truncate=DEFAULT_TRUNCATE)
+        lhs = expr2str(
+            linear=self.linear, quadratic=self.quadratic, truncate=DEFAULT_TRUNCATE
+        )
         return f"<{self.__class__.__name__}: {lhs} {self.sense.label} {self.rhs} '{self.name}'>"
 
     def __str__(self):
+        """Str. for QuadraticConstraint."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import expr2str
 

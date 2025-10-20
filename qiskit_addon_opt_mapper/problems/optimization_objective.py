@@ -13,7 +13,7 @@
 """Optimization Objective."""
 
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from numpy import ndarray
 from scipy.sparse import spmatrix
@@ -24,11 +24,9 @@ from .linear_constraint import LinearExpression
 from .optimization_problem_element import OptimizationProblemElement
 from .quadratic_expression import QuadraticExpression
 
-CoeffLike = Union[
-    ndarray,
-    Dict[Tuple[Union[int, str], ...], float],
-    List,  # nested list as dense tensor
-]
+CoeffLike = (
+    ndarray | dict[tuple[int | str, ...], float] | list
+)  # nested list as dense tensor
 
 
 class ObjSense(Enum):
@@ -39,8 +37,10 @@ class ObjSense(Enum):
 
 
 class OptimizationObjective(OptimizationProblemElement):
-    """Objective:
-    constant + linear(x) + x^T Q x + sum_{k>=3} H_k(x)
+    """Optimization objective element.
+
+    Follows:
+        constant + linear(x) + x^T Q x + sum_{k>=3} H_k(x).
     """
 
     Sense = ObjSense
@@ -49,21 +49,19 @@ class OptimizationObjective(OptimizationProblemElement):
         self,
         optimization_problem: Any,
         constant: float = 0.0,
-        linear: Optional[
-            Union[ndarray, spmatrix, List[float], Dict[Union[str, int], float]]
-        ] = None,
-        quadratic: Optional[
-            Union[
-                ndarray,
-                spmatrix,
-                List[List[float]],
-                Dict[Tuple[Union[int, str], Union[int, str]], float],
-            ]
-        ] = None,
-        higher_order: Optional[Dict[int, CoeffLike]] = None,
+        linear: ndarray | spmatrix | list[float] | dict[int | str, float] | None = None,
+        quadratic: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[int | str, int | str], float]
+            | None
+        ) = None,
+        higher_order: dict[int, CoeffLike] | None = None,
         sense: ObjSense = ObjSense.MINIMIZE,
     ) -> None:
         """Construct an objective with linear, quadratic, and optional higher-order parts.
+
         Args:
             optimization_problem: The optimization problem this objective belongs to.
             constant: The constant part of the objective function.
@@ -86,7 +84,7 @@ class OptimizationObjective(OptimizationProblemElement):
 
         # Store multiple higher-order expressions keyed by order (k>=3)
         if higher_order is None:
-            self._higher_order: Dict[int, HigherOrderExpression] = {}
+            self._higher_order: dict[int, HigherOrderExpression] = {}
         else:
             self.higher_order = higher_order
 
@@ -108,7 +106,6 @@ class OptimizationObjective(OptimizationProblemElement):
         Args:
             constant: The constant part of the objective function.
         """
-
         self._constant = float(constant)
 
     @property
@@ -123,7 +120,7 @@ class OptimizationObjective(OptimizationProblemElement):
     @linear.setter
     def linear(
         self,
-        linear: Union[ndarray, spmatrix, List[float], Dict[Union[str, int], float]],
+        linear: ndarray | spmatrix | list[float] | dict[int | str, float],
     ) -> None:
         """Sets the linear expression corresponding to the left-hand-side of the constraint.
 
@@ -144,12 +141,12 @@ class OptimizationObjective(OptimizationProblemElement):
     @quadratic.setter
     def quadratic(
         self,
-        quadratic: Union[
-            ndarray,
-            spmatrix,
-            List[List[float]],
-            Dict[Tuple[Union[int, str], Union[int, str]], float],
-        ],
+        quadratic: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[int | str, int | str], float]
+        ),
     ) -> None:
         """Sets the quadratic expression corresponding to the left-hand-side of the constraint.
 
@@ -159,7 +156,7 @@ class OptimizationObjective(OptimizationProblemElement):
         self._quadratic = QuadraticExpression(self.optimization_problem, quadratic)
 
     @property
-    def higher_order(self) -> Dict[int, HigherOrderExpression]:
+    def higher_order(self) -> dict[int, HigherOrderExpression]:
         """Return a shallow copy of {order: HigherOrderExpression}.
 
         Returns:
@@ -170,7 +167,7 @@ class OptimizationObjective(OptimizationProblemElement):
     @higher_order.setter
     def higher_order(
         self,
-        higher_order: Dict[int, CoeffLike],
+        higher_order: dict[int, CoeffLike],
     ) -> None:
         """Sets the higher-order expressions.
 
@@ -181,7 +178,9 @@ class OptimizationObjective(OptimizationProblemElement):
         self._higher_order = {}
 
         for k, coeffs in higher_order.items():
-            self._higher_order[k] = HigherOrderExpression(self.optimization_problem, coeffs)
+            self._higher_order[k] = HigherOrderExpression(
+                self.optimization_problem, coeffs
+            )
 
     @property
     def sense(self) -> ObjSense:
@@ -190,7 +189,6 @@ class OptimizationObjective(OptimizationProblemElement):
         Returns:
             The sense of the objective function (e.g., MINIMIZE, MAXIMIZE).
         """
-
         return self._sense
 
     @sense.setter
@@ -202,10 +200,12 @@ class OptimizationObjective(OptimizationProblemElement):
         """
         self._sense = sense
 
-    def evaluate(self, x: Union[ndarray, List, Dict[Union[int, str], float]]) -> float:
+    def evaluate(self, x: ndarray | list | dict[int | str, float]) -> float:
         """Evaluate objective value at x.
+
         Args:
             x: The values of the variables to be evaluated.
+
         Returns:
             The objective value given the variable values.
         """
@@ -223,11 +223,12 @@ class OptimizationObjective(OptimizationProblemElement):
             val += expr.evaluate(x)
         return float(val)
 
-    def evaluate_gradient(self, x: Union[ndarray, List, Dict[Union[int, str], float]]) -> ndarray:
+    def evaluate_gradient(self, x: ndarray | list | dict[int | str, float]) -> ndarray:
         """Evaluate gradient of the objective at x.
 
         Args:
             x: The values of the variables to be evaluated.
+
         Returns:
             The gradient of the objective function given the variable values.
         """
@@ -246,6 +247,7 @@ class OptimizationObjective(OptimizationProblemElement):
         return g
 
     def __repr__(self):
+        """Repr. for OptimizationObjective."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import DEFAULT_TRUNCATE, expr2str
 
@@ -259,6 +261,7 @@ class OptimizationObjective(OptimizationProblemElement):
         return f"<{self.__class__.__name__}: {self._sense.name.lower()} {expr_str}>"
 
     def __str__(self):
+        """Str. for OptimizationObjective."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import expr2str
 

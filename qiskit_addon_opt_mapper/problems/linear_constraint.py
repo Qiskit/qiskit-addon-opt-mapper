@@ -12,7 +12,7 @@
 
 """Linear Constraint."""
 
-from typing import Any, Dict, List, Union
+from typing import Any
 
 from numpy import ndarray
 from scipy.sparse import spmatrix
@@ -31,11 +31,12 @@ class LinearConstraint(Constraint):
         self,
         optimization_problem: Any,
         name: str,
-        linear: Union[ndarray, spmatrix, List[float], Dict[Union[str, int], float]],
+        linear: ndarray | spmatrix | list[float] | dict[str | int, float],
         sense: ConstraintSense,
         rhs: float,
     ) -> None:
-        """
+        """Init method.
+
         Args:
             optimization_problem: The parent optimization problem.
             name: The name of the constraint.
@@ -58,9 +59,10 @@ class LinearConstraint(Constraint):
     @linear.setter
     def linear(
         self,
-        linear: Union[ndarray, spmatrix, List[float], Dict[Union[str, int], float]],
+        linear: ndarray | spmatrix | list[float] | dict[str | int, float],
     ) -> None:
         """Sets the linear expression corresponding to the left-hand-side of the constraint.
+
         The coefficients can either be given by an array, a (sparse) 1d matrix, a list or a
         dictionary.
 
@@ -69,11 +71,12 @@ class LinearConstraint(Constraint):
         """
         self._linear = LinearExpression(self.optimization_problem, linear)
 
-    def evaluate(self, x: Union[ndarray, List, Dict[Union[int, str], float]]) -> float:
+    def evaluate(self, x: ndarray | list | dict[int | str, float]) -> float:
         """Evaluate the left-hand-side of the constraint.
 
         Args:
             x: The values of the variables to be evaluated.
+
 
         Returns:
             The left-hand-side of the constraint given the variable values.
@@ -81,6 +84,7 @@ class LinearConstraint(Constraint):
         return self.linear.evaluate(x)
 
     def __repr__(self):
+        """Repr. for LinearConstraint."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import DEFAULT_TRUNCATE, expr2str
 
@@ -88,6 +92,7 @@ class LinearConstraint(Constraint):
         return f"<{self.__class__.__name__}: {lhs} {self.sense.label} {self.rhs} '{self.name}'>"
 
     def __str__(self):
+        """Str. for LinearConstraint."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import expr2str
 

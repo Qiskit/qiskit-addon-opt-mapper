@@ -10,10 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Translator between an Ising Hamiltonian and a optimization problem"""
+"""Translator between an Ising Hamiltonian and a optimization problem."""
 
 import itertools
-from typing import Tuple
 
 import numpy as np
 from qiskit.quantum_info import Pauli, SparsePauliOp
@@ -22,7 +21,7 @@ from qiskit_addon_opt_mapper.exceptions import OptimizationError
 from qiskit_addon_opt_mapper.problems.optimization_problem import OptimizationProblem
 
 
-def to_ising(optimization_problem: OptimizationProblem) -> Tuple[SparsePauliOp, float]:
+def to_ising(optimization_problem: OptimizationProblem) -> tuple[SparsePauliOp, float]:
     """Return the Ising Hamiltonian of this problem.
 
     Variables are mapped to qubits in the same order, i.e.,
@@ -30,7 +29,7 @@ def to_ising(optimization_problem: OptimizationProblem) -> Tuple[SparsePauliOp, 
     See https://github.com/Qiskit/qiskit-terra/issues/1148 for details.
 
     Args:
-        quad_prog: The problem to be translated.
+        optimization_problem: The problem to be translated.
 
     Returns:
         A tuple (qubit_op, offset) comprising the qubit operator for the problem
@@ -42,14 +41,20 @@ def to_ising(optimization_problem: OptimizationProblem) -> Tuple[SparsePauliOp, 
         OptimizationError: If constraints exist in the problem.
     """
     # if constraints exist, raise an error
-    if optimization_problem.linear_constraints or optimization_problem.quadratic_constraints:
+    if (
+        optimization_problem.linear_constraints
+        or optimization_problem.quadratic_constraints
+    ):
         raise OptimizationError(
             "There must be no constraint in the problem. "
             "You can use `OptimizationProblemToQubo` converter "
             "to convert constraints to penalty terms of the objective function."
         )
 
-    if optimization_problem.get_num_vars() == optimization_problem.get_num_binary_vars():
+    if (
+        optimization_problem.get_num_vars()
+        == optimization_problem.get_num_binary_vars()
+    ):
         # if all variables are binary variables
         # initialize Hamiltonian.
         num_vars = optimization_problem.get_num_vars()
@@ -120,7 +125,9 @@ def to_ising(optimization_problem: OptimizationProblem) -> Tuple[SparsePauliOp, 
                         pauli_list.append(SparsePauliOp(Pauli((z_p, zero)), weight))
                 offset += coef * sense / (2 ** (degree))
 
-    elif optimization_problem.get_num_vars() == optimization_problem.get_num_spin_vars():
+    elif (
+        optimization_problem.get_num_vars() == optimization_problem.get_num_spin_vars()
+    ):
         # if all variables are spin variables
         # initialize Hamiltonian.
         num_vars = optimization_problem.get_num_vars()

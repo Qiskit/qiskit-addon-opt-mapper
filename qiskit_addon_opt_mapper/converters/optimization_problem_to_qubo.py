@@ -12,7 +12,7 @@
 
 """A converter from optimization problem to a QUBO."""
 
-from typing import List, Optional, Union, cast
+from typing import cast
 
 import numpy as np
 
@@ -28,8 +28,10 @@ from .spin_to_binary import SpinToBinary
 
 
 class OptimizationProblemToQubo(OptimizationProblemConverter):
-    """Convert a given optimization problem in quadratic form into a QUBO problem by
-    converting variables to binary and eliminating constraints. An optimization problem in
+    """Convert a given optimization problem in quadratic form into a QUBO problem.
+
+    Done by converting variables to binary and eliminating constraints.
+    An optimization problem in
     quadratic form is a problem with quadratic objective function
     and linear constraints. A QUBO is a problem with quadratic objective function and no
     constraints. This combines several converters: `IntegerToBinary`, `InequalityToPenalty`,
@@ -47,8 +49,9 @@ class OptimizationProblemToQubo(OptimizationProblemConverter):
         >>> problem2 = conv.convert(problem)
     """
 
-    def __init__(self, penalty: Optional[float] = None) -> None:
-        """
+    def __init__(self, penalty: float | None = None) -> None:
+        """Init method.
+
         Args:
             penalty: Penalty factor to scale equality constraints that are added to objective.
                 If None is passed, a penalty factor will be automatically calculated on every
@@ -66,11 +69,13 @@ class OptimizationProblemToQubo(OptimizationProblemConverter):
         ]
 
     def convert(self, problem: OptimizationProblem) -> OptimizationProblem:
-        """Convert a optimization problem into a QUBO form. The new problem has no constraints and
-        the objective function is quadratic.
+        """Convert a optimization problem into a QUBO form.
+
+        The new problem has no constraints and the objective function is quadratic.
 
         Args:
             problem: The problem with linear constraints to be solved.
+
 
         Returns:
             The problem converted in QUBO format as minimization problem.
@@ -78,7 +83,6 @@ class OptimizationProblemToQubo(OptimizationProblemConverter):
         Raises:
             OptimizationError: In case of an incompatible problem.
         """
-
         # analyze compatibility of problem
         msg = self.get_compatibility_msg(problem)
         if len(msg) > 0:
@@ -88,12 +92,14 @@ class OptimizationProblemToQubo(OptimizationProblemConverter):
             problem = conv.convert(problem)
         return problem
 
-    def interpret(self, x: Union[np.ndarray, List[float]]) -> np.ndarray:
-        """Convert the result of the converted problem back to that of the original problem
-        by applying the `interpret` method of each converter in reverse order.
+    def interpret(self, x: np.ndarray | list[float]) -> np.ndarray:
+        """Convert the result of the converted problem back to that of the original problem.
+
+        Done by applying the `interpret` method of each converter in reverse order.
 
         Args:
             x: The result of the converted problem.
+
 
         Returns:
             The result of the original problem.
@@ -122,10 +128,10 @@ class OptimizationProblemToQubo(OptimizationProblemConverter):
         Args:
             problem: The optimization problem to check compatibility.
 
+
         Returns:
             A message describing the incompatibility.
         """
-
         # initialize message
         msg = ""
         # check whether there are incompatible variable types
@@ -143,14 +149,21 @@ class OptimizationProblemToQubo(OptimizationProblemConverter):
         compatible_with_integer_slack = True
         for l_constraint in problem.linear_constraints:
             linear = l_constraint.linear.to_dict()
-            if any(isinstance(coef, float) and not coef.is_integer() for coef in linear.values()):
+            if any(
+                isinstance(coef, float) and not coef.is_integer()
+                for coef in linear.values()
+            ):
                 compatible_with_integer_slack = False
         for q_constraint in problem.quadratic_constraints:
             linear = q_constraint.linear.to_dict()
             quadratic = q_constraint.quadratic.to_dict()
             if any(
-                isinstance(coef, float) and not coef.is_integer() for coef in quadratic.values()
-            ) or any(isinstance(coef, float) and not coef.is_integer() for coef in linear.values()):
+                isinstance(coef, float) and not coef.is_integer()
+                for coef in quadratic.values()
+            ) or any(
+                isinstance(coef, float) and not coef.is_integer()
+                for coef in linear.values()
+            ):
                 compatible_with_integer_slack = False
         if not compatible_with_integer_slack:
             msg += "Can not convert inequality constraints to equality constraint because \
@@ -165,13 +178,14 @@ class OptimizationProblemToQubo(OptimizationProblemConverter):
         Args:
             problem: The optimization problem to check compatibility.
 
+
         Returns:
             Returns True if the problem is compatible, False otherwise.
         """
         return len(self.get_compatibility_msg(problem)) == 0
 
     @property
-    def penalty(self) -> Optional[float]:
+    def penalty(self) -> float | None:
         """Returns the penalty factor used in conversion.
 
         Returns:
@@ -180,7 +194,7 @@ class OptimizationProblemToQubo(OptimizationProblemConverter):
         return self._penalize_lin_eq_constraints.penalty
 
     @penalty.setter
-    def penalty(self, penalty: Optional[float]) -> None:
+    def penalty(self, penalty: float | None) -> None:
         """Set a new penalty factor.
 
         Args:

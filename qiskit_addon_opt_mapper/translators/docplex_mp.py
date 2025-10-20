@@ -13,7 +13,7 @@
 """Translator between a docplex.mp model and an optimization problem."""
 
 from math import isclose
-from typing import Any, Dict, Optional, Tuple, cast
+from typing import Any, ClassVar, cast
 from warnings import warn
 
 from docplex.mp.basic import Expr
@@ -39,6 +39,7 @@ from ..problems.variable import Variable
 
 def to_docplex_mp(quadratic_problem: OptimizationProblem) -> Model:
     """Returns a docplex.mp model corresponding to a optimization problem.
+
     Higher-order terms and spin variables are not supported.
 
     Args:
@@ -68,10 +69,14 @@ def to_docplex_mp(quadratic_problem: OptimizationProblem) -> Model:
         elif x.vartype == Variable.Type.INTEGER:
             var[idx] = mdl.integer_var(lb=x.lowerbound, ub=x.upperbound, name=x.name)
         elif x.vartype == Variable.Type.SPIN:
-            raise OptimizationError("Spin variables are not supported in docplex.md model export.")
+            raise OptimizationError(
+                "Spin variables are not supported in docplex.md model export."
+            )
         else:
             # should never happen
-            raise OptimizationError(f"Internal error: unsupported variable type: {x.vartype}")
+            raise OptimizationError(
+                f"Internal error: unsupported variable type: {x.vartype}"
+            )
 
     if quadratic_problem.objective.higher_order:
         raise OptimizationError(
@@ -87,7 +92,8 @@ def to_docplex_mp(quadratic_problem: OptimizationProblem) -> Model:
     objective = (
         quadratic_problem.objective.constant
         + mdl.sum(
-            v * var[cast(int, i)] for i, v in quadratic_problem.objective.linear.to_dict().items()
+            v * var[cast(int, i)]
+            for i, v in quadratic_problem.objective.linear.to_dict().items()
         )
         + mdl.sum(
             v * var[cast(int, i)] * var[cast(int, j)]
@@ -117,7 +123,9 @@ def to_docplex_mp(quadratic_problem: OptimizationProblem) -> Model:
             mdl.add_constraint(linear_expr <= rhs, ctname=name)
         else:
             # should never happen
-            raise OptimizationError(f"Internal error: unsupported constraint sense: {sense}")
+            raise OptimizationError(
+                f"Internal error: unsupported constraint sense: {sense}"
+            )
 
     # add quadratic constraints
     for q_constraint in quadratic_problem.quadratic_constraints:
@@ -144,23 +152,30 @@ def to_docplex_mp(quadratic_problem: OptimizationProblem) -> Model:
             mdl.add_constraint(quadratic_expr <= rhs, ctname=name)
         else:
             # should never happen
-            raise OptimizationError(f"Internal error: unsupported constraint sense: {sense}")
+            raise OptimizationError(
+                f"Internal error: unsupported constraint sense: {sense}"
+            )
 
     return mdl
 
 
 class _FromDocplexMp:
-    _sense_dict = {ComparisonType.EQ: "==", ComparisonType.LE: "<=", ComparisonType.GE: ">="}
+    _sense_dict: ClassVar[dict[ComparisonType, str]] = {
+        ComparisonType.EQ: "==",
+        ComparisonType.LE: "<=",
+        ComparisonType.GE: ">=",
+    }
 
     def __init__(self, model: Model):
-        """
+        """Init method.
+
         Args:
             model: Docplex model
         """
         self._model: Model = model
         self._quadratic_program: OptimizationProblem = OptimizationProblem()
-        self._var_names: Dict[Var, str] = {}
-        self._var_bounds: Dict[str, Tuple[float, float]] = {}
+        self._var_names: dict[Var, str] = {}
+        self._var_bounds: dict[str, tuple[float, float]] = {}
 
     def _variables(self):
         # keep track of names separately, since docplex allows to have None names.
@@ -172,11 +187,13 @@ class _FromDocplexMp:
             elif isinstance(x.vartype, IntegerVarType):
                 x_new = self._quadratic_program.integer_var(x.lb, x.ub, x.name)
             else:
-                raise OptimizationError(f"Unsupported variable type: {x.name} {x.vartype}")
+                raise OptimizationError(
+                    f"Unsupported variable type: {x.name} {x.vartype}"
+                )
             self._var_names[x] = x_new.name
             self._var_bounds[x.name] = (x_new.lowerbound, x_new.upperbound)
 
-    def _linear_expr(self, expr: AbstractLinearExpr) -> Dict[str, float]:
+    def _linear_expr(self, expr: AbstractLinearExpr) -> dict[str, float]:
         # AbstractLinearExpr is a parent of LinearExpr, ConstantExpr, and ZeroExpr
         linear = {}
         for x, coeff in expr.iter_terms():
@@ -185,7 +202,7 @@ class _FromDocplexMp:
 
     def _quadratic_expr(
         self, expr: QuadExpr
-    ) -> Tuple[Dict[str, float], Dict[Tuple[str, str], float]]:
+    ) -> tuple[dict[str, float], dict[tuple[str, str], float]]:
         linear = self._linear_expr(expr.get_linear_part())
         quad = {}
         for x, y, coeff in expr.iter_quad_triplets():
@@ -194,13 +211,14 @@ class _FromDocplexMp:
             quad[i, j] = coeff
         return linear, quad
 
-    def quadratic_program(self, indicator_big_m: Optional[float]) -> OptimizationProblem:
+    def quadratic_program(self, indicator_big_m: float | None) -> OptimizationProblem:
         """Generate a optimization problem corresponding to the input Docplex model.
 
         Args:
             indicator_big_m: The big-M value used for the big-M formulation to convert
             indicator constraints into linear constraints.
             If ``None``, it is automatically derived from the model.
+
 
         Returns:
             a optimization problem corresponding to the input Docplex model.
@@ -216,7 +234,9 @@ class _FromDocplexMp:
 
         # make sure objective expression is linear or quadratic and not a variable
         if isinstance(self._model.objective_expr, Var):
-            self._model.objective_expr = self._model.objective_expr + 0  # Var + 0 -> LinearExpr
+            self._model.objective_expr = (
+                self._model.objective_expr + 0
+            )  # Var + 0 -> LinearExpr
 
         constant = self._model.objective_expr.constant
         if isinstance(self._model.objective_expr, QuadExpr):
@@ -236,7 +256,9 @@ class _FromDocplexMp:
             linear, sense, rhs = self._linear_constraint(constraint)
             if not linear:  # lhs == 0
                 warn(f"Trivial constraint: {constraint}", stacklevel=3)
-            self._quadratic_program.linear_constraint(linear, sense, rhs, constraint.name)
+            self._quadratic_program.linear_constraint(
+                linear, sense, rhs, constraint.name
+            )
 
         # set quadratic constraints
         for constraint in self._model.iter_quadratic_constraints():
@@ -253,15 +275,17 @@ class _FromDocplexMp:
             if not linear:  # lhs == 0
                 warn(f"Trivial constraint: {constraint}", stacklevel=3)
             prefix = constraint.name or f"ind{index}"
-            linear_constraints = self._indicator_constraints(constraint, prefix, indicator_big_m)
+            linear_constraints = self._indicator_constraints(
+                constraint, prefix, indicator_big_m
+            )
             for linear, sense, rhs, name in linear_constraints:
                 self._quadratic_program.linear_constraint(linear, sense, rhs, name)
 
         return self._quadratic_program
 
     @staticmethod
-    def _subtract(dict1: Dict[Any, float], dict2: Dict[Any, float]) -> Dict[Any, float]:
-        """Calculate dict1 - dict2"""
+    def _subtract(dict1: dict[Any, float], dict2: dict[Any, float]) -> dict[Any, float]:
+        """Calculate dict1 - dict2."""
         ret = dict1.copy()
         for key, val2 in dict2.items():
             if key in dict1:
@@ -276,15 +300,19 @@ class _FromDocplexMp:
 
     def _linear_constraint(
         self, constraint: LinearConstraint
-    ) -> Tuple[Dict[str, float], str, float]:
+    ) -> tuple[dict[str, float], str, float]:
         left_expr = constraint.get_left_expr()
         right_expr = constraint.get_right_expr()
         # for linear constraints we may get an instance of Var instead of expression,
         # e.g. x + y = z
         if not isinstance(left_expr, (Expr, Var)):
-            raise OptimizationError(f"Unsupported expression: {left_expr} {type(left_expr)}")
+            raise OptimizationError(
+                f"Unsupported expression: {left_expr} {type(left_expr)}"
+            )
         if not isinstance(right_expr, (Expr, Var)):
-            raise OptimizationError(f"Unsupported expression: {right_expr} {type(right_expr)}")
+            raise OptimizationError(
+                f"Unsupported expression: {right_expr} {type(right_expr)}"
+            )
         if constraint.sense not in self._sense_dict:
             raise OptimizationError(f"Unsupported constraint sense: {constraint}")
 
@@ -302,13 +330,17 @@ class _FromDocplexMp:
 
     def _quadratic_constraint(
         self, constraint: QuadraticConstraint
-    ) -> Tuple[Dict[str, float], Dict[Tuple[str, str], float], str, float]:
+    ) -> tuple[dict[str, float], dict[tuple[str, str], float], str, float]:
         left_expr = constraint.get_left_expr()
         right_expr = constraint.get_right_expr()
         if not isinstance(left_expr, (Expr, Var)):
-            raise OptimizationError(f"Unsupported expression: {left_expr} {type(left_expr)}")
+            raise OptimizationError(
+                f"Unsupported expression: {left_expr} {type(left_expr)}"
+            )
         if not isinstance(right_expr, (Expr, Var)):
-            raise OptimizationError(f"Unsupported expression: {right_expr} {type(right_expr)}")
+            raise OptimizationError(
+                f"Unsupported expression: {right_expr} {type(right_expr)}"
+            )
         if constraint.sense not in self._sense_dict:
             raise OptimizationError(f"Unsupported constraint sense: {constraint}")
 
@@ -333,7 +365,7 @@ class _FromDocplexMp:
         rhs = right_expr.constant - left_expr.constant
         return linear, quadratic, self._sense_dict[constraint.sense], rhs
 
-    def _linear_bounds(self, linear: Dict[str, float]):
+    def _linear_bounds(self, linear: dict[str, float]):
         linear_lb = 0.0
         linear_ub = 0.0
         for var_name, val in linear.items():
@@ -348,7 +380,7 @@ class _FromDocplexMp:
         self,
         constraint: IndicatorConstraint,
         name: str,
-        indicator_big_m: Optional[float] = None,
+        indicator_big_m: float | None = None,
     ):
         binary_var = constraint.binary_var
         active_value = constraint.active_value
@@ -357,7 +389,11 @@ class _FromDocplexMp:
         linear_lb, linear_ub = self._linear_bounds(linear)
         ret = []
         if sense in ["<=", "=="]:
-            big_m = max(0.0, linear_ub - rhs) if indicator_big_m is None else indicator_big_m
+            big_m = (
+                max(0.0, linear_ub - rhs)
+                if indicator_big_m is None
+                else indicator_big_m
+            )
             if active_value:
                 # rhs += big_m * (1 - binary_var)
                 linear2 = self._subtract(linear, {binary_var.name: -big_m})
@@ -369,7 +405,11 @@ class _FromDocplexMp:
             name2 = name + "_LE" if sense == "==" else name
             ret.append((linear2, "<=", rhs2, name2))
         if sense in [">=", "=="]:
-            big_m = max(0.0, rhs - linear_lb) if indicator_big_m is None else indicator_big_m
+            big_m = (
+                max(0.0, rhs - linear_lb)
+                if indicator_big_m is None
+                else indicator_big_m
+            )
             if active_value:
                 # rhs += -big_m * (1 - binary_var)
                 linear2 = self._subtract(linear, {binary_var.name: big_m})
@@ -387,7 +427,9 @@ class _FromDocplexMp:
         return ret
 
 
-def from_docplex_mp(model: Model, indicator_big_m: Optional[float] = None) -> OptimizationProblem:
+def from_docplex_mp(
+    model: Model, indicator_big_m: float | None = None
+) -> OptimizationProblem:
     """Translate a docplex.mp model into a quadratic problem.
 
     Note that this supports the following features of docplex:

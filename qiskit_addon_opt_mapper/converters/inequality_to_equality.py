@@ -12,7 +12,6 @@
 
 import copy
 import math
-from typing import List, Optional, Union
 
 import numpy as np
 
@@ -41,7 +40,8 @@ class InequalityToEquality(OptimizationProblemConverter):
     _delimiter = "@"  # users are supposed not to use this character in variable names
 
     def __init__(self, mode: str = "auto") -> None:
-        """
+        """Init method.
+
         Args:
             mode: To choose the type of slack variables. There are 3 options for mode.
 
@@ -49,8 +49,8 @@ class InequalityToEquality(OptimizationProblemConverter):
                 - 'continuous': All slack variables will be continuous variables.
                 - 'auto': Use integer variables if possible, otherwise use continuous variables.
         """
-        self._src: Optional[OptimizationProblem] = None
-        self._dst: Optional[OptimizationProblem] = None
+        self._src: OptimizationProblem | None = None
+        self._dst: OptimizationProblem | None = None
         self._mode = mode
 
     def convert(self, problem: OptimizationProblem) -> OptimizationProblem:
@@ -58,6 +58,7 @@ class InequalityToEquality(OptimizationProblemConverter):
 
         Args:
             problem: The problem to be solved, that may contain inequality constraints.
+
 
         Returns:
             The converted problem, that contain only equality constraints.
@@ -117,10 +118,17 @@ class InequalityToEquality(OptimizationProblemConverter):
         for lin_const in self._src.linear_constraints:
             if lin_const.sense == Constraint.Sense.EQ:
                 new_linear_constraints.append(
-                    (lin_const.linear.coefficients, lin_const.sense, lin_const.rhs, lin_const.name)
+                    (
+                        lin_const.linear.coefficients,
+                        lin_const.sense,
+                        lin_const.rhs,
+                        lin_const.name,
+                    )
                 )
             elif lin_const.sense in [Constraint.Sense.LE, Constraint.Sense.GE]:
-                new_linear_constraints.append(self._add_slack_var_linear_constraint(lin_const))
+                new_linear_constraints.append(
+                    self._add_slack_var_linear_constraint(lin_const)
+                )
             else:
                 raise OptimizationError(
                     f"Internal error: type of sense in {lin_const.name} is not supported: "
@@ -158,7 +166,10 @@ class InequalityToEquality(OptimizationProblemConverter):
                     (
                         ho_const.linear.coefficients,
                         ho_const.quadratic.coefficients,
-                        {degree: ho.to_dict() for degree, ho in ho_const.higher_order.items()},
+                        {
+                            degree: ho.to_dict()
+                            for degree, ho in ho_const.higher_order.items()
+                        },
                         ho_const.sense,
                         ho_const.rhs,
                         ho_const.name,
@@ -269,7 +280,9 @@ class InequalityToEquality(OptimizationProblemConverter):
         sense = constraint.sense
         name = constraint.name
 
-        any_float = self._any_float(linear.to_array()) or self._any_float(quadratic.to_array())
+        any_float = self._any_float(linear.to_array()) or self._any_float(
+            quadratic.to_array()
+        )
         mode = self._mode
         if mode == "integer":
             if any_float:
@@ -405,11 +418,12 @@ class InequalityToEquality(OptimizationProblemConverter):
         }
         return new_linear, quadratic.coefficients, higher_order, "==", new_rhs, name
 
-    def interpret(self, x: Union[np.ndarray, List[float]]) -> np.ndarray:
+    def interpret(self, x: np.ndarray | list[float]) -> np.ndarray:
         """Convert a result of a converted problem into that of the original problem.
 
         Args:
             x: The result of the converted problem or the given result in case of FAILURE.
+
 
         Returns:
             The result of the original problem.
@@ -427,10 +441,12 @@ class InequalityToEquality(OptimizationProblemConverter):
     @staticmethod
     def _any_float(values: np.ndarray) -> bool:
         """Check whether the list contains float or not.
+
         This method is used to check whether a constraint contain float coefficients or not.
 
         Args:
             values: Coefficients of the constraint
+
 
         Returns:
             bool: If the constraint contains float coefficients, this returns True, else False.
@@ -439,7 +455,7 @@ class InequalityToEquality(OptimizationProblemConverter):
 
     @property
     def mode(self) -> str:
-        """Returns the mode of the converter
+        """Returns the mode of the converter.
 
         Returns:
             The mode of the converter used for additional slack variables
@@ -448,7 +464,7 @@ class InequalityToEquality(OptimizationProblemConverter):
 
     @mode.setter
     def mode(self, mode: str) -> None:
-        """Set a new mode for the converter
+        """Set a new mode for the converter.
 
         Args:
             mode: The new mode for the converter

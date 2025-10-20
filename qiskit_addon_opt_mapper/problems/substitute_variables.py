@@ -15,7 +15,6 @@
 import logging
 from dataclasses import dataclass
 from math import isclose
-from typing import Dict, List, Optional, Tuple, Union
 
 from ..converters.util import (
     Monomial,
@@ -49,14 +48,14 @@ class SubstitutionExpression:
     """Constant value"""
     coeff: float = 0.0
     """Coefficient of the new variable"""
-    variable: Optional[str] = None
+    variable: str | None = None
     """Variable name or `None`"""
 
 
 def substitute_variables(
     optimization_problem: OptimizationProblem,
-    constants: Optional[Dict[Union[str, int], float]] = None,
-    variables: Optional[Dict[Union[str, int], Tuple[Union[str, int], float]]] = None,
+    constants: dict[str | int, float] | None = None,
+    variables: dict[str | int, tuple[str | int, float]] | None = None,
 ) -> OptimizationProblem:
     """Substitutes variables with constants or other variables.
 
@@ -90,7 +89,9 @@ def substitute_variables(
             # substitute i <- v
             i_2 = optimization_problem.get_variable(i).name
             if i_2 in subs:
-                raise OptimizationError(f"Cannot substitute the same variable twice: {i} <- {v}")
+                raise OptimizationError(
+                    f"Cannot substitute the same variable twice: {i} <- {v}"
+                )
             subs[i_2] = SubstitutionExpression(const=v)
 
     if variables:
@@ -101,14 +102,17 @@ def substitute_variables(
             i_2 = optimization_problem.get_variable(i).name
             j_2 = optimization_problem.get_variable(j).name
             if i_2 == j_2:
-                raise OptimizationError(f"Cannot substitute the same variable: {i} <- {j} {v}")
+                raise OptimizationError(
+                    f"Cannot substitute the same variable: {i} <- {j} {v}"
+                )
             if i_2 in subs:
                 raise OptimizationError(
                     f"Cannot substitute the same variable twice: {i} <- {j} {v}"
                 )
             if j_2 in subs:
                 raise OptimizationError(
-                    "Cannot substitute by variable that gets substituted itself: " f"{i} <- {j} {v}"
+                    "Cannot substitute by variable that gets substituted itself: "
+                    f"{i} <- {j} {v}"
                 )
             subs[i_2] = SubstitutionExpression(variable=j_2, coeff=v)
 
@@ -116,18 +120,17 @@ def substitute_variables(
 
 
 class _SubstituteVariables:
-    """A class to substitute variables of an optimization problem with constants for other
-    variables"""
+    """A class to substitute variables of an optimization problem with constants."""
 
     def __init__(self) -> None:
-        self._src: Optional[OptimizationProblem] = None
-        self._dst: Optional[OptimizationProblem] = None
-        self._subs: Dict[str, SubstitutionExpression] = {}
+        self._src: OptimizationProblem | None = None
+        self._dst: OptimizationProblem | None = None
+        self._subs: dict[str, SubstitutionExpression] = {}
 
     def substitute_variables(
         self,
         optimization_problem: OptimizationProblem,
-        subs: Dict[str, SubstitutionExpression],
+        subs: dict[str, SubstitutionExpression],
     ) -> OptimizationProblem:
         """Substitutes variables with constants or other variables.
 
@@ -137,6 +140,7 @@ class _SubstituteVariables:
             subs: substitution expressions as a dictionary.
                 e.g., {'x': SubstitutionExpression(const=1, coeff=2, variable='y'} means
                 `x` is substituted with `1 + 2 * y`.
+
 
         Returns:
             An optimization problem by substituting variables with constants or other variables.
@@ -160,18 +164,15 @@ class _SubstituteVariables:
 
     @staticmethod
     def _feasible(sense: ConstraintSense, rhs: float) -> bool:
-        """Checks feasibility of the following condition
-        0 `sense` rhs
-        """
+        """Checks feasibility of the following condition: 0 `sense` rhs."""
         if sense == ConstraintSense.EQ:
             if rhs == 0:
                 return True
         elif sense == ConstraintSense.LE:
             if rhs >= 0:
                 return True
-        elif sense == ConstraintSense.GE:
-            if rhs <= 0:
-                return True
+        elif sense == ConstraintSense.GE and rhs <= 0:
+            return True
         return False
 
     def _variables(self) -> bool:
@@ -242,13 +243,13 @@ class _SubstituteVariables:
         out: Poly = {}
         for m, coef in f.items():
             # For each variable in monomial, build options: const and/or variable term
-            factors: List[List[Tuple[Monomial, float]]] = []
+            factors: list[list[tuple[Monomial, float]]] = []
             zero_flag = False
             for name in m:
                 expr = self._subs.get(
                     name, SubstitutionExpression(const=0.0, coeff=1.0, variable=name)
                 )
-                opts: List[Tuple[Monomial, float]] = []
+                opts: list[tuple[Monomial, float]] = []
                 if expr.const != 0.0:
                     opts.append(((), expr.const))
                 if expr.variable is not None and expr.coeff != 0.0:
@@ -260,9 +261,9 @@ class _SubstituteVariables:
             if zero_flag:
                 continue
 
-            monoms: List[Tuple[Monomial, float]] = [((), 1.0)]
+            monoms: list[tuple[Monomial, float]] = [((), 1.0)]
             for opts in factors:
-                nxt: List[Tuple[Monomial, float]] = []
+                nxt: list[tuple[Monomial, float]] = []
                 for m0, c0 in monoms:
                     for m1, c1 in opts:
                         nxt.append((_norm(m0 + m1), c0 * c1))
@@ -280,7 +281,9 @@ class _SubstituteVariables:
         )
 
         constant = obj.constant + const
-        lin_expr = LinearExpression(optimization_problem=self._dst, coefficients=lin if lin else {})
+        lin_expr = LinearExpression(
+            optimization_problem=self._dst, coefficients=lin if lin else {}
+        )
         quad_expr = QuadraticExpression(
             optimization_problem=self._dst, coefficients=quad if quad else {}
         )
@@ -304,7 +307,7 @@ class _SubstituteVariables:
     def _linear_constraints(self) -> bool:
         feasible = True
         for lin_cst in self._src.linear_constraints:
-            const, lin, quad, higher = self._poly_apply_substitution(
+            const, lin, _quad, _higher = self._poly_apply_substitution(
                 lin_cst.linear,
                 QuadraticExpression(optimization_problem=self._dst, coefficients={}),
                 {},
@@ -320,14 +323,16 @@ class _SubstituteVariables:
                 )
             else:
                 if not self._feasible(lin_cst.sense, rhs):
-                    logger.warning("constraint %s is infeasible due to substitution", lin_cst.name)
+                    logger.warning(
+                        "constraint %s is infeasible due to substitution", lin_cst.name
+                    )
                     feasible = False
         return feasible
 
     def _quadratic_constraints(self) -> bool:
         feasible = True
         for quad_cst in self._src.quadratic_constraints:
-            const, lin, quad, higher = self._poly_apply_substitution(
+            const, lin, quad, _higher = self._poly_apply_substitution(
                 quad_cst.linear, quad_cst.quadratic, {}
             )
             rhs = quad_cst.rhs - const
@@ -346,10 +351,14 @@ class _SubstituteVariables:
                 lin_names = {c.name for c in self._dst.linear_constraints}
                 while name in lin_names:
                     name = "_" + name
-                self._dst.linear_constraint(name=name, linear=lin, sense=quad_cst.sense, rhs=rhs)
+                self._dst.linear_constraint(
+                    name=name, linear=lin, sense=quad_cst.sense, rhs=rhs
+                )
             else:
                 if not self._feasible(quad_cst.sense, rhs):
-                    logger.warning("constraint %s is infeasible due to substitution", quad_cst.name)
+                    logger.warning(
+                        "constraint %s is infeasible due to substitution", quad_cst.name
+                    )
                     feasible = False
         return feasible
 
@@ -383,10 +392,14 @@ class _SubstituteVariables:
                 lin_names = {c.name for c in self._dst.linear_constraints}
                 while name in lin_names:
                     name = "_" + name
-                self._dst.linear_constraint(name=name, linear=lin, sense=ho_cst.sense, rhs=rhs)
+                self._dst.linear_constraint(
+                    name=name, linear=lin, sense=ho_cst.sense, rhs=rhs
+                )
             else:
                 if not self._feasible(ho_cst.sense, rhs):
-                    logger.warning("constraint %s is infeasible due to substitution", ho_cst.name)
+                    logger.warning(
+                        "constraint %s is infeasible due to substitution", ho_cst.name
+                    )
                     feasible = False
         return feasible
 

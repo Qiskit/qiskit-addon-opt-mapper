@@ -14,10 +14,9 @@
 
 import numpy as np
 import pytest
-from scipy.sparse import dok_matrix
-
 from qiskit_addon_opt_mapper.exceptions import OptimizationError
 from qiskit_addon_opt_mapper.problems import LinearExpression, OptimizationProblem
+from scipy.sparse import dok_matrix
 
 
 def MAKE_INSTANCE(coeffs, nvars=4):

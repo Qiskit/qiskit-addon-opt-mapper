@@ -10,9 +10,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""An application class for the bin packing."""
+"""BinPacking class.
 
-from typing import List, Optional
+An application class for the bin packing problem.
+"""
 
 import numpy as np
 from docplex.mp.model import Model
@@ -28,7 +29,8 @@ if _optionals.HAS_MATPLOTLIB:
 else:
 
     class Figure:  # type: ignore
-        """Empty Figure class
+        """Empty Figure class.
+
         Replacement Figure for when matplotlib is not present.
         """
 
@@ -45,9 +47,10 @@ class BinPacking(OptimizationApplication):
     """
 
     def __init__(
-        self, weights: List[int], max_weight: int, max_number_of_bins: Optional[int] = None
+        self, weights: list[int], max_weight: int, max_number_of_bins: int | None = None
     ) -> None:
-        """
+        """BinPacking init.
+
         Args:
             weights: A list of the weights of items
             max_weight: The maximum bin weight capacity
@@ -61,8 +64,11 @@ class BinPacking(OptimizationApplication):
             self._max_number_of_bins = max_number_of_bins
 
     def to_optimization_problem(self) -> OptimizationProblem:
-        """Convert a bin packing problem instance into a
+        """Represent as an optimization problem.
+
+        Convert a bin packing problem instance into an
         :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem`
+
 
         Returns:
             The :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem` created
@@ -86,11 +92,12 @@ class BinPacking(OptimizationApplication):
         op = from_docplex_mp(mdl)
         return op
 
-    def interpret(self, result: np.ndarray) -> List[List[int]]:
-        """Interpret a result as item indices
+    def interpret(self, result: np.ndarray) -> list[list[int]]:
+        """Interpret a result as item indices.
 
         Args:
             result : The calculated result of the problem
+
 
         Returns:
             items_in_bins: A list of lists with the items in each bin
@@ -101,7 +108,8 @@ class BinPacking(OptimizationApplication):
         bins = x[:num_bins]
         items = np.array(x[num_bins:]).reshape((num_items, num_bins))
         items_in_bins = [
-            [i for i in range(num_items) if bins[j] and items[i, j]] for j in range(num_bins)
+            [i for i in range(num_items) if bins[j] and items[i, j]]
+            for j in range(num_bins)
         ]
         return items_in_bins
 
@@ -111,6 +119,7 @@ class BinPacking(OptimizationApplication):
 
         Args:
             result : The calculated result of the problem
+
 
         Returns:
             fig: A plot of the solution, where x and y represent the bins and

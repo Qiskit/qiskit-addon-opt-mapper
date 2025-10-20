@@ -10,6 +10,13 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+"""Applications module for Optimization Add-on.
+
+===========================================================
+Applications module (:mod:`qiskit_addon_opt_mapper.applications`)
+===========================================================
+"""
+
 from .bin_packing import BinPacking
 from .clique import Clique
 from .exact_cover import ExactCover
@@ -32,13 +39,13 @@ __all__ = [
     "ExactCover",
     "GraphOptimizationApplication",
     "GraphPartition",
+    "IndependentSet",
     "Knapsack",
     "Maxcut",
     "NumberPartition",
     "OptimizationApplication",
-    "SetPacking",
     "SKModel",
-    "IndependentSet",
+    "SetPacking",
     "Tsp",
     "VehicleRouting",
     "VertexCover",

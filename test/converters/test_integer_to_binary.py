@@ -15,7 +15,6 @@
 import unittest
 
 import numpy as np
-
 from qiskit_addon_opt_mapper import OptimizationProblem
 from qiskit_addon_opt_mapper.converters import (
     IntegerToBinary,
@@ -41,8 +40,12 @@ class TestIntegerToBinaryConverter(OptimizationTestCase):
         conv = IntegerToBinary()
         op2 = conv.convert(op)
         self.assertEqual(op2.get_num_vars(), 5)
-        self.assertListEqual([x.vartype for x in op2.variables], [Variable.Type.BINARY] * 5)
-        self.assertListEqual([x.name for x in op2.variables], ["x0", "x1", "x2@0", "x2@1", "x2@2"])
+        self.assertListEqual(
+            [x.vartype for x in op2.variables], [Variable.Type.BINARY] * 5
+        )
+        self.assertListEqual(
+            [x.name for x in op2.variables], ["x0", "x1", "x2@0", "x2@1", "x2@2"]
+        )
         dct = op2.objective.linear.to_dict()
         self.assertEqual(dct[2], 3)
         self.assertEqual(dct[3], 6)
@@ -60,13 +63,25 @@ class TestIntegerToBinaryConverter(OptimizationTestCase):
         self.assertListEqual(
             [e.name + "@0" for e in mod.variables], [e.name for e in mod2.variables]
         )
-        self.assertDictEqual(mod.objective.linear.to_dict(), mod2.objective.linear.to_dict())
-        self.assertDictEqual(mod.objective.quadratic.to_dict(), mod2.objective.quadratic.to_dict())
-        self.assertEqual(mod.get_num_linear_constraints(), mod2.get_num_linear_constraints())
-        for cst, cst2 in zip(mod.linear_constraints, mod2.linear_constraints):
+        self.assertDictEqual(
+            mod.objective.linear.to_dict(), mod2.objective.linear.to_dict()
+        )
+        self.assertDictEqual(
+            mod.objective.quadratic.to_dict(), mod2.objective.quadratic.to_dict()
+        )
+        self.assertEqual(
+            mod.get_num_linear_constraints(), mod2.get_num_linear_constraints()
+        )
+        for cst, cst2 in zip(
+            mod.linear_constraints, mod2.linear_constraints, strict=False
+        ):
             self.assertDictEqual(cst.linear.to_dict(), cst2.linear.to_dict())
-        self.assertEqual(mod.get_num_quadratic_constraints(), mod2.get_num_quadratic_constraints())
-        for cst, cst2 in zip(mod.quadratic_constraints, mod2.quadratic_constraints):
+        self.assertEqual(
+            mod.get_num_quadratic_constraints(), mod2.get_num_quadratic_constraints()
+        )
+        for cst, cst2 in zip(
+            mod.quadratic_constraints, mod2.quadratic_constraints, strict=False
+        ):
             self.assertDictEqual(cst.linear.to_dict(), cst2.linear.to_dict())
             self.assertDictEqual(cst.quadratic.to_dict(), cst2.quadratic.to_dict())
 
@@ -80,7 +95,9 @@ class TestIntegerToBinaryConverter(OptimizationTestCase):
         self.assertEqual(mod.get_num_linear_constraints(), 0)
         self.assertEqual(mod.get_num_quadratic_constraints(), 0)
         self.assertAlmostEqual(mod2.objective.constant, 100)
-        self.assertDictEqual(mod2.objective.linear.to_dict(use_name=True), {"x@0": 20, "x@1": 40})
+        self.assertDictEqual(
+            mod2.objective.linear.to_dict(use_name=True), {"x@0": 20, "x@1": 40}
+        )
         self.assertDictEqual(
             mod2.objective.quadratic.to_dict(use_name=True),
             {("x@0", "x@0"): 1, ("x@1", "x@1"): 4, ("x@0", "x@1"): 4},
@@ -89,7 +106,9 @@ class TestIntegerToBinaryConverter(OptimizationTestCase):
     def test_integer_to_binary_zero_range_variable(self):
         """Test integer to binary variables with zero range variables"""
 
-        with self.subTest("zero range variable in a linear expression of the objective"):
+        with self.subTest(
+            "zero range variable in a linear expression of the objective"
+        ):
             mod = OptimizationProblem()
             mod.integer_var(name="x", lowerbound=10, upperbound=10)
             mod.minimize(linear={"x": 1})
@@ -101,7 +120,9 @@ class TestIntegerToBinaryConverter(OptimizationTestCase):
             self.assertDictEqual(mod2.objective.linear.to_dict(), {})
             self.assertDictEqual(mod2.objective.quadratic.to_dict(), {})
 
-        with self.subTest("zero range variable in a quadratic expression of the objective"):
+        with self.subTest(
+            "zero range variable in a quadratic expression of the objective"
+        ):
             mod = OptimizationProblem()
             mod.integer_var(name="x", lowerbound=10, upperbound=10)
             mod.minimize(quadratic={("x", "x"): 1})
@@ -135,7 +156,9 @@ class TestIntegerToBinaryConverter(OptimizationTestCase):
             mod = OptimizationProblem()
             mod.integer_var(name="x", lowerbound=10, upperbound=10)
             mod.binary_var(name="y")
-            mod.quadratic_constraint({"x": 1}, {("x", "x"): 2, ("x", "y"): 3}, ">=", 100)
+            mod.quadratic_constraint(
+                {"x": 1}, {("x", "x"): 2, ("x", "y"): 3}, ">=", 100
+            )
             mod2 = IntegerToBinary().convert(mod)
             self.assertListEqual([e.name for e in mod2.variables], ["x@0", "y"])
             self.assertEqual(mod.get_num_linear_constraints(), 0)
@@ -181,7 +204,9 @@ class TestIntegerToBinaryConverter(OptimizationTestCase):
         converter = IntegerToBinary()
         op2 = converter.convert(op)
         self.assertEqual(op2.get_num_vars(), 6)
-        self.assertListEqual([x.vartype for x in op2.variables], [Variable.Type.BINARY] * 6)
+        self.assertListEqual(
+            [x.vartype for x in op2.variables], [Variable.Type.BINARY] * 6
+        )
         self.assertListEqual(
             [x.name for x in op2.variables],
             ["x0@0", "x0@1", "x0@2", "x1", "x2", "x3"],

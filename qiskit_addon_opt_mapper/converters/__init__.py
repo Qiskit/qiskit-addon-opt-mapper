@@ -10,8 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""
-Optimization converters (:mod:`qiskit_addon_opt_mapper.converters`)
+"""Optimization converters.
+
+Optimization converters (:mod:`qiskit_addon_opt_mapper.converters`).
 ===============================================================
 
 .. currentmodule:: qiskit_addon_opt_mapper.converters
@@ -63,9 +64,9 @@ from .spin_to_binary import SpinToBinary
 
 __all__ = [
     "BinaryToSpin",
+    "EqualityToPenalty",
     "InequalityToEquality",
     "IntegerToBinary",
-    "EqualityToPenalty",
     "LinearInequalityToPenalty",
     "MaximizeToMinimize",
     "MinimizeToMaximize",

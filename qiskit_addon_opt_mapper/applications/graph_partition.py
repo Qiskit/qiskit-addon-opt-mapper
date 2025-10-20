@@ -12,8 +12,6 @@
 
 """An application class for the graph partitioning."""
 
-from typing import Dict, List, Optional
-
 import numpy as np
 import rustworkx as rx
 from docplex.mp.model import Model
@@ -32,8 +30,11 @@ class GraphPartition(GraphOptimizationApplication):
     """
 
     def to_optimization_problem(self) -> OptimizationProblem:
-        """Convert a graph partition instance into a
+        """Represent as an optimization problem.
+
+        Convert a graph partition instance into a
         :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem`
+
 
         Returns:
             The :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem` created
@@ -43,7 +44,11 @@ class GraphPartition(GraphOptimizationApplication):
         n = self._graph.num_nodes()
         x = {i: mdl.binary_var(name=f"x_{i}") for i in range(n)}
         objective = mdl.sum(
-            (self._graph.get_edge_data(i, j) if self._graph.get_edge_data(i, j) is not None else 1)
+            (
+                self._graph.get_edge_data(i, j)
+                if self._graph.get_edge_data(i, j) is not None
+                else 1
+            )
             * (x[i] + x[j] - 2 * x[i] * x[j])
             for i, j in self._graph.edge_list()
         )
@@ -52,17 +57,18 @@ class GraphPartition(GraphOptimizationApplication):
         op = from_docplex_mp(mdl)
         return op
 
-    def interpret(self, result: np.ndarray) -> List[List[int]]:
-        """Interpret a result as a list of node indices
+    def interpret(self, result: np.ndarray) -> list[list[int]]:
+        """Interpret a result as a list of node indices.
 
         Args:
             result : The calculated result of the problem
+
 
         Returns:
             A list of node indices divided into two groups.
         """
         x = self._result_to_x(result)
-        partition = [[], []]  # type: List[List[int]]
+        partition = [[], []]  # type: list[list[int]]
         for i, value in enumerate(x):
             if value == 0:
                 partition[0].append(i)
@@ -73,9 +79,9 @@ class GraphPartition(GraphOptimizationApplication):
     def _draw_result(
         self,
         result: np.ndarray,
-        pos: Optional[Dict[int, np.ndarray]] = None,
+        pos: dict[int, np.ndarray] | None = None,
     ) -> None:
-        """Draw the result with colors
+        """Draw the result with colors.
 
         Args:
             result : The calculated result for the pr∂oblem
@@ -86,7 +92,7 @@ class GraphPartition(GraphOptimizationApplication):
             self._graph, node_color=self._node_colors(x), pos=pos, with_labels=True
         )
 
-    def _node_colors(self, x: np.ndarray) -> List[str]:
+    def _node_colors(self, x: np.ndarray) -> list[str]:
         # Return a list of strings for draw.
         # Color a node with red when the corresponding variable is 1.
         # Otherwise color it with blue.

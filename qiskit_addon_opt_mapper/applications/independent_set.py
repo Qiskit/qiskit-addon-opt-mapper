@@ -12,8 +12,6 @@
 
 """An application class for the independent set."""
 
-from typing import Dict, List, Optional
-
 import numpy as np
 import rustworkx as rx
 from docplex.mp.model import Model
@@ -34,8 +32,11 @@ class IndependentSet(GraphOptimizationApplication):
     """
 
     def to_optimization_problem(self) -> OptimizationProblem:
-        """Convert a independent set instance into a
+        """Represent as an optimization problem.
+
+        Convert a independent set instance into a
         :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem`
+
 
         Returns:
             The :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem` created
@@ -51,11 +52,12 @@ class IndependentSet(GraphOptimizationApplication):
         op = from_docplex_mp(mdl)
         return op
 
-    def interpret(self, result: np.ndarray) -> List[int]:
-        """Interpret a result as a list of node indices
+    def interpret(self, result: np.ndarray) -> list[int]:
+        """Interpret a result as a list of node indices.
 
         Args:
             result : The calculated result of the problem
+
 
         Returns:
             A list of node indices whose corresponding variable is 1
@@ -70,9 +72,9 @@ class IndependentSet(GraphOptimizationApplication):
     def _draw_result(
         self,
         result: np.ndarray,
-        pos: Optional[Dict[int, np.ndarray]] = None,
+        pos: dict[int, np.ndarray] | None = None,
     ) -> None:
-        """Draw the result with colors
+        """Draw the result with colors.
 
         Args:
             result : The calculated result for the problem
@@ -87,4 +89,6 @@ class IndependentSet(GraphOptimizationApplication):
         # Return a list of strings for draw.
         # Color a node with red when the corresponding variable is 1.
         # Otherwise color it with dark gray.
-        return ["r" if x[node] == 1 else "darkgrey" for node in self._graph.node_indices()]
+        return [
+            "r" if x[node] == 1 else "darkgrey" for node in self._graph.node_indices()
+        ]

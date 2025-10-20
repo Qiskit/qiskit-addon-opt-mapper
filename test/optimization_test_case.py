@@ -18,7 +18,6 @@ import time
 import unittest
 import warnings
 from abc import ABC
-from typing import Optional
 
 # disable deprecation warnings that can cause log output overflow
 # pylint: disable=unused-argument
@@ -53,7 +52,9 @@ class OptimizationTestCase(unittest.TestCase, ABC):
         # is set.
         if os.getenv("LOG_LEVEL"):
             # Set up formatter.
-            log_fmt = f"{cls.__name__}.%(funcName)s:%(levelname)s:%(asctime)s:" " %(message)s"
+            log_fmt = (
+                f"{cls.__name__}.%(funcName)s:%(levelname)s:%(asctime)s:" " %(message)s"
+            )
             formatter = logging.Formatter(log_fmt)
 
             # Set up the file handler.
@@ -67,11 +68,12 @@ class OptimizationTestCase(unittest.TestCase, ABC):
             level = logging._nameToLevel.get(os.getenv("LOG_LEVEL"), logging.INFO)
             cls.log.setLevel(level)
 
-    def get_resource_path(self, filename: str, path: Optional[str] = None) -> str:
+    def get_resource_path(self, filename: str, path: str | None = None) -> str:
         """Get the absolute path to a resource.
         Args:
             filename: filename or relative path to the resource.
             path: path used as relative to the filename.
+
         Returns:
             str: the absolute path to the resource.
         """

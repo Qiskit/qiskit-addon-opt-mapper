@@ -13,7 +13,6 @@
 """An abstract class for optimization algorithms in Qiskit optimization module."""
 
 from abc import ABC, abstractmethod
-from typing import List, Union
 
 import numpy as np
 
@@ -21,18 +20,18 @@ from ..problems.optimization_problem import OptimizationProblem
 
 
 class OptimizationProblemConverter(ABC):
-    """
-    An abstract class for converters of optimization problem in Qiskit optimization module.
-    """
+    """An abstract class for converters of optimization problem in Qiskit optimization module."""
 
     @abstractmethod
     def convert(self, problem: OptimizationProblem) -> OptimizationProblem:
-        """Convert a OptimizationProblem into another form
+        """Convert method.
+
+        Convert a OptimizationProblem into another form
         and keep the information required to interpret the result.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def interpret(self, x: Union[np.ndarray, List[float]]) -> np.ndarray:
-        """Interpret a result into another form using the information of conversion"""
+    def interpret(self, x: np.ndarray | list[float]) -> np.ndarray:
+        """Interpret a result into another form using the information of conversion."""
         raise NotImplementedError

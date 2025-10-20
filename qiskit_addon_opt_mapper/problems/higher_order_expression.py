@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import itertools
 import math
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 import numpy as np
 from numpy import ndarray
@@ -30,9 +30,9 @@ from ..infinity import INFINITY
 from .linear_expression import ExpressionBounds
 from .optimization_problem_element import OptimizationProblemElement
 
-Index = Union[int, str]
-Key = Tuple[Index, ...]
-_IntKey = Tuple[int, ...]
+Index = int | str
+Key = tuple[Index, ...]
+_IntKey = tuple[int, ...]
 
 
 class HigherOrderExpression(OptimizationProblemElement):
@@ -52,11 +52,9 @@ class HigherOrderExpression(OptimizationProblemElement):
     def __init__(
         self,
         optimization_problem: Any,
-        coefficients: Union[
-            ndarray,
-            Dict[Key, float],
-            List,  # nested list acting like ndarray
-        ],
+        coefficients: (
+            ndarray | dict[Key, float] | list
+        ),  # nested list acting like ndarray
     ) -> None:
         """Creates a new higher-order expression.
 
@@ -70,8 +68,8 @@ class HigherOrderExpression(OptimizationProblemElement):
         """
         super().__init__(optimization_problem)
         self._n = int(self.optimization_problem.get_num_vars())
-        self._coeffs: Dict[_IntKey, float] = {}
-        self.coefficients: Dict[_IntKey, float] = coefficients  # via setter
+        self._coeffs: dict[_IntKey, float] = {}
+        self.coefficients: dict[_IntKey, float] = coefficients  # via setter
 
     def __getitem__(self, key: Key) -> float:
         """Returns the coefficient for a given (sorted or unsorted) key."""
@@ -97,12 +95,12 @@ class HigherOrderExpression(OptimizationProblemElement):
         return self._n
 
     @property
-    def coefficients(self) -> Dict[Tuple[int, ...], float]:
+    def coefficients(self) -> dict[tuple[int, ...], float]:
         """Returns a copy of internal (canonical) coefficient dictionary."""
         return dict(self._coeffs)
 
     @coefficients.setter
-    def coefficients(self, coefficients: Union[ndarray, Dict[Key, float], List]) -> None:
+    def coefficients(self, coefficients: ndarray | dict[Key, float] | list) -> None:
         """Set coefficients; accepts dict, and dense array/list. Also infers order.
 
         Args:
@@ -117,9 +115,11 @@ class HigherOrderExpression(OptimizationProblemElement):
                 raise ValueError("Cannot infer order from empty dict coefficients.")
 
             order = None
-            for key in coefficients.keys():
+            for key in coefficients:
                 if not isinstance(key, tuple):
-                    raise ValueError(f"Dict keys must be tuples, got {type(key).__name__}: {key!r}")
+                    raise ValueError(
+                        f"Dict keys must be tuples, got {type(key).__name__}: {key!r}"
+                    )
                 k = len(key)
                 if order is None:
                     order = k
@@ -132,7 +132,7 @@ class HigherOrderExpression(OptimizationProblemElement):
                 raise ValueError(f"order must be >= 3, got {order}")
             self._order = order
 
-            acc: Dict[_IntKey, float] = {}
+            acc: dict[_IntKey, float] = {}
             for key, v in coefficients.items():
                 idx = self._normalize_key(key)
                 fv = float(v)
@@ -150,11 +150,13 @@ class HigherOrderExpression(OptimizationProblemElement):
             # all axes must match the number of variables
             expected = (self._n,) * arr.ndim
             if arr.shape != expected:
-                raise ValueError(f"coefficients shape must be {expected}, got {arr.shape}")
+                raise ValueError(
+                    f"coefficients shape must be {expected}, got {arr.shape}"
+                )
 
             self._order = int(arr.ndim)
 
-            acc: Dict[_IntKey, float] = {}
+            acc: dict[_IntKey, float] = {}
             nz = np.argwhere(arr != 0.0)
             for idx_tuple in map(tuple, nz):
                 val = float(arr[idx_tuple])
@@ -172,7 +174,7 @@ class HigherOrderExpression(OptimizationProblemElement):
 
     def to_dict(
         self, use_name: bool = False
-    ) -> Dict[Union[Tuple[int, ...], Tuple[str, ...]], float]:
+    ) -> dict[tuple[int, ...] | tuple[str, ...], float]:
         """Returns the internal coefficients as a dictionary."""
         if not use_name:
             return dict(self._coeffs)
@@ -200,7 +202,7 @@ class HigherOrderExpression(OptimizationProblemElement):
 
         for idx, c in self._coeffs.items():
             # count multiplicities
-            counts: Dict[int, int] = {}
+            counts: dict[int, int] = {}
             for i in idx:
                 counts[i] = counts.get(i, 0) + 1
             # number of distinct permutations: k! / Π m_r!
@@ -214,11 +216,12 @@ class HigherOrderExpression(OptimizationProblemElement):
                 arr[perm] += weight
         return arr
 
-    def evaluate(self, x: Union[ndarray, List, Dict[Index, float]]) -> float:
+    def evaluate(self, x: ndarray | list | dict[Index, float]) -> float:
         """Evaluate the expression: sum_{t} C[t] * prod_{i in t} x[i].
 
         Args:
             x: The values of the variables to be evaluated.
+
 
         Returns:
             The value of the higher order expression given the variable values.
@@ -232,12 +235,14 @@ class HigherOrderExpression(OptimizationProblemElement):
             val += c * prod
         return float(val)
 
-    def evaluate_gradient(self, x: Union[ndarray, List, Dict[Index, float]]) -> ndarray:
-        """Evaluate gradient wrt x: for each m,
-        g[m] = sum_{t} C[t] * (count_m_in_t) * prod_{i in t / {one m}}
+    def evaluate_gradient(self, x: ndarray | list | dict[Index, float]) -> ndarray:
+        """Evaluate gradient wrt x.
+
+        For each m, g[m] = sum_{t} C[t] * (count_m_in_t) * prod_{i in t / {one m}}.
 
         Args:
             x: The values of the variables to be evaluated.
+
 
         Returns:
             The value of the gradient of the higher order expression given the variable values.
@@ -246,7 +251,7 @@ class HigherOrderExpression(OptimizationProblemElement):
         g = np.zeros(self._n, dtype=float)
         for idx, c in self._coeffs.items():
             # multiplicities of each variable in this term
-            counts: Dict[int, int] = {}
+            counts: dict[int, int] = {}
             for i in idx:
                 counts[i] = counts.get(i, 0) + 1
 
@@ -274,7 +279,7 @@ class HigherOrderExpression(OptimizationProblemElement):
 
     @property
     def bounds(self) -> ExpressionBounds:
-        """Returns the lower bound and the upper bound of the linear expression
+        """Returns the lower bound and the upper bound of the linear expression.
 
         Returns:
             The lower bound and the upper bound of the linear expression
@@ -285,7 +290,7 @@ class HigherOrderExpression(OptimizationProblemElement):
         # validate bounds
         for idx, c in self._coeffs.items():
             # collect variable bounds with multiplicity
-            bounds: List[Tuple[float, float]] = []
+            bounds: list[tuple[float, float]] = []
             for i in idx:
                 var = self.optimization_problem.get_variable(i)
                 lb, ub = var.lowerbound, var.upperbound
@@ -310,13 +315,15 @@ class HigherOrderExpression(OptimizationProblemElement):
 
     def _normalize_key(self, key: Key) -> _IntKey:
         """Normalizes the key to a sorted tuple of integers.
+
         Args:
             key: A tuple of variable indices or names.
+
 
         Returns:
             A sorted tuple of integers representing the indices of the variables.
         """
-        idxs: List[int] = []
+        idxs: list[int] = []
         for k in key:
             kk = k
             if isinstance(kk, str):
@@ -327,35 +334,47 @@ class HigherOrderExpression(OptimizationProblemElement):
             idxs.append(kk)
         return tuple(sorted(idxs))
 
-    def _cast_as_array(self, x: Union[ndarray, List, Dict[Index, float]]) -> np.ndarray:
+    def _cast_as_array(self, x: ndarray | list | dict[Index, float]) -> np.ndarray:
         """Casts the input x to a 1D numpy array.
+
         This method handles different input types and ensures the output is a 1D numpy array.
 
         Args:
             x: The input variable values, which can be a numpy array, list, or dict.
+
         Returns:
             A 1D numpy array of variable values.
         """
         if isinstance(x, dict):
             arr = np.zeros(self._n, dtype=float)
             for i, v in x.items():
-                ii = self.optimization_problem.variables_index[i] if isinstance(i, str) else int(i)
+                ii = (
+                    self.optimization_problem.variables_index[i]
+                    if isinstance(i, str)
+                    else int(i)
+                )
                 arr[ii] = float(v)
             return arr
         arr = np.asarray(x, dtype=float)
         if arr.ndim != 1 or arr.shape[0] != self._n:
-            raise ValueError("x must be a 1D array with length equal to the number of variables")
+            raise ValueError(
+                "x must be a 1D array with length equal to the number of variables"
+            )
         return arr
 
     def __repr__(self):
+        """Repr. for higher order expression."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import DEFAULT_TRUNCATE, expr2str
 
         rep_str = f"<{self.__class__.__name__}(k={self._order}):"
-        rep_str += f"{expr2str(higher_order={self._order: self},truncate=DEFAULT_TRUNCATE)}>"
+        rep_str += (
+            f"{expr2str(higher_order={self._order: self},truncate=DEFAULT_TRUNCATE)}>"
+        )
         return rep_str
 
     def __str__(self):
+        """Str. for higher order expression."""
         from ..translators.prettyprint import expr2str
 
         return f"{expr2str(higher_order=self)}"

@@ -17,7 +17,6 @@ import unittest
 import numpy as np
 import pytest
 from qiskit.result import QuasiDistribution
-
 from qiskit_addon_opt_mapper.applications import OptimizationApplication
 
 

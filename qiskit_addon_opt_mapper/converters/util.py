@@ -13,15 +13,17 @@
 """Utility functions for converters."""
 
 from collections import defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Dict, Mapping, Optional, Tuple
 
 # We use sparse polynomial representation {monomial: coefficient} throughout the converters.
 # Monomials are tuples of variable names, e.g., ('x', 'y') for xy term.
 # The empty tuple () represents the constant term.
-Monomial = Tuple[str, ...]  # ()=const, ('x',)=linear, ('x','y')=quadratic, ('x','y','z')=cubic, ...
+Monomial = tuple[
+    str, ...
+]  # ()=const, ('x',)=linear, ('x','y')=quadratic, ('x','y','z')=cubic, ...
 # Poly represents a polynomial as a mapping from monomials to coefficients.
-Poly = Dict[Monomial, float]
+Poly = dict[Monomial, float]
 
 
 def _norm(m: Monomial) -> Monomial:
@@ -49,11 +51,13 @@ def _poly_mul(a: Poly, b: Poly) -> Poly:
 
 def _poly_split(poly: Poly):
     """Split a polynomial into constant, linear, quadratic, and higher-order parts.
-    Poly -> (const, linear{name:coef}, quadratic{(i,j):coef}, higher{deg: {monomial:coef}})"""
+
+    Poly -> (const, linear{name:coef}, quadratic{(i,j):coef}, higher{deg: {monomial:coef}}).
+    """
     const = poly.get((), 0.0)
-    lin: Dict[str, float] = {}
-    quad: Dict[Tuple[str, str], float] = {}
-    higher: Dict[int, Dict[Tuple[str, ...], float]] = defaultdict(dict)
+    lin: dict[str, float] = {}
+    quad: dict[tuple[str, str], float] = {}
+    higher: dict[int, dict[tuple[str, ...], float]] = defaultdict(dict)
     for m, c in poly.items():
         if not m:
             continue
@@ -108,4 +112,4 @@ def _poly_from_higher(higher_map) -> Poly:
 class _Subst:
     const: float
     coeff: float
-    var: Optional[str]  # None if pure constant
+    var: str | None  # None if pure constant

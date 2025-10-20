@@ -15,7 +15,6 @@ import unittest
 
 import networkx as nx
 import numpy as np
-
 from qiskit_addon_opt_mapper import OptimizationProblem
 from qiskit_addon_opt_mapper.applications.vertex_cover import VertexCover
 from qiskit_addon_opt_mapper.problems import Constraint, OptimizationObjective, VarType

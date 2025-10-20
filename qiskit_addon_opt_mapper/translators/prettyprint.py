@@ -9,11 +9,11 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Translate ``OptimizationProblem`` into a pretty-printed string"""
+"""Translate ``OptimizationProblem`` into a pretty-printed string."""
 
 from io import StringIO
 from math import isclose
-from typing import Dict, List, Optional, Tuple, Union, cast
+from typing import cast
 
 import numpy as np
 
@@ -30,8 +30,8 @@ from qiskit_addon_opt_mapper.problems import (
 DEFAULT_TRUNCATE = 50
 
 
-def _int_if_close(val: Union[int, float, np.integer, np.floating]) -> Union[int, float]:
-    """Convert a value into an integer if possible
+def _int_if_close(val: int | float | np.integer | np.floating) -> int | float:
+    """Convert a value into an integer if possible.
 
     Note: if abs(val) is too large, int(val) is not correct
           e.g., int(1e16 - 1) -> 10000000000000000
@@ -95,10 +95,10 @@ def _check_name(name: str, name_type: str) -> None:
         OptimizationError: if the name is not printable.
     """
     if not name.isprintable():
-        raise OptimizationError(f"{name_type} name is not printable: {repr(name)}")
+        raise OptimizationError(f"{name_type} name is not printable: {name!r}")
 
 
-def _concatenate_terms(terms: List[str], wrap: int, indent: int) -> str:
+def _concatenate_terms(terms: list[str], wrap: int, indent: int) -> str:
     ind = " " * indent
     if wrap == 0:
         return ind + " ".join(terms)
@@ -119,9 +119,11 @@ def _concatenate_terms(terms: List[str], wrap: int, indent: int) -> str:
 
 def expr2str(
     constant: float = 0.0,
-    linear: Optional[LinearExpression] = None,
-    quadratic: Optional[QuadraticExpression] = None,
-    higher_order: Optional[Union[HigherOrderExpression, Dict[int, HigherOrderExpression]]] = None,
+    linear: LinearExpression | None = None,
+    quadratic: QuadraticExpression | None = None,
+    higher_order: (
+        HigherOrderExpression | dict[int, HigherOrderExpression] | None
+    ) = None,
     truncate: int = 0,
     suffix: str = "",
     wrap: int = 0,
@@ -131,14 +133,14 @@ def expr2str(
     if truncate < 0:
         raise ValueError(f"Invalid truncate value: {truncate}")
 
-    terms: List[str] = []
+    terms: list[str] = []
     is_head = True
 
     lin_dict = linear.to_dict(use_name=True) if linear else {}
     quad_dict = quadratic.to_dict(use_name=True) if quadratic else {}
 
     # --- collect higher-order terms into {k: {tuple[str,...]: coeff}} ---
-    ho_by_k: Dict[int, Dict[Tuple[str, ...], float]] = {}
+    ho_by_k: dict[int, dict[tuple[str, ...], float]] = {}
     if higher_order is not None:
         for k, expr in higher_order.items():
             ho_by_k[k] = expr.to_dict(use_name=True)
@@ -146,7 +148,7 @@ def expr2str(
     # --- higher-order (descending by order k) ---
     for k in sorted(ho_by_k.keys(), reverse=True):
         for vars_tuple, coeff in sorted(ho_by_k[k].items()):
-            mono = _monomial_tuple_to_str(cast(Tuple[str, ...], vars_tuple))
+            mono = _monomial_tuple_to_str(cast(tuple[str, ...], vars_tuple))
             terms.append(_term2str(float(coeff), mono, is_head))
             is_head = False
 
@@ -204,7 +206,6 @@ def _monomial_tuple_to_str(vars_tuple: tuple[str, ...]) -> str:
 
 def prettyprint(optimization_problem: OptimizationProblem, wrap: int = 80) -> str:
     """Translate an OptimizationProblem into a pretty-printed string (higher-order aware)."""
-
     with StringIO() as buf:
         _check_name(optimization_problem.name, "Problem")
         buf.write(f"Problem name: {optimization_problem.name}\n\n")
@@ -246,12 +247,16 @@ def prettyprint(optimization_problem: OptimizationProblem, wrap: int = 80) -> st
             for cst in optimization_problem.linear_constraints:
                 _check_name(cst.name, "Linear constraint")
                 suffix = f"{cst.sense.label} {_int_if_close(cst.rhs)}  '{cst.name}'\n"
-                buf.write(expr2str(linear=cst.linear, suffix=suffix, wrap=wrap, indent=4))
+                buf.write(
+                    expr2str(linear=cst.linear, suffix=suffix, wrap=wrap, indent=4)
+                )
         if num_quad_csts > 0:
             buf.write(f"\n  Quadratic constraints ({num_quad_csts})\n")
             for cst2 in optimization_problem.quadratic_constraints:
                 _check_name(cst2.name, "Quadratic constraint")
-                suffix = f"{cst2.sense.label} {_int_if_close(cst2.rhs)}  '{cst2.name}'\n"
+                suffix = (
+                    f"{cst2.sense.label} {_int_if_close(cst2.rhs)}  '{cst2.name}'\n"
+                )
                 buf.write(
                     expr2str(
                         linear=cst2.linear,
@@ -268,7 +273,9 @@ def prettyprint(optimization_problem: OptimizationProblem, wrap: int = 80) -> st
 
             for csth in optimization_problem.higher_order_constraints:
                 _check_name(csth.name, "Higher-order constraint")
-                suffix = f"{csth.sense.label} {_int_if_close(csth.rhs)}  '{csth.name}'\n"
+                suffix = (
+                    f"{csth.sense.label} {_int_if_close(csth.rhs)}  '{csth.name}'\n"
+                )
 
                 buf.write(
                     expr2str(
@@ -284,7 +291,7 @@ def prettyprint(optimization_problem: OptimizationProblem, wrap: int = 80) -> st
         # --- Variables section (unchanged) ---
         if optimization_problem.get_num_vars() == 0:
             buf.write("\n  No variables\n")
-        bin_vars: List[str] = []
+        bin_vars: list[str] = []
         int_vars = []
         con_vars = []
         spin_vars = []

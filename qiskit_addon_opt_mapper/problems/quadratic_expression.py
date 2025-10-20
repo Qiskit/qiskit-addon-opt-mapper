@@ -12,7 +12,7 @@
 
 """Quadratic expression interface."""
 
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 import numpy as np
 from numpy import ndarray
@@ -30,12 +30,12 @@ class QuadraticExpression(OptimizationProblemElement):
     def __init__(
         self,
         optimization_problem: Any,
-        coefficients: Union[
-            ndarray,
-            spmatrix,
-            List[List[float]],
-            Dict[Tuple[Union[int, str], Union[int, str]], float],
-        ],
+        coefficients: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[str | int, str | int], float]
+        ),
     ) -> None:
         """Creates a new quadratic expression.
 
@@ -52,11 +52,12 @@ class QuadraticExpression(OptimizationProblemElement):
         super().__init__(optimization_problem)
         self.coefficients = coefficients
 
-    def __getitem__(self, key: Tuple[Union[int, str], Union[int, str]]) -> float:
+    def __getitem__(self, key: tuple[str | int, str | int]) -> float:
         """Returns the coefficient where i, j can be a variable names or indices.
 
         Args:
             key: The tuple of indices or names of the variables corresponding to the coefficient.
+
 
         Returns:
             The coefficient corresponding to the addressed variables.
@@ -68,7 +69,7 @@ class QuadraticExpression(OptimizationProblemElement):
             j = self.optimization_problem.variables_index[j]
         return self.coefficients[min(i, j), max(i, j)]
 
-    def __setitem__(self, key: Tuple[Union[int, str], Union[int, str]], value: float) -> None:
+    def __setitem__(self, key: tuple[str | int, str | int], value: float) -> None:
         """Sets the coefficient where i, j can be a variable names or indices.
 
         Args:
@@ -84,17 +85,18 @@ class QuadraticExpression(OptimizationProblemElement):
 
     def _coeffs_to_dok_matrix(
         self,
-        coefficients: Union[
-            ndarray,
-            spmatrix,
-            List[List[float]],
-            Dict[Tuple[Union[int, str], Union[int, str]], float],
-        ],
+        coefficients: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[str | int, str | int], float]
+        ),
     ) -> dok_matrix:
         """Maps given coefficients to a dok_matrix.
 
         Args:
             coefficients: The coefficients to be mapped.
+
 
         Returns:
             The given coefficients as a dok_matrix
@@ -140,7 +142,9 @@ class QuadraticExpression(OptimizationProblemElement):
                 coeffs[i, j] = value
             coefficients = coeffs
         else:
-            raise OptimizationError(f"Unsupported format for coefficients: {coefficients}")
+            raise OptimizationError(
+                f"Unsupported format for coefficients: {coefficients}"
+            )
         return self._triangle_matrix(coefficients)
 
     @staticmethod
@@ -167,12 +171,12 @@ class QuadraticExpression(OptimizationProblemElement):
     @coefficients.setter
     def coefficients(
         self,
-        coefficients: Union[
-            ndarray,
-            spmatrix,
-            List[List[float]],
-            Dict[Tuple[Union[int, str], Union[int, str]], float],
-        ],
+        coefficients: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[str | int, str | int], float]
+        ),
     ) -> None:
         """Sets the coefficients of the quadratic expression.
 
@@ -187,26 +191,37 @@ class QuadraticExpression(OptimizationProblemElement):
         Args:
             symmetric: Determines whether the output is in a symmetric form or not.
 
+
         Returns:
             An array with the coefficients corresponding to the quadratic expression.
         """
-        coeffs = self._symmetric_matrix(self._coefficients) if symmetric else self._coefficients
+        coeffs = (
+            self._symmetric_matrix(self._coefficients)
+            if symmetric
+            else self._coefficients
+        )
         return coeffs.toarray()
 
     def to_dict(
         self, symmetric: bool = False, use_name: bool = False
-    ) -> Dict[Union[Tuple[int, int], Tuple[str, str]], float]:
-        """Returns the coefficients of the quadratic expression as dictionary, either using tuples
-        of variable names or indices as keys.
+    ) -> dict[tuple[int, int] | tuple[str, str], float]:
+        """Returns the coefficients of the quadratic expression as dictionary.
+
+        Either using tuples of variable names or indices as keys.
 
         Args:
             symmetric: Determines whether the output is in a symmetric form or not.
             use_name: Determines whether to use index or names to refer to variables.
 
+
         Returns:
             An dictionary with the coefficients corresponding to the quadratic expression.
         """
-        coeffs = self._symmetric_matrix(self._coefficients) if symmetric else self._coefficients
+        coeffs = (
+            self._symmetric_matrix(self._coefficients)
+            if symmetric
+            else self._coefficients
+        )
         if use_name:
             return {
                 (
@@ -218,11 +233,12 @@ class QuadraticExpression(OptimizationProblemElement):
         else:
             return {(int(i), int(j)): v for (i, j), v in coeffs.items()}
 
-    def evaluate(self, x: Union[ndarray, List, Dict[Union[int, str], float]]) -> float:
+    def evaluate(self, x: ndarray | list | dict[str | int, float]) -> float:
         """Evaluate the quadratic expression for given variables: x * Q * x.
 
         Args:
             x: The values of the variables to be evaluated.
+
 
         Returns:
             The value of the quadratic expression given the variable values.
@@ -235,11 +251,12 @@ class QuadraticExpression(OptimizationProblemElement):
         # return the result
         return val
 
-    def evaluate_gradient(self, x: Union[ndarray, List, Dict[Union[int, str], float]]) -> ndarray:
+    def evaluate_gradient(self, x: ndarray | list | dict[str | int, float]) -> ndarray:
         """Evaluate the gradient of the quadratic expression for given variables.
 
         Args:
             x: The values of the variables to be evaluated.
+
 
         Returns:
             The value of the gradient quadratic expression given the variable values.
@@ -253,8 +270,8 @@ class QuadraticExpression(OptimizationProblemElement):
         return val
 
     def _cast_as_array(
-        self, x: Union[ndarray, List, Dict[Union[int, str], float]]
-    ) -> Union[dok_matrix, np.ndarray]:
+        self, x: ndarray | list | dict[str | int, float]
+    ) -> dok_matrix | np.ndarray:
         """Converts input to an array if it is a dictionary or list."""
         if isinstance(x, dict):
             x_aux = np.zeros(self.optimization_problem.get_num_vars())
@@ -269,7 +286,7 @@ class QuadraticExpression(OptimizationProblemElement):
 
     @property
     def bounds(self) -> ExpressionBounds:
-        """Returns the lower bound and the upper bound of the quadratic expression
+        """Returns the lower bound and the upper bound of the quadratic expression.
 
         Returns:
             The lower bound and the upper bound of the quadratic expression
@@ -310,12 +327,14 @@ class QuadraticExpression(OptimizationProblemElement):
         return ExpressionBounds(lowerbound=l_b, upperbound=u_b)
 
     def __repr__(self):
+        """Repr. for QuadraticExpression."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import DEFAULT_TRUNCATE, expr2str
 
         return f"<{self.__class__.__name__}: {expr2str(quadratic=self, truncate=DEFAULT_TRUNCATE)}>"
 
     def __str__(self):
+        """Repr. for QuadraticExpression."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import expr2str
 

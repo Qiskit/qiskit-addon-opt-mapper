@@ -55,7 +55,9 @@ def test_minimize_with_multiple_higher_orders(op3):
         4: {(0, 1, 1, 2): -0.5},  # -0.5*x0*x1^2*x2
     }
 
-    op3.minimize(constant=0.0, linear=linear, quadratic=quadratic, higher_order=higher_orders)
+    op3.minimize(
+        constant=0.0, linear=linear, quadratic=quadratic, higher_order=higher_orders
+    )
     assert op3.objective.sense == ObjSense.MINIMIZE
 
     x = [2.0, 1.0, -1.0]
@@ -157,8 +159,12 @@ def test_higher_order_constraint_name_autoincrement(op3):
     """
     Names should auto-increment as h0, h1, ... when not provided.
     """
-    c0 = op3.higher_order_constraint(linear={}, quadratic={}, higher_order={3: {(0, 0, 1): 1.0}})
-    c1 = op3.higher_order_constraint(linear={}, quadratic={}, higher_order={3: {(0, 1, 2): -1.0}})
+    c0 = op3.higher_order_constraint(
+        linear={}, quadratic={}, higher_order={3: {(0, 0, 1): 1.0}}
+    )
+    c1 = op3.higher_order_constraint(
+        linear={}, quadratic={}, higher_order={3: {(0, 1, 2): -1.0}}
+    )
     assert c0.name.startswith("h0")
     assert c1.name.startswith("h1")
     # index map must be consistent
@@ -289,7 +295,9 @@ class TestOptimizationProblem(OptimizationTestCase):
             self.assertEqual(var.vartype, VarType.BINARY)
             self.assertTupleEqual(var.as_tuple(), d_1[var.name].as_tuple())
 
-        d_2 = q_p.integer_var_dict(keys=1, key_format="-{}", lowerbound=-4, upperbound=10)
+        d_2 = q_p.integer_var_dict(
+            keys=1, key_format="-{}", lowerbound=-4, upperbound=10
+        )
         self.assertSetEqual(set(d_2.keys()), {"x-8"})
         self.assertSetEqual(
             {var.name for var in q_p.variables},
@@ -448,7 +456,9 @@ class TestOptimizationProblem(OptimizationTestCase):
             self.assertEqual(var.vartype, VarType.BINARY)
             self.assertTupleEqual(var.as_tuple(), d_1[i].as_tuple())
 
-        d_2 = q_p.integer_var_list(keys=1, key_format="-{}", lowerbound=-4, upperbound=10)
+        d_2 = q_p.integer_var_list(
+            keys=1, key_format="-{}", lowerbound=-4, upperbound=10
+        )
         names = ["x-8"]
         self.assertSetEqual(
             {var.name for var in q_p.variables},
@@ -671,7 +681,9 @@ class TestOptimizationProblem(OptimizationTestCase):
             z = quadratic_program.get_variable(x.name)
             self.assertEqual(x.name, y.name)
             self.assertEqual(x.name, z.name)
-        self.assertDictEqual(quadratic_program.variables_index, {"x" + str(i): i for i in range(6)})
+        self.assertDictEqual(
+            quadratic_program.variables_index, {"x" + str(i): i for i in range(6)}
+        )
 
     def test_linear_constraints_handling(self):
         """test linear constraints handling"""
@@ -779,7 +791,9 @@ class TestOptimizationProblem(OptimizationTestCase):
         self.assertDictEqual(quad[0].linear.to_dict(use_name=True), {"x": 1})
         self.assertListEqual(quad[0].linear.to_array().tolist(), [1, 0, 0])
         self.assertDictEqual(quad[0].quadratic.to_dict(), {(0, 1): 1})
-        self.assertDictEqual(quad[0].quadratic.to_dict(symmetric=True), {(0, 1): 0.5, (1, 0): 0.5})
+        self.assertDictEqual(
+            quad[0].quadratic.to_dict(symmetric=True), {(0, 1): 0.5, (1, 0): 0.5}
+        )
         self.assertDictEqual(quad[0].quadratic.to_dict(use_name=True), {("x", "y"): 1})
         self.assertDictEqual(
             quad[0].quadratic.to_dict(use_name=True, symmetric=True),
@@ -802,7 +816,9 @@ class TestOptimizationProblem(OptimizationTestCase):
         self.assertDictEqual(quad[1].linear.to_dict(use_name=True), {"y": 1})
         self.assertListEqual(quad[1].linear.to_array().tolist(), [0, 1, 0])
         self.assertDictEqual(quad[1].quadratic.to_dict(), {(1, 2): 1})
-        self.assertDictEqual(quad[1].quadratic.to_dict(symmetric=True), {(1, 2): 0.5, (2, 1): 0.5})
+        self.assertDictEqual(
+            quad[1].quadratic.to_dict(symmetric=True), {(1, 2): 0.5, (2, 1): 0.5}
+        )
         self.assertDictEqual(quad[1].quadratic.to_dict(use_name=True), {("y", "z"): 1})
         self.assertDictEqual(
             quad[1].quadratic.to_dict(use_name=True, symmetric=True),
@@ -825,7 +841,9 @@ class TestOptimizationProblem(OptimizationTestCase):
         self.assertDictEqual(quad[2].linear.to_dict(use_name=True), {"z": 1})
         self.assertListEqual(quad[2].linear.to_array().tolist(), [0, 0, 1])
         self.assertDictEqual(quad[2].quadratic.to_dict(), {(0, 2): 1})
-        self.assertDictEqual(quad[2].quadratic.to_dict(symmetric=True), {(0, 2): 0.5, (2, 0): 0.5})
+        self.assertDictEqual(
+            quad[2].quadratic.to_dict(symmetric=True), {(0, 2): 0.5, (2, 0): 0.5}
+        )
         self.assertDictEqual(quad[2].quadratic.to_dict(use_name=True), {("x", "z"): 1})
         self.assertDictEqual(
             quad[2].quadratic.to_dict(use_name=True, symmetric=True),
@@ -862,7 +880,9 @@ class TestOptimizationProblem(OptimizationTestCase):
         self.assertDictEqual(quad[1].linear.to_dict(use_name=True), {"z": 1})
         self.assertListEqual(quad[1].linear.to_array().tolist(), [0, 0, 1])
         self.assertDictEqual(quad[1].quadratic.to_dict(), {(0, 2): 1})
-        self.assertDictEqual(quad[1].quadratic.to_dict(symmetric=True), {(0, 2): 0.5, (2, 0): 0.5})
+        self.assertDictEqual(
+            quad[1].quadratic.to_dict(symmetric=True), {(0, 2): 0.5, (2, 0): 0.5}
+        )
         self.assertDictEqual(quad[1].quadratic.to_dict(use_name=True), {("x", "z"): 1})
         self.assertDictEqual(
             quad[1].quadratic.to_dict(use_name=True, symmetric=True),
@@ -909,12 +929,16 @@ class TestOptimizationProblem(OptimizationTestCase):
         self.assertDictEqual(
             obj.quadratic.to_dict(symmetric=True), {(0, 2): 0.5, (2, 0): 0.5, (1, 1): 1}
         )
-        self.assertDictEqual(obj.quadratic.to_dict(use_name=True), {("x", "z"): 1, ("y", "y"): 1})
+        self.assertDictEqual(
+            obj.quadratic.to_dict(use_name=True), {("x", "z"): 1, ("y", "y"): 1}
+        )
         self.assertDictEqual(
             obj.quadratic.to_dict(use_name=True, symmetric=True),
             {("x", "z"): 0.5, ("z", "x"): 0.5, ("y", "y"): 1},
         )
-        self.assertListEqual(obj.quadratic.to_array().tolist(), [[0, 0, 1], [0, 1, 0], [0, 0, 0]])
+        self.assertListEqual(
+            obj.quadratic.to_array().tolist(), [[0, 0, 1], [0, 1, 0], [0, 0, 0]]
+        )
         self.assertListEqual(
             obj.quadratic.to_array(symmetric=True).tolist(),
             [[0, 0, 0.5], [0, 1, 0], [0.5, 0, 0]],
@@ -970,7 +994,9 @@ class TestOptimizationProblem(OptimizationTestCase):
             q_p2 = q_p.substitute_variables(constants={"x": 0})
             self.assertEqual(q_p2.status, OptimizationProblem.Status.VALID)
             self.assertDictEqual(q_p2.objective.linear.to_dict(use_name=True), {"y": 2})
-            self.assertDictEqual(q_p2.objective.quadratic.to_dict(use_name=True), {("z", "z"): 2})
+            self.assertDictEqual(
+                q_p2.objective.quadratic.to_dict(use_name=True), {("z", "z"): 2}
+            )
             self.assertEqual(q_p2.objective.constant, 1)
             self.assertEqual(len(q_p2.linear_constraints), 1)
             self.assertEqual(len(q_p2.quadratic_constraints), 1)
@@ -989,8 +1015,12 @@ class TestOptimizationProblem(OptimizationTestCase):
         with self.subTest("z <- -1"):
             q_p2 = q_p.substitute_variables(constants={"z": -1})
             self.assertEqual(q_p2.status, OptimizationProblem.Status.VALID)
-            self.assertDictEqual(q_p2.objective.linear.to_dict(use_name=True), {"x": 1, "y": 2})
-            self.assertDictEqual(q_p2.objective.quadratic.to_dict(use_name=True), {("x", "y"): -1})
+            self.assertDictEqual(
+                q_p2.objective.linear.to_dict(use_name=True), {"x": 1, "y": 2}
+            )
+            self.assertDictEqual(
+                q_p2.objective.quadratic.to_dict(use_name=True), {("x", "y"): -1}
+            )
             self.assertEqual(q_p2.objective.constant, 3)
             self.assertEqual(len(q_p2.linear_constraints), 2)
             self.assertEqual(len(q_p2.quadratic_constraints), 0)
@@ -1024,7 +1054,9 @@ class TestOptimizationProblem(OptimizationTestCase):
 
             cst = q_p2.quadratic_constraints[0]
             self.assertDictEqual(cst.linear.to_dict(use_name=True), {"x": 2, "z": -1})
-            self.assertDictEqual(cst.quadratic.to_dict(use_name=True), {("x", "z"): -1.5})
+            self.assertDictEqual(
+                cst.quadratic.to_dict(use_name=True), {("x", "z"): -1.5}
+            )
             self.assertEqual(cst.sense.name, "LE")
             self.assertEqual(cst.rhs, -1)
 
@@ -1102,9 +1134,15 @@ class TestOptimizationProblem(OptimizationTestCase):
             x = q_p.binary_var_dict(2, name="")
             y = q_p.integer_var_dict(2, name="")
             z = q_p.continuous_var_dict(2, name="")
-            self.assertDictEqual({k: v.name for k, v in x.items()}, {"x0": "x0", "x1": "x1"})
-            self.assertDictEqual({k: v.name for k, v in y.items()}, {"x2": "x2", "x3": "x3"})
-            self.assertDictEqual({k: v.name for k, v in z.items()}, {"x4": "x4", "x5": "x5"})
+            self.assertDictEqual(
+                {k: v.name for k, v in x.items()}, {"x0": "x0", "x1": "x1"}
+            )
+            self.assertDictEqual(
+                {k: v.name for k, v in y.items()}, {"x2": "x2", "x3": "x3"}
+            )
+            self.assertDictEqual(
+                {k: v.name for k, v in z.items()}, {"x4": "x4", "x5": "x5"}
+            )
 
         with self.subTest("linear constraint name"):
             q_p = OptimizationProblem()

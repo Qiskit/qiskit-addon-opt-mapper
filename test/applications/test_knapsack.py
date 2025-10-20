@@ -11,7 +11,6 @@
 # that they have been altered from the originals.
 """Test Knapsack class"""
 import numpy as np
-
 from qiskit_addon_opt_mapper import OptimizationProblem
 from qiskit_addon_opt_mapper.applications.knapsack import Knapsack
 from qiskit_addon_opt_mapper.problems import Constraint, OptimizationObjective, VarType
@@ -35,7 +34,9 @@ class TestKnapsack(OptimizationTestCase):
 
     def test_to_optimization_problem(self):
         """Test to_optimization_problem"""
-        knapsack = Knapsack(values=self.values, weights=self.weights, max_weight=self.max_weight)
+        knapsack = Knapsack(
+            values=self.values, weights=self.weights, max_weight=self.max_weight
+        )
         op = knapsack.to_optimization_problem()
         # Test name
         self.assertEqual(op.name, "Knapsack")
@@ -58,11 +59,15 @@ class TestKnapsack(OptimizationTestCase):
 
     def test_interpret(self):
         """Test interpret"""
-        knapsack = Knapsack(values=self.values, weights=self.weights, max_weight=self.max_weight)
+        knapsack = Knapsack(
+            values=self.values, weights=self.weights, max_weight=self.max_weight
+        )
         self.assertEqual(knapsack.interpret(self.result), [1, 3])
 
     def test_max_weight(self):
         """Test max_weight"""
-        knapsack = Knapsack(values=self.values, weights=self.weights, max_weight=self.max_weight)
+        knapsack = Knapsack(
+            values=self.values, weights=self.weights, max_weight=self.max_weight
+        )
         knapsack.max_weight = 5
         self.assertEqual(knapsack.max_weight, 5)

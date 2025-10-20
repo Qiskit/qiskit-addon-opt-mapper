@@ -38,7 +38,9 @@ class CplexSolver(OptimizationSolver):
         >>> if optimizer: result = optimizer.solve(problem)
     """
 
-    def __init__(self, disp: bool = False, cplex_parameters: dict[str, Any] | None = None) -> None:
+    def __init__(
+        self, disp: bool = False, cplex_parameters: dict[str, Any] | None = None
+    ) -> None:
         """Initializes the CplexSolver.
 
         Args:
@@ -51,7 +53,7 @@ class CplexSolver(OptimizationSolver):
 
     @staticmethod
     def is_cplex_installed():
-        """Returns True if cplex is installed"""
+        """Returns True if cplex is installed."""
         return _optionals.HAS_CPLEX
 
     @property
@@ -66,6 +68,7 @@ class CplexSolver(OptimizationSolver):
     @disp.setter
     def disp(self, disp: bool):
         """Set the display setting.
+
         Args:
             disp: The display setting.
         """
@@ -73,14 +76,15 @@ class CplexSolver(OptimizationSolver):
 
     @property
     def cplex_parameters(self) -> dict[str, Any] | None:
-        """Returns parameters for CPLEX"""
+        """Returns parameters for CPLEX."""
         return self._cplex_parameters
 
     @cplex_parameters.setter
     def cplex_parameters(self, parameters: dict[str, Any] | None):
-        """Set parameters for CPLEX
+        """Set parameters for CPLEX.
+
         Args:
-            parameters: The parameters for CPLEX
+            parameters: The parameters for CPLEX.
         """
         self._cplex_parameters = parameters
 
@@ -94,6 +98,7 @@ class CplexSolver(OptimizationSolver):
 
         Args:
             problem: The optimization problem to check compatibility.
+
 
         Returns:
             An empty string.
@@ -109,13 +114,13 @@ class CplexSolver(OptimizationSolver):
         Args:
             problem: The problem to be solved.
 
+
         Returns:
             The result of the optimizer applied to the problem.
 
         Raises:
             QiskitOptimizationError: If the problem is incompatible with the optimizer.
         """
-
         mod = to_docplex_mp(problem)
         sol = mod.solve(log_output=self._disp, cplex_parameters=self._cplex_parameters)
         if sol is None:

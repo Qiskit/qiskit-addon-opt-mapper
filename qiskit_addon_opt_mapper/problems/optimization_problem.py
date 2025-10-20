@@ -17,7 +17,7 @@ import warnings
 from collections.abc import Sequence
 from enum import Enum
 from math import isclose
-from typing import Dict, List, Optional, Tuple, Union, cast
+from typing import cast
 from warnings import warn
 
 import numpy as np
@@ -39,11 +39,11 @@ from .variable import Variable, VarType
 logger = logging.getLogger(__name__)
 
 
-CoeffLike = Union[ndarray, Dict[Tuple[Union[int, str], ...], float], List]
+CoeffLike = ndarray | dict[tuple[int | str, ...], float] | list
 
 
 class OptimizationProblemStatus(Enum):
-    """Status of OptimizationProblem"""
+    """Status of OptimizationProblem."""
 
     VALID = 0
     INFEASIBLE = 1
@@ -59,7 +59,8 @@ class OptimizationProblem:
     Status = OptimizationProblemStatus
 
     def __init__(self, name: str = "") -> None:
-        """
+        """Init method.
+
         Args:
             name: The name of the optimization problem.
         """
@@ -69,21 +70,22 @@ class OptimizationProblem:
         self.name = name
         self._status = OptimizationProblem.Status.VALID
 
-        self._variables: List[Variable] = []
-        self._variables_index: Dict[str, int] = {}
+        self._variables: list[Variable] = []
+        self._variables_index: dict[str, int] = {}
 
-        self._linear_constraints: List[LinearConstraint] = []
-        self._linear_constraints_index: Dict[str, int] = {}
+        self._linear_constraints: list[LinearConstraint] = []
+        self._linear_constraints_index: dict[str, int] = {}
 
-        self._quadratic_constraints: List[QuadraticConstraint] = []
-        self._quadratic_constraints_index: Dict[str, int] = {}
+        self._quadratic_constraints: list[QuadraticConstraint] = []
+        self._quadratic_constraints_index: dict[str, int] = {}
 
-        self._higher_order_constraints: List[HigherOrderConstraint] = []
-        self._higher_order_constraints_index: Dict[str, int] = {}
+        self._higher_order_constraints: list[HigherOrderConstraint] = []
+        self._higher_order_constraints_index: dict[str, int] = {}
 
         self._objective = OptimizationObjective(self)
 
     def __repr__(self) -> str:
+        """Repr. for OptimizationProblem."""
         from ..translators.prettyprint import DEFAULT_TRUNCATE, expr2str
 
         objective = expr2str(
@@ -108,20 +110,23 @@ class OptimizationProblem:
         )
 
     def __str__(self) -> str:
+        """Str. for OptimizationProblem."""
         num_constraints = (
             self.get_num_linear_constraints()
             + self.get_num_quadratic_constraints()
             + self.get_num_higher_order_constraints()
         )
         return (
-            f"{str(self.objective)} "
+            f"{self.objective!s} "
             f"({self.get_num_vars()} variables, "
             f"{num_constraints} constraints, "
             f"'{self._name}')"
         )
 
     def clear(self) -> None:
-        """Clears the optimization problem, i.e., deletes all variables, constraints, the
+        """Clears the optimization problem.
+
+        i.e., deletes all variables, constraints, the
         objective function as well as the name.
         """
         self._name = ""
@@ -163,6 +168,7 @@ class OptimizationProblem:
     @property
     def status(self) -> OptimizationProblemStatus:
         """Status of the optimization problem.
+
         It can be infeasible due to variable substitution.
 
         Returns:
@@ -171,16 +177,16 @@ class OptimizationProblem:
         return self._status
 
     @property
-    def variables(self) -> List[Variable]:
+    def variables(self) -> list[Variable]:
         """Returns the list of variables of the optimization problem.
 
         Returns:
-            List of variables.
+            list of variables.
         """
         return self._variables
 
     @property
-    def variables_index(self) -> Dict[str, int]:
+    def variables_index(self) -> dict[str, int]:
         """Returns the dictionary that maps the name of a variable to its index.
 
         Returns:
@@ -190,10 +196,10 @@ class OptimizationProblem:
 
     def _add_variable(
         self,
-        lowerbound: Union[float, int],
-        upperbound: Union[float, int],
+        lowerbound: float | int,
+        upperbound: float | int,
         vartype: VarType,
-        name: Optional[str],
+        name: str | None,
         internal: bool = False,
     ) -> Variable:
         if not name:
@@ -201,22 +207,25 @@ class OptimizationProblem:
             key_format = "{}"
         else:
             key_format = ""
-        return self._add_variables(1, lowerbound, upperbound, vartype, name, key_format, internal)[
-            1
-        ][0]
+        return self._add_variables(
+            1, lowerbound, upperbound, vartype, name, key_format, internal
+        )[1][0]
 
     def _add_variables(  # pylint: disable=too-many-positional-arguments
         self,
-        keys: Union[int, Sequence],
-        lowerbound: Union[float, int],
-        upperbound: Union[float, int],
+        keys: int | Sequence,
+        lowerbound: float | int,
+        upperbound: float | int,
         vartype: VarType,
-        name: Optional[str],
+        name: str | None,
         key_format: str,
         internal: bool = False,
-    ) -> Tuple[List[str], List[Variable]]:
+    ) -> tuple[list[str], list[Variable]]:
+        """Add variables."""
         if isinstance(keys, int) and keys < 1:
-            raise OptimizationError(f"Cannot create non-positive number of variables: {keys}")
+            raise OptimizationError(
+                f"Cannot create non-positive number of variables: {keys}"
+            )
         if not name:
             name = "x"
         if "@" in name and not internal:
@@ -226,7 +235,9 @@ class OptimizationProblem:
             )
 
         if "{{}}" in key_format:
-            raise OptimizationError(f"Formatter cannot contain nested substitutions: {key_format}")
+            raise OptimizationError(
+                f"Formatter cannot contain nested substitutions: {key_format}"
+            )
         if key_format.count("{}") > 1:
             raise OptimizationError(
                 f"Formatter cannot contain more than one substitution: {key_format}"
@@ -266,16 +277,17 @@ class OptimizationProblem:
 
     def _var_dict(  # pylint: disable=too-many-positional-arguments
         self,
-        keys: Union[int, Sequence],
-        lowerbound: Union[float, int],
-        upperbound: Union[float, int],
+        keys: int | Sequence,
+        lowerbound: float | int,
+        upperbound: float | int,
         vartype: VarType,
-        name: Optional[str],
+        name: str | None,
         key_format: str,
-    ) -> Dict[str, Variable]:
-        """
-        Adds a positive number of variables to the variable list and index and returns a
-        dictionary mapping the variable names to their instances. If 'key_format' is present,
+    ) -> dict[str, Variable]:
+        """Adds a positive number of variables to the variable list and index.
+
+        Returns a dictionary mapping the variable names to their instances.
+        If 'key_format' is present,
         the next 'var_count' available indices are substituted into 'key_format' and appended
         to 'name'.
 
@@ -289,6 +301,7 @@ class OptimizationProblem:
                   Otherwise, the elements of the sequence are converted to strings via 'str' and
                   substituted into `key_format`.
 
+
         Returns:
             A dictionary mapping the variable names to variable instances.
 
@@ -299,21 +312,26 @@ class OptimizationProblem:
                                      nested substitution.
         """
         return dict(
-            zip(*self._add_variables(keys, lowerbound, upperbound, vartype, name, key_format))
+            zip(
+                *self._add_variables(
+                    keys, lowerbound, upperbound, vartype, name, key_format
+                ),
+                strict=False,
+            )
         )
 
     def _var_list(  # pylint: disable=too-many-positional-arguments
         self,
-        keys: Union[int, Sequence],
-        lowerbound: Union[float, int],
-        upperbound: Union[float, int],
+        keys: int | Sequence,
+        lowerbound: float | int,
+        upperbound: float | int,
         vartype: VarType,
-        name: Optional[str],
+        name: str | None,
         key_format: str,
-    ) -> List[Variable]:
-        """
-        Adds a positive number of variables to the variable list and index and returns a
-        list of variable instances.
+    ) -> list[Variable]:
+        """Adds a positive number of variables to the variable list and index.
+
+        Returns a list of variable instances.
 
         Args:
             lowerbound: The lower bound of the variable(s).
@@ -325,6 +343,7 @@ class OptimizationProblem:
                   Otherwise, the elements of the sequence are converted to strings via 'str' and
                   substituted into `key_format`.
 
+
         Returns:
             A dictionary mapping the variable names to variable instances.
 
@@ -334,13 +353,15 @@ class OptimizationProblem:
             OptimizationError: if `key_format` has more than one substitution or a
                                      nested substitution.
         """
-        return self._add_variables(keys, lowerbound, upperbound, vartype, name, key_format)[1]
+        return self._add_variables(
+            keys, lowerbound, upperbound, vartype, name, key_format
+        )[1]
 
     def continuous_var(
         self,
-        lowerbound: Union[float, int] = 0,
-        upperbound: Union[float, int] = INFINITY,
-        name: Optional[str] = None,
+        lowerbound: float | int = 0,
+        upperbound: float | int = INFINITY,
+        name: str | None = None,
     ) -> Variable:
         """Adds a continuous variable to the optimization problem.
 
@@ -350,24 +371,26 @@ class OptimizationProblem:
             name: The name of the variable.
                 If it's ``None`` or empty ``""``, the default name, e.g., ``x0``, is used.
 
+
         Returns:
             The added variable.
 
         Raises:
             OptimizationError: if the variable name is already occupied.
         """
-        return self._add_variable(lowerbound, upperbound, Variable.Type.CONTINUOUS, name)
+        return self._add_variable(
+            lowerbound, upperbound, Variable.Type.CONTINUOUS, name
+        )
 
     def continuous_var_dict(  # pylint: disable=too-many-positional-arguments
         self,
-        keys: Union[int, Sequence],
-        lowerbound: Union[float, int] = 0,
-        upperbound: Union[float, int] = INFINITY,
-        name: Optional[str] = None,
+        keys: int | Sequence,
+        lowerbound: float | int = 0,
+        upperbound: float | int = INFINITY,
+        name: str | None = None,
         key_format: str = "{}",
-    ) -> Dict[str, Variable]:
-        """
-        Uses 'var_dict' to construct a dictionary of continuous variables
+    ) -> dict[str, Variable]:
+        """Uses 'var_dict' to construct a dictionary of continuous variables.
 
         Args:
             lowerbound: The lower bound of the variable(s).
@@ -378,6 +401,7 @@ class OptimizationProblem:
             keys: If keys: int, it is interpreted as the number of variables to construct.
                   Otherwise, the elements of the sequence are converted to strings via 'str' and
                   substituted into `key_format`.
+
 
         Returns:
             A dictionary mapping the variable names to variable instances.
@@ -399,14 +423,13 @@ class OptimizationProblem:
 
     def continuous_var_list(  # pylint: disable=too-many-positional-arguments
         self,
-        keys: Union[int, Sequence],
-        lowerbound: Union[float, int] = 0,
-        upperbound: Union[float, int] = INFINITY,
-        name: Optional[str] = None,
+        keys: int | Sequence,
+        lowerbound: float | int = 0,
+        upperbound: float | int = INFINITY,
+        name: str | None = None,
         key_format: str = "{}",
-    ) -> List[Variable]:
-        """
-        Uses 'var_list' to construct a list of continuous variables
+    ) -> list[Variable]:
+        """Uses 'var_list' to construct a list of continuous variables.
 
         Args:
             lowerbound: The lower bound of the variable(s).
@@ -417,6 +440,7 @@ class OptimizationProblem:
             keys: If keys: int, it is interpreted as the number of variables to construct.
                   Otherwise, the elements of the sequence are converted to strings via 'str' and
                   substituted into `key_format`.
+
 
         Returns:
             A list of variable instances.
@@ -431,12 +455,13 @@ class OptimizationProblem:
             keys, lowerbound, upperbound, Variable.Type.CONTINUOUS, name, key_format
         )
 
-    def binary_var(self, name: Optional[str] = None) -> Variable:
+    def binary_var(self, name: str | None = None) -> Variable:
         """Adds a binary variable to the optimization problem.
 
         Args:
             name: The name of the variable.
                 If it's ``None`` or empty ``""``, the default name, e.g., ``x0``, is used.
+
 
         Returns:
             The added variable.
@@ -448,12 +473,11 @@ class OptimizationProblem:
 
     def binary_var_dict(
         self,
-        keys: Union[int, Sequence],
-        name: Optional[str] = None,
+        keys: int | Sequence,
+        name: str | None = None,
         key_format: str = "{}",
-    ) -> Dict[str, Variable]:
-        """
-        Uses 'var_dict' to construct a dictionary of binary variables
+    ) -> dict[str, Variable]:
+        """Uses 'var_dict' to construct a dictionary of binary variables.
 
         Args:
             name: The name(s) of the variable(s).
@@ -462,6 +486,7 @@ class OptimizationProblem:
             keys: If keys: int, it is interpreted as the number of variables to construct.
                   Otherwise, the elements of the sequence are converted to strings via 'str' and
                   substituted into `key_format`.
+
 
         Returns:
             A dictionary mapping the variable names to variable instances.
@@ -483,12 +508,11 @@ class OptimizationProblem:
 
     def binary_var_list(
         self,
-        keys: Union[int, Sequence],
-        name: Optional[str] = None,
+        keys: int | Sequence,
+        name: str | None = None,
         key_format: str = "{}",
-    ) -> List[Variable]:
-        """
-        Uses 'var_list' to construct a list of binary variables
+    ) -> list[Variable]:
+        """Uses 'var_list' to construct a list of binary variables.
 
         Args:
             name: The name(s) of the variable(s).
@@ -497,6 +521,7 @@ class OptimizationProblem:
             keys: If keys: int, it is interpreted as the number of variables to construct.
                   Otherwise, the elements of the sequence are converted to strings via 'str' and
                   substituted into `key_format`.
+
 
         Returns:
             A list of variable instances.
@@ -511,9 +536,9 @@ class OptimizationProblem:
 
     def integer_var(
         self,
-        lowerbound: Union[float, int] = 0,
-        upperbound: Union[float, int] = INFINITY,
-        name: Optional[str] = None,
+        lowerbound: float | int = 0,
+        upperbound: float | int = INFINITY,
+        name: str | None = None,
     ) -> Variable:
         """Adds an integer variable to the optimization problem.
 
@@ -522,6 +547,7 @@ class OptimizationProblem:
             upperbound: The upperbound of the variable.
             name: The name of the variable.
                 If it's ``None`` or empty ``""``, the default name, e.g., ``x0``, is used.
+
 
         Returns:
             The added variable.
@@ -533,14 +559,13 @@ class OptimizationProblem:
 
     def integer_var_dict(  # pylint: disable=too-many-positional-arguments
         self,
-        keys: Union[int, Sequence],
-        lowerbound: Union[float, int] = 0,
-        upperbound: Union[float, int] = INFINITY,
-        name: Optional[str] = None,
+        keys: int | Sequence,
+        lowerbound: float | int = 0,
+        upperbound: float | int = INFINITY,
+        name: str | None = None,
         key_format: str = "{}",
-    ) -> Dict[str, Variable]:
-        """
-        Uses 'var_dict' to construct a dictionary of integer variables
+    ) -> dict[str, Variable]:
+        """Uses 'var_dict' to construct a dictionary of integer variables.
 
         Args:
             lowerbound: The lower bound of the variable(s).
@@ -551,6 +576,7 @@ class OptimizationProblem:
             keys: If keys: int, it is interpreted as the number of variables to construct.
                   Otherwise, the elements of the sequence are converted to strings via 'str' and
                   substituted into `key_format`.
+
 
         Returns:
             A dictionary mapping the variable names to variable instances.
@@ -572,14 +598,13 @@ class OptimizationProblem:
 
     def integer_var_list(  # pylint: disable=too-many-positional-arguments
         self,
-        keys: Union[int, Sequence],
-        lowerbound: Union[float, int] = 0,
-        upperbound: Union[float, int] = INFINITY,
-        name: Optional[str] = None,
+        keys: int | Sequence,
+        lowerbound: float | int = 0,
+        upperbound: float | int = INFINITY,
+        name: str | None = None,
         key_format: str = "{}",
-    ) -> List[Variable]:
-        """
-        Uses 'var_list' to construct a list of integer variables
+    ) -> list[Variable]:
+        """Uses 'var_list' to construct a list of integer variables.
 
         Args:
             lowerbound: The lower bound of the variable(s).
@@ -591,6 +616,7 @@ class OptimizationProblem:
                   Otherwise, the elements of the sequence are converted to strings via 'str' and
                   substituted into `key_format`.
 
+
         Returns:
             A list of variable instances.
 
@@ -600,14 +626,17 @@ class OptimizationProblem:
             OptimizationError: if `key_format` has more than one substitution or a
                                      nested substitution.
         """
-        return self._var_list(keys, lowerbound, upperbound, Variable.Type.INTEGER, name, key_format)
+        return self._var_list(
+            keys, lowerbound, upperbound, Variable.Type.INTEGER, name, key_format
+        )
 
-    def spin_var(self, name: Optional[str] = None) -> Variable:
+    def spin_var(self, name: str | None = None) -> Variable:
         """Adds a spin variable to the optimization program.
 
         Args:
             name: The name of the variable.
                 If it's ``None`` or empty ``""``, the default name, e.g., ``x0``, is used.
+
 
         Returns:
             The added variable.
@@ -619,12 +648,11 @@ class OptimizationProblem:
 
     def spin_var_dict(
         self,
-        keys: Union[int, Sequence],
-        name: Optional[str] = None,
+        keys: int | Sequence,
+        name: str | None = None,
         key_format: str = "{}",
-    ) -> Dict[str, Variable]:
-        """
-        Uses 'var_dict' to construct a dictionary of spin variables
+    ) -> dict[str, Variable]:
+        """Uses 'var_dict' to construct a dictionary of spin variables.
 
         Args:
             keys: If keys: int, it is interpreted as the number of variables to construct.
@@ -633,6 +661,7 @@ class OptimizationProblem:
             name: The name(s) of the variable(s).
                 If it's ``None`` or empty ``""``, the default name, e.g., ``x0``, is used.
             key_format: The format used to name/index the variable(s).
+
 
 
         Returns:
@@ -655,12 +684,11 @@ class OptimizationProblem:
 
     def spin_var_list(
         self,
-        keys: Union[int, Sequence],
-        name: Optional[str] = None,
+        keys: int | Sequence,
+        name: str | None = None,
         key_format: str = "{}",
-    ) -> List[Variable]:
-        """
-        Uses 'var_list' to construct a list of spin variables
+    ) -> list[Variable]:
+        """Uses 'var_list' to construct a list of spin variables.
 
         Args:
             keys: If keys: int, it is interpreted as the number of variables to construct.
@@ -669,6 +697,7 @@ class OptimizationProblem:
             name: The name(s) of the variable(s).
                 If it's ``None`` or empty ``""``, the default name, e.g., ``x0``, is used.
             key_format: The format used to name/index the variable(s).
+
 
         Returns:
             A list of variable instances.
@@ -681,11 +710,12 @@ class OptimizationProblem:
         """
         return self._var_list(keys, -1, 1, Variable.Type.SPIN, name, key_format)
 
-    def get_variable(self, i: Union[int, str]) -> Variable:
+    def get_variable(self, i: int | str) -> Variable:
         """Returns a variable for a given name or index.
 
         Args:
             i: the index or name of the variable.
+
 
         Returns:
             The corresponding variable.
@@ -695,11 +725,12 @@ class OptimizationProblem:
         else:
             return self.variables[self._variables_index[i]]
 
-    def get_num_vars(self, vartype: Optional[VarType] = None) -> int:
+    def get_num_vars(self, vartype: VarType | None = None) -> int:
         """Returns the total number of variables or the number of variables of the specified type.
 
         Args:
             vartype: The type to be filtered on. All variables are counted if None.
+
 
         Returns:
             The total number of variables.
@@ -742,7 +773,7 @@ class OptimizationProblem:
         return self.get_num_vars(Variable.Type.SPIN)
 
     @property
-    def linear_constraints(self) -> List[LinearConstraint]:
+    def linear_constraints(self) -> list[LinearConstraint]:
         """Returns the list of linear constraints of the optimization problem.
 
         Returns:
@@ -751,7 +782,7 @@ class OptimizationProblem:
         return self._linear_constraints
 
     @property
-    def linear_constraints_index(self) -> Dict[str, int]:
+    def linear_constraints_index(self) -> dict[str, int]:
         """Returns the dictionary that maps the name of a linear constraint to its index.
 
         Returns:
@@ -761,12 +792,14 @@ class OptimizationProblem:
 
     def linear_constraint(
         self,
-        linear: Union[ndarray, spmatrix, List[float], Dict[Union[int, str], float]] = None,
-        sense: Union[str, ConstraintSense] = "<=",
+        linear: ndarray | spmatrix | list[float] | dict[int | str, float] = None,
+        sense: str | ConstraintSense = "<=",
         rhs: float = 0.0,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> LinearConstraint:
-        """Adds a linear equality constraint to the optimization problem of the form:
+        """Adds a linear equality constraint to the optimization problem.
+
+        The constraint is of the form:
             ``(linear * x) sense rhs``.
 
         Args:
@@ -781,6 +814,7 @@ class OptimizationProblem:
             name: The name of the constraint.
                 If it's ``None`` or empty ``""``, the default name, e.g., ``c0``, is used.
 
+
         Returns:
             The added constraint.
 
@@ -790,7 +824,9 @@ class OptimizationProblem:
         """
         if name:
             if name in self.linear_constraints_index:
-                raise OptimizationError(f"Linear constraint's name already exists: {name}")
+                raise OptimizationError(
+                    f"Linear constraint's name already exists: {name}"
+                )
             self._check_name(name, "Linear constraint")
         else:
             k = self.get_num_linear_constraints()
@@ -800,15 +836,18 @@ class OptimizationProblem:
         self.linear_constraints_index[name] = len(self.linear_constraints)
         if linear is None:
             linear = {}
-        constraint = LinearConstraint(self, name, linear, Constraint.Sense.convert(sense), rhs)
+        constraint = LinearConstraint(
+            self, name, linear, Constraint.Sense.convert(sense), rhs
+        )
         self.linear_constraints.append(constraint)
         return constraint
 
-    def get_linear_constraint(self, i: Union[int, str]) -> LinearConstraint:
+    def get_linear_constraint(self, i: int | str) -> LinearConstraint:
         """Returns a linear constraint for a given name or index.
 
         Args:
             i: the index or name of the constraint.
+
 
         Returns:
             The corresponding constraint.
@@ -831,7 +870,7 @@ class OptimizationProblem:
         return len(self._linear_constraints)
 
     @property
-    def quadratic_constraints(self) -> List[QuadraticConstraint]:
+    def quadratic_constraints(self) -> list[QuadraticConstraint]:
         """Returns the list of quadratic constraints of the optimization problem.
 
         Returns:
@@ -840,7 +879,7 @@ class OptimizationProblem:
         return self._quadratic_constraints
 
     @property
-    def quadratic_constraints_index(self) -> Dict[str, int]:
+    def quadratic_constraints_index(self) -> dict[str, int]:
         """Returns the dictionary that maps the name of a quadratic constraint to its index.
 
         Returns:
@@ -850,18 +889,20 @@ class OptimizationProblem:
 
     def quadratic_constraint(  # pylint: disable=too-many-positional-arguments
         self,
-        linear: Union[ndarray, spmatrix, List[float], Dict[Union[int, str], float]] = None,
-        quadratic: Union[
-            ndarray,
-            spmatrix,
-            List[List[float]],
-            Dict[Tuple[Union[int, str], Union[int, str]], float],
-        ] = None,
-        sense: Union[str, ConstraintSense] = "<=",
+        linear: ndarray | spmatrix | list[float] | dict[int | str, float] = None,
+        quadratic: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[int | str, int | str], float]
+        ) = None,
+        sense: str | ConstraintSense = "<=",
         rhs: float = 0.0,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> QuadraticConstraint:
-        """Adds a quadratic equality constraint to the optimization problem of the form:
+        """Adds a quadratic equality constraint to the optimization problem.
+
+        The constraint is of the form:
             ``(x * quadratic * x + linear * x) sense rhs``.
 
         Args:
@@ -877,6 +918,7 @@ class OptimizationProblem:
             name: The name of the constraint.
                 If it's ``None`` or empty ``""``, the default name, e.g., ``q0``, is used.
 
+
         Returns:
             The added constraint.
 
@@ -885,7 +927,9 @@ class OptimizationProblem:
         """
         if name:
             if name in self.quadratic_constraints_index:
-                raise OptimizationError(f"Quadratic constraint name already exists: {name}")
+                raise OptimizationError(
+                    f"Quadratic constraint name already exists: {name}"
+                )
             self._check_name(name, "Quadratic constraint")
         else:
             k = self.get_num_quadratic_constraints()
@@ -903,11 +947,12 @@ class OptimizationProblem:
         self.quadratic_constraints.append(constraint)
         return constraint
 
-    def get_quadratic_constraint(self, i: Union[int, str]) -> QuadraticConstraint:
+    def get_quadratic_constraint(self, i: int | str) -> QuadraticConstraint:
         """Returns a quadratic constraint for a given name or index.
 
         Args:
             i: the index or name of the constraint.
+
 
         Returns:
             The corresponding constraint.
@@ -930,30 +975,31 @@ class OptimizationProblem:
         return len(self._quadratic_constraints)
 
     @property
-    def higher_order_constraints(self) -> List[HigherOrderConstraint]:
+    def higher_order_constraints(self) -> list[HigherOrderConstraint]:
         """Returns the list of higher-order constraints."""
         return self._higher_order_constraints
 
     @property
-    def higher_order_constraints_index(self) -> Dict[str, int]:
+    def higher_order_constraints_index(self) -> dict[str, int]:
         """Returns the name -> index map for higher-order constraints."""
         return self._higher_order_constraints_index
 
     def higher_order_constraint(  # pylint: disable=too-many-positional-arguments
         self,
-        linear: Union[ndarray, spmatrix, List[float], Dict[Union[int, str], float]] = None,
-        quadratic: Union[
-            ndarray,
-            spmatrix,
-            List[List[float]],
-            Dict[Tuple[Union[int, str], Union[int, str]], float],
-        ] = None,
-        higher_order: Dict[int, CoeffLike] = None,
-        sense: Union[str, ConstraintSense] = "<=",
+        linear: ndarray | spmatrix | list[float] | dict[int | str, float] = None,
+        quadratic: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[int | str, int | str], float]
+        ) = None,
+        higher_order: dict[int, CoeffLike] | None = None,
+        sense: str | ConstraintSense = "<=",
         rhs: float = 0.0,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> HigherOrderConstraint:
-        """Adds a higher-order constraint:
+        """Adds a higher-order constraint.
+
         e.g. linear(x) + x^T Q x + sum_{k>=3}  sum_{|t|=k} C_k[t] * prod_{i in t} x[i] `sense` `rhs`
         where `sense` is one of the ConstraintSense values (e.g., LE, <=) and `rhs` is a float.
         Supports both a single higher-order term (order+coeffs) and multiple via
@@ -972,7 +1018,9 @@ class OptimizationProblem:
         # Handle constraint name
         if name:
             if name in self.higher_order_constraints_index:
-                raise OptimizationError(f"Higher-order constraint name already exists: {name}")
+                raise OptimizationError(
+                    f"Higher-order constraint name already exists: {name}"
+                )
             self._check_name(name, "Higher-order constraint")
         else:
             k = self.get_num_higher_order_constraints()
@@ -1003,11 +1051,12 @@ class OptimizationProblem:
         self.higher_order_constraints.append(con)
         return con
 
-    def get_higher_order_constraint(self, i: Union[int, str]) -> HigherOrderConstraint:
+    def get_higher_order_constraint(self, i: int | str) -> HigherOrderConstraint:
         """Returns a higher-order constraint for a given name or index.
 
         Args:
             i: the index or name of the constraint.
+
 
         Returns:
             The corresponding constraint.
@@ -1015,12 +1064,14 @@ class OptimizationProblem:
         if isinstance(i, int):
             return self._higher_order_constraints[i]
         else:
-            return self._higher_order_constraints[self._higher_order_constraints_index[i]]
+            return self._higher_order_constraints[
+                self._higher_order_constraints_index[i]
+            ]
 
     def get_num_higher_order_constraints(self) -> int:
         """Returns the number of higher-order constraints.
 
-            Returns:
+        Returns:
         The number of higher-order constraints.
         """
         return len(self._higher_order_constraints)
@@ -1030,8 +1081,8 @@ class OptimizationProblem:
         """Yields all higher-order constraints (for pretty printing)."""
         return iter(self._higher_order_constraints)
 
-    def remove_linear_constraint(self, i: Union[str, int]) -> None:
-        """Remove a linear constraint
+    def remove_linear_constraint(self, i: str | int) -> None:
+        """Remove a linear constraint.
 
         Args:
             i: an index or a name of a linear constraint
@@ -1047,8 +1098,8 @@ class OptimizationProblem:
             cst.name: j for j, cst in enumerate(self._linear_constraints)
         }
 
-    def remove_quadratic_constraint(self, i: Union[str, int]) -> None:
-        """Remove a quadratic constraint
+    def remove_quadratic_constraint(self, i: str | int) -> None:
+        """Remove a quadratic constraint.
 
         Args:
             i: an index or a name of a quadratic constraint
@@ -1064,13 +1115,14 @@ class OptimizationProblem:
             cst.name: j for j, cst in enumerate(self._quadratic_constraints)
         }
 
-    def remove_higher_order_constraint(self, i: Union[str, int]) -> None:
-        """Remove a higher-order constraint
+    def remove_higher_order_constraint(self, i: str | int) -> None:
+        """Remove a higher-order constraint.
+
         Args:
             i: an index or a name of a higher-order constraint
         Raises:
             KeyError: if name does not exist
-            IndexError: if index is out of range
+            IndexError: if index is out of range.
         """
         if isinstance(i, str):
             i = self._higher_order_constraints_index[i]
@@ -1091,17 +1143,16 @@ class OptimizationProblem:
     def minimize(
         self,
         constant: float = 0.0,
-        linear: Union[ndarray, spmatrix, List[float], Dict[Union[str, int], float]] = None,
-        quadratic: Union[
-            ndarray,
-            spmatrix,
-            List[List[float]],
-            Dict[Tuple[Union[int, str], Union[int, str]], float],
-        ] = None,
-        higher_order: Optional[Union[CoeffLike, Dict[int, CoeffLike]]] = None,
+        linear: ndarray | spmatrix | list[float] | dict[int | str, float] = None,
+        quadratic: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[int | str, int | str], float]
+        ) = None,
+        higher_order: CoeffLike | dict[int, CoeffLike] | None = None,
     ) -> None:
         """Sets an objective to be minimized."""
-
         self._objective = OptimizationObjective(
             self,
             constant=constant,
@@ -1114,17 +1165,16 @@ class OptimizationProblem:
     def maximize(
         self,
         constant: float = 0.0,
-        linear: Union[ndarray, spmatrix, List[float], Dict[Union[str, int], float]] = None,
-        quadratic: Union[
-            ndarray,
-            spmatrix,
-            List[List[float]],
-            Dict[Tuple[Union[int, str], Union[int, str]], float],
-        ] = None,
-        higher_order: Optional[Union[CoeffLike, Dict[int, CoeffLike]]] = None,
+        linear: ndarray | spmatrix | list[float] | dict[int | str, float] = None,
+        quadratic: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[int | str, int | str], float]
+        ) = None,
+        higher_order: CoeffLike | dict[int, CoeffLike] | None = None,
     ) -> None:
         """Sets an objective to be maximized."""
-
         self._objective = OptimizationObjective(
             self,
             constant=constant,
@@ -1135,7 +1185,7 @@ class OptimizationProblem:
         )
 
     def _copy_from(self, other: "OptimizationProblem", include_name: bool) -> None:
-        """Copy another OptimizationProblem to this updating OptimizationProblemElement
+        """Copy another OptimizationProblem to this updating OptimizationProblemElement.
 
         Note: this breaks the consistency of `other`. You cannot use `other` after the copy.
 
@@ -1156,8 +1206,8 @@ class OptimizationProblem:
 
     def substitute_variables(
         self,
-        constants: Optional[Dict[Union[str, int], float]] = None,
-        variables: Optional[Dict[Union[str, int], Tuple[Union[str, int], float]]] = None,
+        constants: dict[str | int, float] | None = None,
+        variables: dict[str | int, tuple[str | int, float]] | None = None,
     ) -> "OptimizationProblem":
         """Substitutes variables with constants or other variables.
 
@@ -1169,6 +1219,7 @@ class OptimizationProblem:
                 need to copy everything using name reference to make sure that indices are matched
                 correctly. The lower and upper bounds are updated accordingly.
                 e.g., ``{'x': ('y', 2)}`` means ``x`` is substituted with ``y * 2``
+
 
         Returns:
             An optimization problem by substituting variables with constants or other variables.
@@ -1187,12 +1238,13 @@ class OptimizationProblem:
 
         return substitute_variables(self, constants, variables)
 
-    def to_ising(self) -> Tuple[SparsePauliOp, float]:
+    def to_ising(self) -> tuple[SparsePauliOp, float]:
         """Return the Ising Hamiltonian of this problem.
 
         Variables are mapped to qubits in the same order, i.e.,
         i-th variable is mapped to i-th qubit.
         See https://github.com/Qiskit/qiskit-terra/issues/1148 for details.
+
 
         Returns:
             qubit_op: The qubit operator for the problem
@@ -1239,15 +1291,17 @@ class OptimizationProblem:
         self._copy_from(other, include_name=False)
 
     def get_feasibility_info(
-        self, x: Union[List[float], np.ndarray]
-    ) -> Tuple[bool, List[Variable], List[Constraint]]:
+        self, x: list[float] | np.ndarray
+    ) -> tuple[bool, list[Variable], list[Constraint]]:
         """Returns whether a solution is feasible or not along with the violations.
+
         Args:
             x: a solution value, such as returned in an optimizer result.
+
         Returns:
             feasible: Whether the solution provided is feasible or not.
-            List[Variable]: List of variables which are violated.
-            List[Constraint]: List of constraints which are violated.
+            list[Variable]: List of variables which are violated.
+            list[Constraint]: List of constraints which are violated.
 
         Raises:
             OptimizationError: If the input `x` is not same len as total vars
@@ -1268,35 +1322,42 @@ class OptimizationProblem:
 
         # check whether the input satisfy the constraints of the problem
         violated_constraints = []
-        for constraint in cast(List[Constraint], self._linear_constraints) + cast(
-            List[Constraint], self._quadratic_constraints
+        for constraint in cast(list[Constraint], self._linear_constraints) + cast(
+            list[Constraint], self._quadratic_constraints
         ):
             lhs = constraint.evaluate(x)
-            if constraint.sense == ConstraintSense.LE and lhs > constraint.rhs:
-                violated_constraints.append(constraint)
-            elif constraint.sense == ConstraintSense.GE and lhs < constraint.rhs:
-                violated_constraints.append(constraint)
-            elif constraint.sense == ConstraintSense.EQ and not isclose(lhs, constraint.rhs):
+            if (
+                (constraint.sense == ConstraintSense.LE and lhs > constraint.rhs)
+                or (constraint.sense == ConstraintSense.GE and lhs < constraint.rhs)
+                or (
+                    constraint.sense == ConstraintSense.EQ
+                    and not isclose(lhs, constraint.rhs)
+                )
+            ):
                 violated_constraints.append(constraint)
 
-        for constraint in cast(List[Constraint], self._higher_order_constraints):
+        for constraint in cast(list[Constraint], self._higher_order_constraints):
             lhs = constraint.evaluate(x)
-            if constraint.sense == ConstraintSense.LE and lhs > constraint.rhs:
-                violated_constraints.append(constraint)
-            elif constraint.sense == ConstraintSense.GE and lhs < constraint.rhs:
-                violated_constraints.append(constraint)
-            elif constraint.sense == ConstraintSense.EQ and not isclose(lhs, constraint.rhs):
+            if (
+                (constraint.sense == ConstraintSense.LE and lhs > constraint.rhs)
+                or (constraint.sense == ConstraintSense.GE and lhs < constraint.rhs)
+                or (
+                    constraint.sense == ConstraintSense.EQ
+                    and not isclose(lhs, constraint.rhs)
+                )
+            ):
                 violated_constraints.append(constraint)
 
         feasible = not violated_variables and not violated_constraints
 
         return feasible, violated_variables, violated_constraints
 
-    def is_feasible(self, x: Union[List[float], np.ndarray]) -> bool:
+    def is_feasible(self, x: list[float] | np.ndarray) -> bool:
         """Returns whether a solution is feasible or not.
 
         Args:
             x: a solution value, such as returned in an optimizer result.
+
 
         Returns:
             ``True`` if the solution provided is feasible otherwise ``False``.
@@ -1314,6 +1375,7 @@ class OptimizationProblem:
                 Note that some strings might exceed this value, for example, a long variable
                 name won't be wrapped. The default value is 80.
 
+
         Returns:
             A pretty printed string representing the problem.
 
@@ -1327,6 +1389,6 @@ class OptimizationProblem:
 
     @staticmethod
     def _check_name(name: str, name_type: str) -> None:
-        """Displays a warning message if a name string is not printable"""
+        """Displays a warning message if a name string is not printable."""
         if not name.isprintable():
-            warn(f"{name_type} name is not printable: {repr(name)}", stacklevel=2)
+            warn(f"{name_type} name is not printable: {name!r}", stacklevel=2)

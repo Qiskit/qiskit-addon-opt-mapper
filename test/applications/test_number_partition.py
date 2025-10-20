@@ -12,7 +12,6 @@
 
 """Test NumberPartition class"""
 import numpy as np
-
 from qiskit_addon_opt_mapper import OptimizationProblem
 from qiskit_addon_opt_mapper.applications.number_partition import NumberPartition
 from qiskit_addon_opt_mapper.problems import Constraint, OptimizationObjective, VarType

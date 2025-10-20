@@ -10,8 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""
-Classical Solvers (:mod:`qiskit_addon_opt_mapper.solvers`)
+"""Solvers module.
+
+Classical Solvers (:mod:`qiskit_addon_opt_mapper.solvers`).
 ===============================================================
 
 .. currentmodule:: qiskit_addon_opt_mapper.solvers
@@ -48,8 +49,8 @@ from .solver import OptimizationSolver, SolverResult, SolverResultStatus
 __all__ = [
     "CplexSolver",
     "GurobiSolver",
-    "ScipyMilpSolver",
     "OptimizationSolver",
+    "ScipyMilpSolver",
     "SolverResult",
     "SolverResultStatus",
 ]

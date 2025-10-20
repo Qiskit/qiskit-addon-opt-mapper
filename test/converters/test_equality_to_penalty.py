@@ -15,7 +15,6 @@
 import unittest
 
 import numpy as np
-
 from qiskit_addon_opt_mapper import OptimizationError, OptimizationProblem
 from qiskit_addon_opt_mapper.converters import (
     EqualityToPenalty,
@@ -98,14 +97,23 @@ class TestEqualityToPenaltyConverter(OptimizationTestCase):
             quadratic={("x", "y"): 2},
             higher_order={3: {("x", "y", "z"): 3}},
         )
-        op.linear_constraint(linear={"x": 1, "y": 1, "z": 1}, sense="EQ", rhs=2, name="xyz_eq")
+        op.linear_constraint(
+            linear={"x": 1, "y": 1, "z": 1}, sense="EQ", rhs=2, name="xyz_eq"
+        )
         lineq2penalty_auto = EqualityToPenalty()
         qubo_auto = lineq2penalty_auto.convert(op)
         self.assertEqual(lineq2penalty_auto.penalty, 7)
         self.assertEqual(qubo_auto.objective.linear.to_dict(), {0: -27, 1: -28, 2: -28})
         self.assertEqual(
             qubo_auto.objective.quadratic.to_dict(),
-            {(0, 0): 7.0, (0, 1): 16, (0, 2): 14.0, (1, 1): 7.0, (1, 2): 14.0, (2, 2): 7.0},
+            {
+                (0, 0): 7.0,
+                (0, 1): 16,
+                (0, 2): 14.0,
+                (1, 1): 7.0,
+                (1, 2): 14.0,
+                (2, 2): 7.0,
+            },
         )
         self.assertEqual(qubo_auto.objective.higher_order[3].to_dict(), {(0, 1, 2): 3})
 
@@ -116,7 +124,9 @@ class TestEqualityToPenaltyConverter(OptimizationTestCase):
         op.binary_var("y")
         op.binary_var("z")
         op.minimize(linear={"x": 1, "y": 2})
-        op.linear_constraint(linear={"x": 0.5, "y": 0.5, "z": 0.5}, sense="EQ", rhs=1, name="xyz")
+        op.linear_constraint(
+            linear={"x": 0.5, "y": 0.5, "z": 0.5}, sense="EQ", rhs=1, name="xyz"
+        )
         with self.assertLogs("qiskit_addon_opt_mapper", level="WARNING") as log:
             lineq2penalty = EqualityToPenalty()
             _ = lineq2penalty.convert(op)
@@ -135,7 +145,9 @@ class TestEqualityToPenaltyConverter(OptimizationTestCase):
         op.binary_var("y")
         op.binary_var("z")
         op.minimize(constant=3, linear={"x": 1}, quadratic={("x", "y"): 2})
-        op.linear_constraint(linear={"x": 1, "y": 1, "z": 1}, sense="EQ", rhs=2, name="xyz_eq")
+        op.linear_constraint(
+            linear={"x": 1, "y": 1, "z": 1}, sense="EQ", rhs=2, name="xyz_eq"
+        )
         # First, create a converter with no penalty
         lineq2penalty = EqualityToPenalty()
         self.assertIsNone(lineq2penalty.penalty)
@@ -158,7 +170,9 @@ class TestEqualityToPenaltyConverter(OptimizationTestCase):
         op.binary_var("y")
         op.binary_var("z")
         op.minimize(constant=3, linear={"x": 1}, quadratic={("x", "y"): 2})
-        op.linear_constraint(linear={"x": 1, "y": 1, "z": 1}, sense="EQ", rhs=2, name="xyz_eq")
+        op.linear_constraint(
+            linear={"x": 1, "y": 1, "z": 1}, sense="EQ", rhs=2, name="xyz_eq"
+        )
         # First, create a converter with no penalty
         lineq2penalty = EqualityToPenalty()
         self.assertIsNone(lineq2penalty.penalty)
@@ -190,9 +204,15 @@ class TestEqualityToPenaltyConverter(OptimizationTestCase):
         self.assertEqual(op2.get_num_higher_order_constraints(), 0)
         self.assertEqual(op2.objective.higher_order[3].to_dict(), {(0, 1, 2): -100})
         self.assertEqual(op2.objective.higher_order[4].to_dict(), {(0, 1, 2, 3): -100})
-        self.assertEqual(op2.objective.higher_order[6].to_dict(), {(0, 0, 1, 1, 2, 2): 10})
-        self.assertEqual(op2.objective.higher_order[7].to_dict(), {(0, 0, 1, 1, 2, 2, 3): 20})
-        self.assertEqual(op2.objective.higher_order[8].to_dict(), {(0, 0, 1, 1, 2, 2, 3, 3): 10})
+        self.assertEqual(
+            op2.objective.higher_order[6].to_dict(), {(0, 0, 1, 1, 2, 2): 10}
+        )
+        self.assertEqual(
+            op2.objective.higher_order[7].to_dict(), {(0, 0, 1, 1, 2, 2, 3): 20}
+        )
+        self.assertEqual(
+            op2.objective.higher_order[8].to_dict(), {(0, 0, 1, 1, 2, 2, 3, 3): 10}
+        )
         self.assertEqual(op2.objective.constant, 250)
 
 

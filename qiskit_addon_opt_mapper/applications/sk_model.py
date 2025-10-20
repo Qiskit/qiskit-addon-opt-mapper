@@ -12,8 +12,6 @@
 
 """An application class for the Sherrington Kirkpatrick (SK) model."""
 
-from typing import List, Optional, Union
-
 import networkx as nx
 import numpy as np
 import rustworkx as rx
@@ -40,9 +38,12 @@ class SKModel(OptimizationApplication):
     """
 
     def __init__(
-        self, num_sites: int, rng_or_seed: Optional[Union[np.random.Generator, int]] = None
+        self,
+        num_sites: int,
+        rng_or_seed: np.random.Generator | int | None = None,
     ):
-        """
+        """Init method.
+
         Args:
             num_sites: number of sites
             rng_or_seed: NumPy pseudo-random number generator or seed for
@@ -65,8 +66,11 @@ class SKModel(OptimizationApplication):
             self._graph.update_edge_by_index(edge_index, self._rng.choice([-1, 1]))
 
     def to_optimization_problem(self) -> OptimizationProblem:
-        """Convert an SK model problem instance into a
+        """Represent as an optimization problem.
+
+        Convert an SK model problem instance into a
         :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem`.
+
 
         Returns:
             The :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem` created
@@ -89,11 +93,12 @@ class SKModel(OptimizationApplication):
         mdl.minimize(objective)
         return from_docplex_mp(mdl)
 
-    def interpret(self, result: np.ndarray) -> List[int]:
+    def interpret(self, result: np.ndarray) -> list[int]:
         """Interpret a result as configuration of spins.
 
         Args:
             result : The calculated result of the problem.
+
 
         Returns:
             configuration of spins
@@ -104,6 +109,7 @@ class SKModel(OptimizationApplication):
     @property
     def graph(self) -> rx.PyGraph:
         """Getter of the graph representation.
+
         Returns:
             A graph for a problem.
         """
@@ -111,7 +117,7 @@ class SKModel(OptimizationApplication):
 
     @property
     def nx_graph(self) -> nx.Graph:
-        """Getter of the graph in Networkx format
+        """Getter of the graph in Networkx format.
 
         Returns:
             A graph for a problem
@@ -134,6 +140,7 @@ class SKModel(OptimizationApplication):
     @property
     def num_sites(self) -> int:
         """Getter of the number of sites.
+
         Returns:
             Number of sites.
         """

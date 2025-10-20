@@ -10,10 +10,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Variable interface"""
+"""Variable interface."""
 
 from enum import Enum
-from typing import Any, Tuple, Union
+from typing import Any
 
 from ..exceptions import OptimizationError
 from ..infinity import INFINITY
@@ -38,8 +38,8 @@ class Variable(OptimizationProblemElement):
         self,
         optimization_problem: Any,
         name: str,
-        lowerbound: Union[float, int] = 0,
-        upperbound: Union[float, int] = INFINITY,
+        lowerbound: float | int = 0,
+        upperbound: float | int = INFINITY,
         vartype: VarType = VarType.CONTINUOUS,
     ) -> None:
         """Creates a new Variable.
@@ -77,7 +77,7 @@ class Variable(OptimizationProblemElement):
         return self._name
 
     @property
-    def lowerbound(self) -> Union[float, int]:
+    def lowerbound(self) -> float | int:
         """Returns the lowerbound of the variable.
 
         Returns:
@@ -86,7 +86,7 @@ class Variable(OptimizationProblemElement):
         return self._lowerbound
 
     @lowerbound.setter
-    def lowerbound(self, lowerbound: Union[float, int]) -> None:
+    def lowerbound(self, lowerbound: float | int) -> None:
         """Sets the lowerbound of the variable.
 
         Args:
@@ -100,7 +100,7 @@ class Variable(OptimizationProblemElement):
         self._lowerbound = lowerbound
 
     @property
-    def upperbound(self) -> Union[float, int]:
+    def upperbound(self) -> float | int:
         """Returns the upperbound of the variable.
 
         Returns:
@@ -109,7 +109,7 @@ class Variable(OptimizationProblemElement):
         return self._upperbound
 
     @upperbound.setter
-    def upperbound(self, upperbound: Union[float, int]) -> None:
+    def upperbound(self, upperbound: float | int) -> None:
         """Sets the upperbound of the variable.
 
         Args:
@@ -141,7 +141,7 @@ class Variable(OptimizationProblemElement):
         """
         self._vartype = vartype
 
-    def as_tuple(self) -> Tuple[str, Union[float, int], Union[float, int], VarType]:
+    def as_tuple(self) -> tuple[str, float | int, float | int, VarType]:
         """Returns a tuple corresponding to this variable.
 
         Returns:
@@ -151,9 +151,11 @@ class Variable(OptimizationProblemElement):
         return self.name, self.lowerbound, self.upperbound, self.vartype
 
     def __repr__(self):
-        return f"<{self.__class__.__name__}: {str(self)}>"
+        """Repr. for Variable."""
+        return f"<{self.__class__.__name__}: {self!s}>"
 
     def __str__(self):
+        """Str. for Variable."""
         if self._vartype == VarType.BINARY:
             return f"{self.name} ({self._vartype.name.lower()})"
         lowerbound = "" if self._lowerbound == -INFINITY else f"{self._lowerbound} <= "

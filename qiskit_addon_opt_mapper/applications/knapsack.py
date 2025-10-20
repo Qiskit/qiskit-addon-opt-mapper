@@ -10,8 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""An application class for the Knapsack problem"""
-from typing import List
+"""An application class for the Knapsack problem."""
 
 import numpy as np
 from docplex.mp.model import Model
@@ -30,8 +29,9 @@ class Knapsack(OptimizationApplication):
         https://en.wikipedia.org/wiki/Knapsack_problem
     """
 
-    def __init__(self, values: List[int], weights: List[int], max_weight: int) -> None:
-        """
+    def __init__(self, values: list[int], weights: list[int], max_weight: int) -> None:
+        """Init method.
+
         Args:
             values: A list of the values of items
             weights: A list of the weights of items
@@ -42,8 +42,11 @@ class Knapsack(OptimizationApplication):
         self._max_weight = max_weight
 
     def to_optimization_problem(self) -> OptimizationProblem:
-        """Convert a knapsack problem instance into a
+        """Represent as an optimization problem.
+
+        Convert a knapsack problem instance into a
         :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem`
+
 
         Returns:
             The :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem` created
@@ -52,15 +55,18 @@ class Knapsack(OptimizationApplication):
         mdl = Model(name="Knapsack")
         x = {i: mdl.binary_var(name=f"x_{i}") for i in range(len(self._values))}
         mdl.maximize(mdl.sum(self._values[i] * x[i] for i in x))
-        mdl.add_constraint(mdl.sum(self._weights[i] * x[i] for i in x) <= self._max_weight)
+        mdl.add_constraint(
+            mdl.sum(self._weights[i] * x[i] for i in x) <= self._max_weight
+        )
         op = from_docplex_mp(mdl)
         return op
 
-    def interpret(self, result: np.ndarray) -> List[int]:
-        """Interpret a result as item indices
+    def interpret(self, result: np.ndarray) -> list[int]:
+        """Interpret a result as item indices.
 
         Args:
             result : The calculated result of the problem
+
 
         Returns:
             A list of items whose corresponding variable is 1
@@ -70,7 +76,7 @@ class Knapsack(OptimizationApplication):
 
     @property
     def max_weight(self) -> int:
-        """Getter of max_weight
+        """Getter of max_weight.
 
         Returns:
             The maximal weight for the knapsack problem
@@ -79,7 +85,7 @@ class Knapsack(OptimizationApplication):
 
     @max_weight.setter
     def max_weight(self, max_weight: int) -> None:
-        """Setter of max_weight
+        """Setter of max_weight.
 
         Args:
             max_weight: The maximal weight for the knapsack problem

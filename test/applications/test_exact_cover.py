@@ -12,7 +12,6 @@
 
 """Test ExactCover class"""
 import numpy as np
-
 from qiskit_addon_opt_mapper import OptimizationProblem
 from qiskit_addon_opt_mapper.applications.exact_cover import ExactCover
 from qiskit_addon_opt_mapper.problems import Constraint, OptimizationObjective, VarType
@@ -57,7 +56,11 @@ class TestExactCover(OptimizationTestCase):
             self.assertEqual(lin.rhs, 1)
             self.assertEqual(
                 lin.linear.to_dict(),
-                {j: 1 for j, subset in enumerate(self.list_of_subsets) if i + 1 in subset},
+                {
+                    j: 1
+                    for j, subset in enumerate(self.list_of_subsets)
+                    if i + 1 in subset
+                },
             )
 
     def test_interpret(self):

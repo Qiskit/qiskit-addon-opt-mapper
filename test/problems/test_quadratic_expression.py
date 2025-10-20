@@ -14,10 +14,9 @@
 
 import numpy as np
 import pytest
-from scipy.sparse import csc_matrix, csr_matrix, dok_matrix
-
 from qiskit_addon_opt_mapper.exceptions import OptimizationError
 from qiskit_addon_opt_mapper.problems import OptimizationProblem, QuadraticExpression
+from scipy.sparse import csc_matrix, csr_matrix, dok_matrix
 
 
 def MAKE_INSTANCE(coeffs, nvars=4):

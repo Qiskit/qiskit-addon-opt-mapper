@@ -107,7 +107,9 @@ class TestPrettyprint(OptimizationTestCase):
             q_p.binary_var("x")
             q_p.integer_var(-1, 5, "y")
             q_p.continuous_var(-1, 5, "z")
-            q_p.minimize(1, {"x": 1, "y": -1, "z": 10}, {("x", "x"): 0.5, ("y", "z"): -1})
+            q_p.minimize(
+                1, {"x": 1, "y": -1, "z": 10}, {("x", "x"): 0.5, ("y", "z"): -1}
+            )
             q_p.linear_constraint({"x": 1, "y": 2}, "==", 1, "lin_eq")
             q_p.linear_constraint({"x": 1, "y": 2}, "<=", 1, "lin_leq")
             q_p.linear_constraint({"x": 1, "y": 2}, ">=", 1, "lin_geq")
@@ -174,7 +176,9 @@ class TestPrettyprint(OptimizationTestCase):
             q_p.binary_var_list(10)
             q_p.integer_var_list(3)
             q_p.continuous_var_list(3)
-            q_p.minimize(constant=3, linear={"x": 2, "y": 3}, quadratic={("u", "x"): -1})
+            q_p.minimize(
+                constant=3, linear={"x": 2, "y": 3}, quadratic={("u", "x"): -1}
+            )
             q_p.linear_constraint({"x": 1, "y": -2}, ">=", 2, name="lin_GE")
             q_p.linear_constraint({"x": 2, "y": -1}, "==", 1, name="lin_EQ")
             q_p.quadratic_constraint(
@@ -283,7 +287,9 @@ class TestPrettyprint(OptimizationTestCase):
             q_p.binary_var_list(10, "u")
             q_p.integer_var(-1, 5, "y")
             q_p.continuous_var(-1, 5, "z")
-            q_p.minimize(1, {"x": 1, "y": -1, "z": 10}, {("x", "x"): 0.5, ("y", "z"): -1})
+            q_p.minimize(
+                1, {"x": 1, "y": -1, "z": 10}, {("x", "x"): 0.5, ("y", "z"): -1}
+            )
             q_p.linear_constraint({"x": 1, "y": 2}, "==", 1, "lin_eq")
             q_p.linear_constraint({"x": 1, "y": 2}, "<=", 1, "lin_leq")
             q_p.linear_constraint({"x": 1, "y": 2}, ">=", 1, "lin_geq")
@@ -363,7 +369,9 @@ class TestPrettyprint(OptimizationTestCase):
             q_p.binary_var_list(10, "u")
             q_p.integer_var(-1, 5, "y")
             q_p.continuous_var(-1, 5, "z")
-            q_p.minimize(1, {"x": 1, "y": -1, "z": 10}, {("x", "x"): 0.5, ("y", "z"): -1})
+            q_p.minimize(
+                1, {"x": 1, "y": -1, "z": 10}, {("x", "x"): 0.5, ("y", "z"): -1}
+            )
             q_p.linear_constraint({"x": 1, "y": 2}, "==", 1, "lin_eq")
             q_p.linear_constraint({"x": 1, "y": 2}, "<=", 1, "lin_leq")
             q_p.linear_constraint({"x": 1, "y": 2}, ">=", 1, "lin_geq")
@@ -438,7 +446,9 @@ class TestPrettyprint(OptimizationTestCase):
             q_p.binary_var_list(10, "u")
             q_p.integer_var(-1, 5, "y")
             q_p.continuous_var(-1, 5, "z")
-            q_p.minimize(1, {"x": 1, "y": -1, "z": 10}, {("x", "x"): 0.5, ("y", "z"): -1})
+            q_p.minimize(
+                1, {"x": 1, "y": -1, "z": 10}, {("x", "x"): 0.5, ("y", "z"): -1}
+            )
             q_p.linear_constraint({"x": 1, "y": 2}, "==", 1, "lin_eq")
             q_p.linear_constraint({"x": 1, "y": 2}, "<=", 1, "lin_leq")
             q_p.linear_constraint({"x": 1, "y": 2}, ">=", 1, "lin_geq")
@@ -586,7 +596,9 @@ class TestExpr2Str(OptimizationTestCase):
         q_p = OptimizationProblem()
         q_p.binary_var_list(3)
         q_p.linear_constraint({0: 1, 1: 2, 2: 3}, "==", 0)
-        self.assertEqual(expr2str(linear=q_p.get_linear_constraint(0).linear), "x0 + 2*x1 + 3*x2")
+        self.assertEqual(
+            expr2str(linear=q_p.get_linear_constraint(0).linear), "x0 + 2*x1 + 3*x2"
+        )
         self.assertEqual(
             expr2str(constant=-1, linear=q_p.get_linear_constraint(0).linear),
             "x0 + 2*x1 + 3*x2 - 1",
@@ -596,7 +608,9 @@ class TestExpr2Str(OptimizationTestCase):
         """Test quadratic expression"""
         q_p = OptimizationProblem()
         q_p.binary_var_list(3)
-        q_p.quadratic_constraint(quadratic={(0, 0): 1, (1, 2): 2, (2, 0): -3}, sense="==", rhs=0)
+        q_p.quadratic_constraint(
+            quadratic={(0, 0): 1, (1, 2): 2, (2, 0): -3}, sense="==", rhs=0
+        )
         self.assertEqual(
             expr2str(quadratic=q_p.get_quadratic_constraint(0).quadratic),
             "x0^2 - 3*x0*x2 + 2*x1*x2",
@@ -614,14 +628,17 @@ class TestExpr2Str(OptimizationTestCase):
         q_p.binary_var_list(3, name="long_name")
         q_p.linear_constraint({0: 1, 1: 2, 2: 3}, "==", 0)
         self.assertEqual(
-            expr2str(linear=q_p.get_linear_constraint(0).linear, truncate=10), "long_name0..."
+            expr2str(linear=q_p.get_linear_constraint(0).linear, truncate=10),
+            "long_name0...",
         )
         self.assertEqual(
             expr2str(linear=q_p.get_linear_constraint(0).linear, truncate=20),
             "long_name0 + 2*long_...",
         )
 
-        q_p.quadratic_constraint(quadratic={(0, 0): 1, (1, 2): 2, (2, 0): -3}, sense="==", rhs=0)
+        q_p.quadratic_constraint(
+            quadratic={(0, 0): 1, (1, 2): 2, (2, 0): -3}, sense="==", rhs=0
+        )
         self.assertEqual(
             expr2str(quadratic=q_p.get_quadratic_constraint(0).quadratic, truncate=20),
             "long_name0^2 - 3*lon...",
@@ -633,22 +650,28 @@ class TestExpr2Str(OptimizationTestCase):
         q_p.binary_var_list(3, name="x")
         q_p.linear_constraint({0: 1, 1: 2, 2: 3}, "==", 0)
         self.assertEqual(
-            expr2str(linear=q_p.get_linear_constraint(0).linear, wrap=0), "x0 + 2*x1 + 3*x2"
+            expr2str(linear=q_p.get_linear_constraint(0).linear, wrap=0),
+            "x0 + 2*x1 + 3*x2",
         )
         self.assertEqual(
-            expr2str(linear=q_p.get_linear_constraint(0).linear, wrap=80), "x0 + 2*x1 + 3*x2"
+            expr2str(linear=q_p.get_linear_constraint(0).linear, wrap=80),
+            "x0 + 2*x1 + 3*x2",
         )
         self.assertEqual(
-            expr2str(linear=q_p.get_linear_constraint(0).linear, wrap=8), "x0\n+ 2*x1\n+ 3*x2"
+            expr2str(linear=q_p.get_linear_constraint(0).linear, wrap=8),
+            "x0\n+ 2*x1\n+ 3*x2",
         )
         self.assertEqual(
-            expr2str(linear=q_p.get_linear_constraint(0).linear, wrap=9), "x0 + 2*x1\n+ 3*x2"
+            expr2str(linear=q_p.get_linear_constraint(0).linear, wrap=9),
+            "x0 + 2*x1\n+ 3*x2",
         )
         self.assertEqual(
             expr2str(linear=q_p.get_linear_constraint(0).linear, wrap=5, indent=2),
             "  x0\n  + 2*x1\n  + 3*x2",
         )
-        q_p.quadratic_constraint(quadratic={(0, 0): 1, (1, 2): 2, (2, 0): -3}, sense="==", rhs=0)
+        q_p.quadratic_constraint(
+            quadratic={(0, 0): 1, (1, 2): 2, (2, 0): -3}, sense="==", rhs=0
+        )
         self.assertEqual(
             expr2str(quadratic=q_p.get_quadratic_constraint(0).quadratic),
             "x0^2 - 3*x0*x2 + 2*x1*x2",
@@ -666,6 +689,8 @@ class TestExpr2Str(OptimizationTestCase):
             "x0^2 - 3*x0*x2\n+ 2*x1*x2",
         )
         self.assertEqual(
-            expr2str(quadratic=q_p.get_quadratic_constraint(0).quadratic, wrap=10, indent=2),
+            expr2str(
+                quadratic=q_p.get_quadratic_constraint(0).quadratic, wrap=10, indent=2
+            ),
             "  x0^2\n  - 3*x0*x2\n  + 2*x1*x2",
         )

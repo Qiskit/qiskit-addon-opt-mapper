@@ -84,6 +84,7 @@ class ScipyMilpSolver(OptimizationSolver):
         Args:
             problem: The optimization problem to check compatibility.
 
+
         Returns:
             An empty string (if compatible) or a string describing the incompatibility.
         """
@@ -108,8 +109,12 @@ class ScipyMilpSolver(OptimizationSolver):
             else:
                 integrality.append(1)
 
-        lower_bounds = [_conv_inf(variable.lowerbound) for variable in problem.variables]
-        upper_bounds = [_conv_inf(variable.upperbound) for variable in problem.variables]
+        lower_bounds = [
+            _conv_inf(variable.lowerbound) for variable in problem.variables
+        ]
+        upper_bounds = [
+            _conv_inf(variable.upperbound) for variable in problem.variables
+        ]
         bounds = Bounds(lb=lower_bounds, ub=upper_bounds)
 
         lower_bounds = []
@@ -144,6 +149,7 @@ class ScipyMilpSolver(OptimizationSolver):
         Args:
             problem: The problem to be solved.
 
+
         Returns:
             The result of the optimizer applied to the problem.
 
@@ -164,7 +170,10 @@ class ScipyMilpSolver(OptimizationSolver):
         )
 
         if raw_result.x is None:
-            warn("scipy.milp cannot solve the model. See `raw_results` for details.", stacklevel=2)
+            warn(
+                "scipy.milp cannot solve the model. See `raw_results` for details.",
+                stacklevel=2,
+            )
             x = [0.0] * problem.get_num_vars()
             status = SolverResultStatus.FAILURE
         else:

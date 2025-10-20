@@ -34,7 +34,11 @@ class TestGurobiTranslator(OptimizationTestCase):
         q_p.binary_var(name="x")
         q_p.integer_var(name="y", lowerbound=-2, upperbound=4)
         q_p.continuous_var(name="z", lowerbound=-1.5, upperbound=3.2)
-        q_p.minimize(constant=1, linear={"x": 1, "y": 2}, quadratic={("x", "y"): -1, ("z", "z"): 2})
+        q_p.minimize(
+            constant=1,
+            linear={"x": 1, "y": 2},
+            quadratic={("x", "y"): -1, ("z", "z"): 2},
+        )
         q_p.linear_constraint({"x": 2, "z": -1}, "==", 1)
         q_p.quadratic_constraint({"x": 2, "z": -1}, {("y", "z"): 3}, "==", 1)
         q_p2 = from_gurobipy(to_gurobipy(q_p))
@@ -93,7 +97,9 @@ class TestGurobiTranslator(OptimizationTestCase):
         self.assertListEqual(var_names, ["C0", "C1", "C2"])
         senses = [Constraint.Sense.EQ, Constraint.Sense.GE, Constraint.Sense.LE]
         for i, c in enumerate(q_p.linear_constraints):
-            self.assertDictEqual(c.linear.to_dict(use_name=True), {"C0": 1, "C1": 1, "C2": -1})
+            self.assertDictEqual(
+                c.linear.to_dict(use_name=True), {"C0": 1, "C1": 1, "C2": -1}
+            )
             self.assertEqual(c.rhs, 0)
             self.assertEqual(c.sense, senses[i])
         for i, c in enumerate(q_p.quadratic_constraints):

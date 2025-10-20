@@ -12,7 +12,6 @@
 
 """An application class for the vertex cover."""
 
-from typing import Dict, List, Optional
 
 import numpy as np
 import rustworkx as rx
@@ -32,8 +31,11 @@ class VertexCover(GraphOptimizationApplication):
     """
 
     def to_optimization_problem(self) -> OptimizationProblem:
-        """Convert a vertex cover instance into a
+        """Represent as an optimization problem.
+
+        Convert a vertex cover instance into a
         :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem`
+
 
         Returns:
             The :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem` created
@@ -49,11 +51,12 @@ class VertexCover(GraphOptimizationApplication):
         op = from_docplex_mp(mdl)
         return op
 
-    def interpret(self, result: np.ndarray) -> List[int]:
-        """Interpret a result as a list of node indices
+    def interpret(self, result: np.ndarray) -> list[int]:
+        """Interpret a result as a list of node indices.
 
         Args:
             result : The calculated result of the problem
+
 
         Returns:
             A list of node indices whose corresponding variable is 1
@@ -68,9 +71,9 @@ class VertexCover(GraphOptimizationApplication):
     def _draw_result(
         self,
         result: np.ndarray,
-        pos: Optional[Dict[int, np.ndarray]] = None,
+        pos: dict[int, np.ndarray] | None = None,
     ) -> None:
-        """Draw the result with colors
+        """Draw the result with colors.
 
         Args:
             result : The calculated result for the problem
@@ -81,7 +84,7 @@ class VertexCover(GraphOptimizationApplication):
             self._graph, node_color=self._node_colors(x), pos=pos, with_labels=True
         )
 
-    def _node_colors(self, x: np.ndarray) -> List[str]:
+    def _node_colors(self, x: np.ndarray) -> list[str]:
         # Return a list of strings for draw.
         # Color a node with red when the corresponding variable is 1.
         # Otherwise color it with dark gray.

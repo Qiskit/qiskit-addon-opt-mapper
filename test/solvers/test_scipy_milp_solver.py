@@ -16,7 +16,6 @@ import unittest
 
 import numpy as np
 from ddt import ddt
-
 from qiskit_addon_opt_mapper import INFINITY
 from qiskit_addon_opt_mapper.exceptions import OptimizationError
 from qiskit_addon_opt_mapper.problems import OptimizationProblem

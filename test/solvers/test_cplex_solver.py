@@ -15,11 +15,10 @@
 import unittest
 
 import numpy as np
+import qiskit_addon_opt_mapper.optionals as _optionals
 from ddt import data, ddt
 from docplex.mp.model import Model
 from docplex.mp.model_reader import ModelReader
-
-import qiskit_addon_opt_mapper.optionals as _optionals
 from qiskit_addon_opt_mapper.solvers import CplexSolver, SolverResultStatus
 from qiskit_addon_opt_mapper.translators import from_docplex_mp
 
@@ -38,7 +37,9 @@ class TestCplexSolver(OptimizationTestCase):
     @unittest.skipIf(not _optionals.HAS_CPLEX, "CPLEX not available.")
     def test_cplex_optimizer(self, config):
         """CPLEX Optimizer Test"""
-        cplex_optimizer = CplexSolver(disp=False, cplex_parameters={"threads": 1, "randomseed": 1})
+        cplex_optimizer = CplexSolver(
+            disp=False, cplex_parameters={"threads": 1, "randomseed": 1}
+        )
         # unpack configuration
         filename, x, fval = config
 

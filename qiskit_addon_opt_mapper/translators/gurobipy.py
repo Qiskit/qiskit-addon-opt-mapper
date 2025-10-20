@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Translator between a gurobipy model and an optimization problem"""
+"""Translator between a gurobipy model and an optimization problem."""
 
 from typing import cast
 
@@ -29,21 +29,24 @@ if _optionals.HAS_GUROBIPY:
 else:
 
     class Model:  # type: ignore
-        """Empty Model class
+        """Empty Model class.
+
         Replacement if gurobipy.Model is not present.
         """
 
         pass
 
     class LinExpr:  # type: ignore
-        """Empty LinExpr class
+        """Empty LinExpr class.
+
         Replacement if gurobipy.LinExpr is not present.
         """
 
         pass
 
     class QuadExpr:  # type: ignore
-        """Empty QuadExpr class
+        """Empty QuadExpr class.
+
         Replacement if gurobipy.QuadExpr is not present.
         """
 
@@ -278,11 +281,17 @@ def from_gurobipy(model: Model) -> OptimizationProblem:
             quadratic[var1, var2] = coeff
 
         if sense == gp.GRB.EQUAL:
-            optimization_problem.quadratic_constraint(linear, quadratic, "==", rhs, name)
+            optimization_problem.quadratic_constraint(
+                linear, quadratic, "==", rhs, name
+            )
         elif sense == gp.GRB.GREATER_EQUAL:
-            optimization_problem.quadratic_constraint(linear, quadratic, ">=", rhs, name)
+            optimization_problem.quadratic_constraint(
+                linear, quadratic, ">=", rhs, name
+            )
         elif sense == gp.GRB.LESS_EQUAL:
-            optimization_problem.quadratic_constraint(linear, quadratic, "<=", rhs, name)
+            optimization_problem.quadratic_constraint(
+                linear, quadratic, "<=", rhs, name
+            )
         else:
             raise OptimizationError(f"Unsupported constraint sense: {q_constraint}")
 

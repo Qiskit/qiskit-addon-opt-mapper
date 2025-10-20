@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 """Higher-order Constraint with linear, quadratic, and higher-order terms."""
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from numpy import ndarray
 from scipy.sparse import spmatrix
@@ -21,11 +21,12 @@ from .higher_order_expression import HigherOrderExpression
 from .linear_expression import LinearExpression
 from .quadratic_expression import QuadraticExpression
 
-CoeffLike = Union[ndarray, Dict[Tuple[Union[int, str]], float], List]
+CoeffLike = ndarray | dict[tuple[str | int], float] | list
 
 
 class HigherOrderConstraint(Constraint):
-    """Constraint of the form:
+    """Constraint in higher order form.
+
     e.g. linear(x) + x^T Q x + sum_{k>=3}  sum_{|t|=k} C_k[t] * prod_{i in t} x[i]  `sense` `rhs`
     where `sense` is one of the ConstraintSense values (e.g., LE, <=) and `rhs` is a float.
 
@@ -41,24 +42,20 @@ class HigherOrderConstraint(Constraint):
         optimization_problem: Any,
         name: str,
         # linear/quadratic
-        linear: Optional[
-            Union[ndarray, spmatrix, List[float], Dict[Union[str, int], float]]
-        ] = None,
-        quadratic: Optional[
-            Union[
-                ndarray,
-                spmatrix,
-                List[List[float]],
-                Dict[Tuple[Union[int, str], Union[int, str]], float],
-            ]
-        ] = None,
+        linear: ndarray | spmatrix | list[float] | dict[str | int, float] | None = None,
+        quadratic: (
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[int | str, int | str], float]
+            | None
+        ) = None,
         # higher-order
-        higher_order: Optional[Dict[int, CoeffLike]] = None,
+        higher_order: dict[int, CoeffLike] | None = None,
         sense: ConstraintSense = ConstraintSense.LE,
         rhs: float = 0.0,
     ) -> None:
-        """Construct a higher-order constraint with linear, quadratic, and optional higher-order
-        parts.
+        """Construct a higher-order constraint with linear, quadratic, and optional higher-order parts.
 
         Args:
             optimization_problem: The optimization problem this constraint belongs to.
@@ -72,14 +69,16 @@ class HigherOrderConstraint(Constraint):
         """
         super().__init__(optimization_problem, name, sense, rhs)
 
-        self._linear = LinearExpression(optimization_problem, {} if linear is None else linear)
+        self._linear = LinearExpression(
+            optimization_problem, {} if linear is None else linear
+        )
         self._quadratic = QuadraticExpression(
             optimization_problem, {} if quadratic is None else quadratic
         )
 
         # Store multiple higher-order expressions keyed by order (k>=3)
         if higher_order is None:
-            self._higher_order: Dict[int, HigherOrderExpression] = {}
+            self._higher_order: dict[int, HigherOrderExpression] = {}
         else:
             self.higher_order = higher_order
 
@@ -121,7 +120,7 @@ class HigherOrderConstraint(Constraint):
         self._quadratic = QuadraticExpression(self.optimization_problem, quadratic)
 
     @property
-    def higher_order(self) -> Dict[int, HigherOrderExpression]:
+    def higher_order(self) -> dict[int, HigherOrderExpression]:
         """Return a shallow copy of {order: HigherOrderExpression}.
 
         Returns:
@@ -132,7 +131,7 @@ class HigherOrderConstraint(Constraint):
     @higher_order.setter
     def higher_order(
         self,
-        higher_order: Union[Dict[int, CoeffLike]],
+        higher_order: dict[int, CoeffLike],
     ) -> None:
         """Sets the higher-order expressions.
 
@@ -142,13 +141,16 @@ class HigherOrderConstraint(Constraint):
         self._higher_order = {}
 
         for k, coeffs in higher_order.items():
-            self._higher_order[k] = HigherOrderExpression(self.optimization_problem, coeffs)
+            self._higher_order[k] = HigherOrderExpression(
+                self.optimization_problem, coeffs
+            )
 
-    def evaluate(self, x: Union[ndarray, List, Dict[Union[int, str], float]]) -> float:
+    def evaluate(self, x: ndarray | list | dict[str | int, float]) -> float:
         """Evaluate the left-hand-side of the constraint.
 
         Args:
             x: The values of the variables to be evaluated.
+
         Returns:
             The left-hand-side of the constraint given the variable values.
         """
@@ -158,6 +160,7 @@ class HigherOrderConstraint(Constraint):
         return val
 
     def __repr__(self):
+        """Repr for higher order constraint."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import DEFAULT_TRUNCATE, expr2str
 
@@ -170,6 +173,7 @@ class HigherOrderConstraint(Constraint):
         return f"<{self.__class__.__name__}: {lhs} {self.sense.label} {self.rhs} '{self.name}'>"
 
     def __str__(self):
+        """Str for higher order constraint."""
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import expr2str
 

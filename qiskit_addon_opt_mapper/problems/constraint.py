@@ -14,7 +14,7 @@
 
 from abc import abstractmethod
 from enum import Enum
-from typing import Any, Dict, List, Union
+from typing import Any
 
 from numpy import ndarray
 
@@ -31,11 +31,12 @@ class ConstraintSense(Enum):
     EQ = 2
 
     @staticmethod
-    def convert(sense: Union[str, "ConstraintSense"]) -> "ConstraintSense":
-        """Convert a string into a corresponding sense of constraints
+    def convert(sense: str | "ConstraintSense") -> "ConstraintSense":
+        """Convert a string into a corresponding sense of constraints.
 
         Args:
             sense: A string or sense of constraints
+
 
         Returns:
             The sense of constraints
@@ -70,7 +71,7 @@ class ConstraintSense(Enum):
 
     @property
     def label(self) -> str:
-        """Label of the constraint sense
+        """Label of the constraint sense.
 
         Returns:
             The label of the constraint sense ('<=', '>=', or '==')
@@ -150,11 +151,12 @@ class Constraint(OptimizationProblemElement):
         self._rhs = rhs
 
     @abstractmethod
-    def evaluate(self, x: Union[ndarray, List, Dict[Union[int, str], float]]) -> float:
+    def evaluate(self, x: ndarray | list | dict[str | int, float]) -> float:
         """Evaluate left-hand-side of constraint for given values of variables.
 
         Args:
             x: The values to be used for the variables.
+
 
         Returns:
             The left-hand-side of the constraint.

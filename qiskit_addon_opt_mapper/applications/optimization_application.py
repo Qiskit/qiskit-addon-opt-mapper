@@ -13,7 +13,6 @@
 """An abstract class for optimization application classes."""
 from abc import ABC, abstractmethod
 from collections import OrderedDict
-from typing import Dict, Union
 
 import numpy as np
 from qiskit.quantum_info import Statevector
@@ -23,20 +22,22 @@ from qiskit_addon_opt_mapper.problems.optimization_problem import OptimizationPr
 
 
 class OptimizationApplication(ABC):
-    """
-    An abstract class for optimization applications.
-    """
+    """An abstract class for optimization applications."""
 
     @abstractmethod
     def to_optimization_problem(self) -> OptimizationProblem:
-        """Convert a problem instance into a
+        """Represent as an optimization problem.
+
+        Convert a problem instance into a
         :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem`
         """
         pass
 
     @abstractmethod
     def interpret(self, result: np.ndarray):
-        """Convert the calculation result of the problem
+        """Interpret the problem.
+
+        Convert the calculation result of the problem
         (:class:`~qiskit_addon_opt_mapper.solvers.SolverResult` or a binary array using
         np.ndarray) to the answer of the problem in an easy-to-understand format.
 
@@ -47,7 +48,6 @@ class OptimizationApplication(ABC):
 
     def _result_to_x(self, result: np.ndarray) -> np.ndarray:
         """Hook to support different result formats in the future."""
-
         if isinstance(result, np.ndarray):
             x = result
         else:
@@ -59,12 +59,13 @@ class OptimizationApplication(ABC):
 
     @staticmethod
     def sample_most_likely(
-        state_vector: Union[QuasiDistribution, Statevector, np.ndarray, Dict],
+        state_vector: QuasiDistribution | Statevector | np.ndarray | dict,
     ) -> np.ndarray:
         """Compute the most likely binary string from state vector.
 
         Args:
             state_vector: state vector or counts or quasi-probabilities.
+
 
         Returns:
             binary string as numpy.ndarray of ints.

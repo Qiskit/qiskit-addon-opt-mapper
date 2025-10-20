@@ -15,7 +15,8 @@
 import copy
 import logging
 from collections import defaultdict
-from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
+from collections.abc import Mapping
+from typing import cast
 
 import numpy as np
 
@@ -28,15 +29,16 @@ from .optimization_problem_converter import OptimizationProblemConverter
 
 logger = logging.getLogger(__name__)
 
-Monomial = Tuple[str, ...]  # ()=const, ('x',)=linear, ('x','y')=quadratic, etc.
-Poly = Dict[Monomial, float]
+Monomial = tuple[str, ...]  # ()=const, ('x',)=linear, ('x','y')=quadratic, etc.
+Poly = dict[Monomial, float]
 
 
 class EqualityToPenalty(OptimizationProblemConverter):
     """Convert a problem with only equality constraints to unconstrained with penalty terms."""
 
-    def __init__(self, penalty: Optional[float] = None) -> None:
-        """
+    def __init__(self, penalty: float | None = None) -> None:
+        """Init method.
+
         Args:
             penalty: Penalty factor to scale equality constraints that are added to objective.
                      If None is passed, a penalty factor will be automatically calculated on
@@ -45,8 +47,8 @@ class EqualityToPenalty(OptimizationProblemConverter):
                         1 + (upperbound - lowerbound) of objective function.
 
         """
-        self._src_num_vars: Optional[int] = None
-        self._penalty: Optional[float] = penalty
+        self._src_num_vars: int | None = None
+        self._penalty: float | None = penalty
         self._should_define_penalty: bool = penalty is None
 
     def convert(self, problem: OptimizationProblem) -> OptimizationProblem:
@@ -54,6 +56,7 @@ class EqualityToPenalty(OptimizationProblemConverter):
 
         Args:
             problem: The problem to be solved, that does not contain inequality constraints.
+
 
         Returns:
             The converted problem, that is an unconstrained problem.
@@ -113,12 +116,19 @@ class EqualityToPenalty(OptimizationProblemConverter):
         offset = problem.objective.constant
         linear = problem.objective.linear.to_dict(use_name=True)
         quadratic = problem.objective.quadratic.to_dict(use_name=True)
-        ho = {d: expr.to_dict(use_name=True) for d, expr in problem.objective.higher_order.items()}
-        sense = 1 if problem.objective.sense == OptimizationObjective.Sense.MINIMIZE else -1
+        ho = {
+            d: expr.to_dict(use_name=True)
+            for d, expr in problem.objective.higher_order.items()
+        }
+        sense = (
+            1 if problem.objective.sense == OptimizationObjective.Sense.MINIMIZE else -1
+        )
 
         def add_poly_to_objective(poly: Poly, scale: float):
-            """Add `scale * poly` into (offset, linear, quadratic, ho). Poly may include any
-            degree."""
+            """Add `scale * poly` into (offset, linear, quadratic, ho).
+
+            Poly may include any degree.
+            """
             # Poly may have constant term
             const, linc, quadc, hoc = _poly_split_by_degree(poly)
             nonlocal offset
@@ -153,15 +163,15 @@ class EqualityToPenalty(OptimizationProblemConverter):
             if getattr(constraint, "higher_order", None):
                 _poly_add(f, _poly_from_constraint_higher(constraint))
 
-            # 1) +P * c^2  （Constant）
+            # (1) +P * c^2  (Constant)
             offset_nonlocal = c * c
             nonlocal offset
             offset += sense * penalty * offset_nonlocal
 
-            # 2) -2Pc * f(x)  （Linear terms）
+            # (2) -2Pc * f(x)  (Linear terms)
             add_poly_to_objective(f, scale=(-2.0 * penalty * c))
 
-            # 3) +P * f(x)^2  （Quadratic terms）
+            # (3) +P * f(x)^2  (Quadratic terms)
             f2 = _poly_mul(f, f)
             add_poly_to_objective(f2, scale=penalty)
 
@@ -223,11 +233,12 @@ class EqualityToPenalty(OptimizationProblemConverter):
             + sum((b.upperbound - b.lowerbound) for b in ho_b)
         )
 
-    def interpret(self, x: Union[np.ndarray, List[float]]) -> np.ndarray:
-        """Convert the result of the converted problem back to that of the original problem
+    def interpret(self, x: np.ndarray | list[float]) -> np.ndarray:
+        """Convert the result of the converted problem back to that of the original problem.
 
         Args:
             x: The result of the converted problem or the given result in case of FAILURE.
+
 
         Returns:
             The result of the original problem.
@@ -244,7 +255,7 @@ class EqualityToPenalty(OptimizationProblemConverter):
         return np.asarray(x)
 
     @property
-    def penalty(self) -> Optional[float]:
+    def penalty(self) -> float | None:
         """Returns the penalty factor used in conversion.
 
         Returns:
@@ -253,7 +264,7 @@ class EqualityToPenalty(OptimizationProblemConverter):
         return self._penalty
 
     @penalty.setter
-    def penalty(self, penalty: Optional[float]) -> None:
+    def penalty(self, penalty: float | None) -> None:
         """Set a new penalty factor.
 
         Args:
@@ -267,6 +278,7 @@ class EqualityToPenalty(OptimizationProblemConverter):
 
 def _normalize_monomial(m: Monomial) -> Monomial:
     """Normalize monomial key for symmetric terms.
+
     - Sort variable names for a canonical key: ('y','x')->('x','y')
     - Keep duplicates as-is; we do NOT enforce z^2=z (no multilinear reduction here).
     """
@@ -310,9 +322,9 @@ def _poly_from_constraint_quadratic(constraint) -> Poly:
 def _poly_from_constraint_higher(constraint) -> Poly:
     """Build f(x) from higher-order parts: sum_{deg>=3} sum_{S} h_S prod_{v in S} v."""
     poly: Poly = {}
-    # constraint.higher_order: Dict[int, Expr]; each Expr has to_dict(use_name=True)
+    # constraint.higher_order: dict[int, Expr]; each Expr has to_dict(use_name=True)
     for _deg, expr in getattr(constraint, "higher_order", {}).items():
-        terms = expr.to_dict(use_name=True)  # Dict[Tuple[str,...], float]
+        terms = expr.to_dict(use_name=True)  # dict[tuple[str,...], float]
         for names, coef in terms.items():
             if coef != 0.0:
                 m = _normalize_monomial(tuple(names))
@@ -323,9 +335,9 @@ def _poly_from_constraint_higher(constraint) -> Poly:
 def _poly_split_by_degree(poly: Poly):
     """Split poly into constant/linear/quadratic/higher dicts for objective accumulation."""
     const = poly.get((), 0.0)
-    linear: Dict[str, float] = {}
-    quadratic: Dict[Tuple[str, str], float] = {}
-    higher: Dict[int, Dict[Tuple[str, ...], float]] = defaultdict(dict)
+    linear: dict[str, float] = {}
+    quadratic: dict[tuple[str, str], float] = {}
+    higher: dict[int, dict[tuple[str, ...], float]] = defaultdict(dict)
     for m, c in poly.items():
         if not m:  # ()
             continue

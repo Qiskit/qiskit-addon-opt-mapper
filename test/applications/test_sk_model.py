@@ -13,7 +13,6 @@
 """Test SK model class"""
 import networkx as nx
 import numpy as np
-
 from qiskit_addon_opt_mapper import OptimizationProblem
 from qiskit_addon_opt_mapper.applications.sk_model import SKModel
 from qiskit_addon_opt_mapper.problems import OptimizationObjective, VarType
@@ -29,7 +28,9 @@ class TestSKModel(OptimizationTestCase):
         self._num_of_sites = 2
         self._seed = 0
         self._graph = nx.convert_matrix.from_numpy_array(np.array([[0, -1], [-1, 0]]))
-        self._new_disorder_graph = nx.convert_matrix.from_numpy_array(np.array([[0, 1], [1, 0]]))
+        self._new_disorder_graph = nx.convert_matrix.from_numpy_array(
+            np.array([[0, 1], [1, 0]])
+        )
 
         op = OptimizationProblem()
         for _ in range(2):
@@ -40,7 +41,9 @@ class TestSKModel(OptimizationTestCase):
     def test_disorder(self):
         """Test new_disorder"""
         problem = SKModel(self._num_of_sites, np.random.default_rng(self._seed))
-        self.assertEqual(list(problem.graph.edge_list()), list(self._new_disorder_graph.edges()))
+        self.assertEqual(
+            list(problem.graph.edge_list()), list(self._new_disorder_graph.edges())
+        )
 
     def test_to_optimization_problem(self):
         """Test to_optimization_problem"""

@@ -14,7 +14,6 @@ import math
 
 import numpy as np
 import pytest
-
 from qiskit_addon_opt_mapper import INFINITY, OptimizationError
 from qiskit_addon_opt_mapper.problems import HigherOrderExpression, OptimizationProblem
 

@@ -14,7 +14,6 @@
 
 import networkx as nx
 import numpy as np
-
 from qiskit_addon_opt_mapper import OptimizationProblem
 from qiskit_addon_opt_mapper.applications.clique import Clique
 from qiskit_addon_opt_mapper.problems import Constraint, OptimizationObjective, VarType
@@ -49,7 +48,9 @@ class TestClique(OptimizationTestCase):
         obj = op.objective
         self.assertEqual(obj.sense, OptimizationObjective.Sense.MAXIMIZE)
         self.assertEqual(obj.constant, 0)
-        self.assertDictEqual(obj.linear.to_dict(), {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0})
+        self.assertDictEqual(
+            obj.linear.to_dict(), {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
+        )
         self.assertDictEqual(obj.quadratic.to_dict(), {})
         # Test constraint
         lin = op.linear_constraints
@@ -69,7 +70,9 @@ class TestClique(OptimizationTestCase):
     def test_node_colors(self):
         """Test _node_colors"""
         clique = Clique(self.graph)
-        self.assertEqual(clique._node_colors(self.result), ["r", "darkgrey", "r", "r", "r"])
+        self.assertEqual(
+            clique._node_colors(self.result), ["r", "darkgrey", "r", "r", "r"]
+        )
 
     def test_size(self):
         """Test size"""
@@ -104,7 +107,9 @@ class TestClique(OptimizationTestCase):
         self.assertEqual(lin[1].linear.to_dict(), {1: 1.0, 4: 1.0})
         self.assertEqual(lin[2].sense, Constraint.Sense.EQ)
         self.assertEqual(lin[2].rhs, 3)
-        self.assertEqual(lin[2].linear.to_dict(), {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0})
+        self.assertEqual(
+            lin[2].linear.to_dict(), {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
+        )
 
     def test_interpret_c3(self):
         """Test interpret for the clique size 3"""
