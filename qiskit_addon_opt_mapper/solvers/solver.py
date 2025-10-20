@@ -236,7 +236,7 @@ class SolverResult:
         """Returns the objective function value.
 
         Returns:
-            The function value corresponding to the objective function value 
+            The function value corresponding to the objective function value
             found in the optimization.
         """
         return self._fval

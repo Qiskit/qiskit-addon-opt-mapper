@@ -25,7 +25,7 @@ from .optimization_problem_converter import OptimizationProblemConverter
 
 
 class IntegerToBinary(OptimizationProblemConverter):
-    """Convert a :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem` 
+    """Convert a :class:`~qiskit_addon_opt_mapper.problems.OptimizationProblem`
     into new one by encoding integers with binary variables.
 
     This bounded-coefficient encoding used in this converted is proposed in [1], Eq. (5).

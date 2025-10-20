@@ -28,8 +28,8 @@ from .spin_to_binary import SpinToBinary
 
 
 class OptimizationProblemToQubo(OptimizationProblemConverter):
-    """Convert a given optimization problem in quadratic form into a QUBO problem by 
-    converting variables to binary and eliminating constraints. An optimization problem in 
+    """Convert a given optimization problem in quadratic form into a QUBO problem by
+    converting variables to binary and eliminating constraints. An optimization problem in
     quadratic form is a problem with quadratic objective function
     and linear constraints. A QUBO is a problem with quadratic objective function and no
     constraints. This combines several converters: `IntegerToBinary`, `InequalityToPenalty`,
