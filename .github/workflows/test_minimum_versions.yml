@@ -46,4 +46,4 @@ jobs:
         if: matrix.python-version != '3.10' && matrix.python-version != '3.11'
         shell: bash
         run: |
-          pytest --nbmake docs/ --nbmake-exclude docs/how_tos/04_special_case.ipynb
+          tox -e notebook -- --nbmake docs/ --nbmake-exclude docs/how_tos/04_special_case.ipynb
