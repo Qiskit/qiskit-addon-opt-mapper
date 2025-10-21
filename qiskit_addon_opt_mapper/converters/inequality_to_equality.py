@@ -130,7 +130,9 @@ class InequalityToEquality(OptimizationProblemConverter):
                     )
                 )
             elif lin_const.sense in [Constraint.Sense.LE, Constraint.Sense.GE]:
-                new_linear_constraints.append(self._add_slack_var_linear_constraint(lin_const))
+                new_linear_constraints.append(
+                    self._add_slack_var_linear_constraint(lin_const)
+                )
             else:
                 raise OptimizationError(
                     f"Internal error: type of sense in {lin_const.name} is not supported: "
@@ -168,7 +170,10 @@ class InequalityToEquality(OptimizationProblemConverter):
                     (
                         ho_const.linear.coefficients,
                         ho_const.quadratic.coefficients,
-                        {degree: ho.to_dict() for degree, ho in ho_const.higher_order.items()},
+                        {
+                            degree: ho.to_dict()
+                            for degree, ho in ho_const.higher_order.items()
+                        },
                         ho_const.sense,
                         ho_const.rhs,
                         ho_const.name,
@@ -282,7 +287,9 @@ class InequalityToEquality(OptimizationProblemConverter):
         sense = constraint.sense
         name = constraint.name
 
-        any_float = self._any_float(linear.to_array()) or self._any_float(quadratic.to_array())
+        any_float = self._any_float(linear.to_array()) or self._any_float(
+            quadratic.to_array()
+        )
         mode = self._mode
         if mode == "integer":
             if any_float:

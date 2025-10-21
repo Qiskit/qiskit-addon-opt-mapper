@@ -49,7 +49,9 @@ class OptimizationProblemElement:
         return self._optimization_problem
 
     @optimization_problem.setter
-    def optimization_problem(self, optimization_problem: "problems.OptimizationProblem") -> None:
+    def optimization_problem(
+        self, optimization_problem: "problems.OptimizationProblem"
+    ) -> None:
         """Sets the parent OptimizationProblem.
 
         Args:

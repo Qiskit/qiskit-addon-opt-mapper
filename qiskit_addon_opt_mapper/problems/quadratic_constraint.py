@@ -34,7 +34,10 @@ class QuadraticConstraint(Constraint):
         name: str,
         linear: ndarray | spmatrix | list[float] | dict[str | int, float],
         quadratic: (
-            ndarray | spmatrix | list[list[float]] | dict[tuple[str | int, str | int], float]
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[str | int, str | int], float]
         ),
         sense: ConstraintSense,
         rhs: float,
@@ -90,7 +93,10 @@ class QuadraticConstraint(Constraint):
     def quadratic(
         self,
         quadratic: (
-            ndarray | spmatrix | list[list[float]] | dict[tuple[str | int, str | int], float]
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[str | int, str | int], float]
         ),
     ) -> None:
         """Sets the quadratic expression corresponding to the left-hand-side of the constraint.
@@ -120,7 +126,9 @@ class QuadraticConstraint(Constraint):
         # pylint: disable=cyclic-import
         from ..translators.prettyprint import DEFAULT_TRUNCATE, expr2str
 
-        lhs = expr2str(linear=self.linear, quadratic=self.quadratic, truncate=DEFAULT_TRUNCATE)
+        lhs = expr2str(
+            linear=self.linear, quadratic=self.quadratic, truncate=DEFAULT_TRUNCATE
+        )
         return f"<{self.__class__.__name__}: {lhs} {self.sense.label} {self.rhs} '{self.name}'>"
 
     def __str__(self):

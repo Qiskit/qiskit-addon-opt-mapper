@@ -200,7 +200,9 @@ class BinaryToSpin(OptimizationProblemConverter):
         else:
             self._dst.maximize(c0, ldict, qdict, hdict)
 
-    def _emit_constraint_from_poly(self, name: str, sense, rhs: float, poly: Poly) -> None:
+    def _emit_constraint_from_poly(
+        self, name: str, sense, rhs: float, poly: Poly
+    ) -> None:
         """Emit a constraint to the destination problem from a polynomial form."""
         assert self._dst
         c0, ldict, qdict, hdict = _poly_split(poly)

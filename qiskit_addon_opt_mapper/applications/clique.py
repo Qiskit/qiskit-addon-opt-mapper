@@ -33,7 +33,9 @@ class Clique(GraphOptimizationApplication):
         <https://en.wikipedia.org/wiki/Clique_(graph_theory)>`_
     """
 
-    def __init__(self, graph: nx.Graph | np.ndarray | list, size: int | None = None) -> None:
+    def __init__(
+        self, graph: nx.Graph | np.ndarray | list, size: int | None = None
+    ) -> None:
         """Init method.
 
         Args:

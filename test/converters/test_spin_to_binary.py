@@ -37,8 +37,12 @@ class TestSpinToBinaryConverter(OptimizationTestCase):
         conv = SpinToBinary()
         op2 = conv.convert(op)
         self.assertEqual(op2.get_num_vars(), 3)
-        self.assertListEqual([x.vartype for x in op2.variables], [Variable.Type.BINARY] * 3)
-        self.assertListEqual([x.name for x in op2.variables], ["x0@bin", "x1@bin", "x2@bin"])
+        self.assertListEqual(
+            [x.vartype for x in op2.variables], [Variable.Type.BINARY] * 3
+        )
+        self.assertListEqual(
+            [x.name for x in op2.variables], ["x0@bin", "x1@bin", "x2@bin"]
+        )
         self.assertAlmostEqual(op2.objective.constant, 0)
         self.assertDictEqual(op2.objective.linear.to_dict(use_name=True), {"x0@bin": 1})
         self.assertDictEqual(
@@ -53,7 +57,9 @@ class TestSpinToBinaryConverter(OptimizationTestCase):
         """Test spin to binary constraints"""
         op = OptimizationProblem()
         op.spin_var_list(3, name="x")
-        op.linear_constraint(linear={"x0": -0.5, "x1": -0.5}, sense="==", rhs=0, name="c0")
+        op.linear_constraint(
+            linear={"x0": -0.5, "x1": -0.5}, sense="==", rhs=0, name="c0"
+        )
         op.quadratic_constraint(
             linear={"x0": -0.75, "x1": -0.75},
             quadratic={("x0", "x1"): 0.25},
@@ -72,25 +78,39 @@ class TestSpinToBinaryConverter(OptimizationTestCase):
         conv = SpinToBinary()
         op2 = conv.convert(op)
         self.assertEqual(op2.get_num_vars(), 3)
-        self.assertListEqual([x.vartype for x in op2.variables], [Variable.Type.BINARY] * 3)
-        self.assertListEqual([x.name for x in op2.variables], ["x0@bin", "x1@bin", "x2@bin"])
+        self.assertListEqual(
+            [x.vartype for x in op2.variables], [Variable.Type.BINARY] * 3
+        )
+        self.assertListEqual(
+            [x.name for x in op2.variables], ["x0@bin", "x1@bin", "x2@bin"]
+        )
         c0 = op2.linear_constraints[0]
         self.assertEqual(c0.name, "c0")
         self.assertEqual(c0.sense, Constraint.Sense.EQ)
         self.assertAlmostEqual(c0.rhs, 1)
-        self.assertDictEqual(c0.linear.to_dict(use_name=True), {"x0@bin": 1, "x1@bin": 1})
+        self.assertDictEqual(
+            c0.linear.to_dict(use_name=True), {"x0@bin": 1, "x1@bin": 1}
+        )
         c1 = op2.quadratic_constraints[0]
         self.assertEqual(c1.name, "c1")
         self.assertEqual(c1.sense, Constraint.Sense.LE)
         self.assertAlmostEqual(c1.rhs, 1)
-        self.assertDictEqual(c1.linear.to_dict(use_name=True), {"x0@bin": 1, "x1@bin": 1})
-        self.assertDictEqual(c1.quadratic.to_dict(use_name=True), {("x0@bin", "x1@bin"): 1})
+        self.assertDictEqual(
+            c1.linear.to_dict(use_name=True), {"x0@bin": 1, "x1@bin": 1}
+        )
+        self.assertDictEqual(
+            c1.quadratic.to_dict(use_name=True), {("x0@bin", "x1@bin"): 1}
+        )
         c2 = op2.higher_order_constraints[0]
         self.assertEqual(c2.name, "c2")
         self.assertEqual(c2.sense, Constraint.Sense.GE)
         self.assertAlmostEqual(c2.rhs, 1)
-        self.assertDictEqual(c2.linear.to_dict(use_name=True), {"x0@bin": 1, "x1@bin": 1})
-        self.assertDictEqual(c2.quadratic.to_dict(use_name=True), {("x0@bin", "x1@bin"): 1})
+        self.assertDictEqual(
+            c2.linear.to_dict(use_name=True), {"x0@bin": 1, "x1@bin": 1}
+        )
+        self.assertDictEqual(
+            c2.quadratic.to_dict(use_name=True), {("x0@bin", "x1@bin"): 1}
+        )
         self.assertDictEqual(
             c2.higher_order[3].to_dict(use_name=True),
             {("x0@bin", "x1@bin", "x2@bin"): 1},

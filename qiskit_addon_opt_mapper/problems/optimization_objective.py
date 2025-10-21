@@ -24,7 +24,9 @@ from .linear_constraint import LinearExpression
 from .optimization_problem_element import OptimizationProblemElement
 from .quadratic_expression import QuadraticExpression
 
-CoeffLike = ndarray | dict[tuple[int | str, ...], float] | list  # nested list as dense tensor
+CoeffLike = (
+    ndarray | dict[tuple[int | str, ...], float] | list
+)  # nested list as dense tensor
 
 
 class ObjSense(Enum):
@@ -49,7 +51,11 @@ class OptimizationObjective(OptimizationProblemElement):
         constant: float = 0.0,
         linear: ndarray | spmatrix | list[float] | dict[int | str, float] | None = None,
         quadratic: (
-            ndarray | spmatrix | list[list[float]] | dict[tuple[int | str, int | str], float] | None
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[int | str, int | str], float]
+            | None
         ) = None,
         higher_order: dict[int, CoeffLike] | None = None,
         sense: ObjSense = ObjSense.MINIMIZE,
@@ -136,7 +142,10 @@ class OptimizationObjective(OptimizationProblemElement):
     def quadratic(
         self,
         quadratic: (
-            ndarray | spmatrix | list[list[float]] | dict[tuple[int | str, int | str], float]
+            ndarray
+            | spmatrix
+            | list[list[float]]
+            | dict[tuple[int | str, int | str], float]
         ),
     ) -> None:
         """Sets the quadratic expression corresponding to the left-hand-side of the constraint.
@@ -169,7 +178,9 @@ class OptimizationObjective(OptimizationProblemElement):
         self._higher_order = {}
 
         for k, coeffs in higher_order.items():
-            self._higher_order[k] = HigherOrderExpression(self.optimization_problem, coeffs)
+            self._higher_order[k] = HigherOrderExpression(
+                self.optimization_problem, coeffs
+            )
 
     @property
     def sense(self) -> ObjSense:

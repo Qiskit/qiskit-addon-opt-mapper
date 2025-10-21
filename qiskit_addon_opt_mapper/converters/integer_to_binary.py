@@ -112,7 +112,9 @@ class IntegerToBinary(OptimizationProblemConverter):
                             internal=True,
                         )
                     else:
-                        raise OptimizationError(f"Unsupported variable type {x.vartype}")
+                        raise OptimizationError(
+                            f"Unsupported variable type {x.vartype}"
+                        )
 
             self._substitute_int_var()
 
@@ -130,7 +132,9 @@ class IntegerToBinary(OptimizationProblemConverter):
         bounded_coef = var_range - (2**power - 1)
 
         coeffs = [2**i for i in range(power)] + [bounded_coef]
-        return [(name + self._delimiter + str(i), coef) for i, coef in enumerate(coeffs)]
+        return [
+            (name + self._delimiter + str(i), coef) for i, coef in enumerate(coeffs)
+        ]
 
     def _convert_linear_coefficients_dict(
         self, coefficients: dict[str, float]
@@ -235,7 +239,9 @@ class IntegerToBinary(OptimizationProblemConverter):
                     next_monomials: list[tuple[tuple[str, ...], float]] = []
                     for vars_so_far, coef_so_far in monomials:
                         for vars_new, coef_new in opts:
-                            next_monomials.append((vars_so_far + vars_new, coef_so_far * coef_new))
+                            next_monomials.append(
+                                (vars_so_far + vars_new, coef_so_far * coef_new)
+                            )
                     monomials = next_monomials
 
                 # Assign expanded terms to constant / linear / higher-order
@@ -268,7 +274,9 @@ class IntegerToBinary(OptimizationProblemConverter):
             self._src.objective.higher_order
         )
 
-        constant = self._src.objective.constant + linear_constant + q_constant + ho_constant
+        constant = (
+            self._src.objective.constant + linear_constant + q_constant + ho_constant
+        )
         for i, v in q_linear.items():
             linear[i] = linear.get(i, 0) + v
 
@@ -373,7 +381,10 @@ class IntegerToBinary(OptimizationProblemConverter):
         new_x = np.zeros(self._src.get_num_vars())
         for i, var in enumerate(self._src.variables):
             if var in self._conv:
-                new_x[i] = sum(sol[aux] * coef for aux, coef in self._conv[var]) + var.lowerbound
+                new_x[i] = (
+                    sum(sol[aux] * coef for aux, coef in self._conv[var])
+                    + var.lowerbound
+                )
             else:
                 new_x[i] = sol[var.name]
         return np.array(new_x)

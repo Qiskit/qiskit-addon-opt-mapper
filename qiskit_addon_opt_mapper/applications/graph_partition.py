@@ -44,7 +44,11 @@ class GraphPartition(GraphOptimizationApplication):
         n = self._graph.num_nodes()
         x = {i: mdl.binary_var(name=f"x_{i}") for i in range(n)}
         objective = mdl.sum(
-            (self._graph.get_edge_data(i, j) if self._graph.get_edge_data(i, j) is not None else 1)
+            (
+                self._graph.get_edge_data(i, j)
+                if self._graph.get_edge_data(i, j) is not None
+                else 1
+            )
             * (x[i] + x[j] - 2 * x[i] * x[j])
             for i, j in self._graph.edge_list()
         )

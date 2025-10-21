@@ -281,11 +281,17 @@ def from_gurobipy(model: Model) -> OptimizationProblem:
             quadratic[var1, var2] = coeff
 
         if sense == gp.GRB.EQUAL:
-            optimization_problem.quadratic_constraint(linear, quadratic, "==", rhs, name)
+            optimization_problem.quadratic_constraint(
+                linear, quadratic, "==", rhs, name
+            )
         elif sense == gp.GRB.GREATER_EQUAL:
-            optimization_problem.quadratic_constraint(linear, quadratic, ">=", rhs, name)
+            optimization_problem.quadratic_constraint(
+                linear, quadratic, ">=", rhs, name
+            )
         elif sense == gp.GRB.LESS_EQUAL:
-            optimization_problem.quadratic_constraint(linear, quadratic, "<=", rhs, name)
+            optimization_problem.quadratic_constraint(
+                linear, quadratic, "<=", rhs, name
+            )
         else:
             raise OptimizationError(f"Unsupported constraint sense: {q_constraint}")
 

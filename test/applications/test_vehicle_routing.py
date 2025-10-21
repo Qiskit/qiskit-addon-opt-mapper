@@ -30,11 +30,16 @@ class TestVehicleRouting(OptimizationTestCase):
         random.seed(600)
         low = 0
         high = 100
-        pos = {i: (random.randint(low, high), random.randint(low, high)) for i in range(4)}
-        self.graph = nx.random_geometric_graph(4, np.hypot(high - low, high - low) + 1, pos=pos)
+        pos = {
+            i: (random.randint(low, high), random.randint(low, high)) for i in range(4)
+        }
+        self.graph = nx.random_geometric_graph(
+            4, np.hypot(high - low, high - low) + 1, pos=pos
+        )
         for w, v in self.graph.edges:
             delta = [
-                self.graph.nodes[w]["pos"][i] - self.graph.nodes[v]["pos"][i] for i in range(2)
+                self.graph.nodes[w]["pos"][i] - self.graph.nodes[v]["pos"][i]
+                for i in range(2)
             ]
             self.graph.edges[w, v]["weight"] = np.rint(np.hypot(delta[0], delta[1]))
         op = OptimizationProblem()
@@ -111,7 +116,9 @@ class TestVehicleRouting(OptimizationTestCase):
         self.assertEqual(lin[10].linear.to_dict(), {8: 1.0, 11: 1.0})
         self.assertEqual(lin[11].sense, Constraint.Sense.LE)
         self.assertEqual(lin[11].rhs, 2)
-        self.assertEqual(lin[11].linear.to_dict(), {4: 1, 5: 1, 7: 1, 8: 1, 10: 1, 11: 1})
+        self.assertEqual(
+            lin[11].linear.to_dict(), {4: 1, 5: 1, 7: 1, 8: 1, 10: 1, 11: 1}
+        )
 
     def test_interpret(self):
         """Test interpret"""
@@ -207,7 +214,9 @@ class TestVehicleRouting(OptimizationTestCase):
         self.assertEqual(lin[10].linear.to_dict(), {5: 1.0, 10: 1.0})
         self.assertEqual(lin[11].sense, Constraint.Sense.LE)
         self.assertEqual(lin[11].rhs, 2)
-        self.assertEqual(lin[11].linear.to_dict(), {0: 1, 2: 1, 3: 1, 5: 1, 9: 1, 10: 1})
+        self.assertEqual(
+            lin[11].linear.to_dict(), {0: 1, 2: 1, 3: 1, 5: 1, 9: 1, 10: 1}
+        )
 
     def test_interpret_d2(self):
         """Test interpret for depot=2"""
@@ -301,7 +310,9 @@ class TestVehicleRouting(OptimizationTestCase):
         self.assertEqual(lin[10].linear.to_dict(), {8: 1.0, 11: 1.0})
         self.assertEqual(lin[11].sense, Constraint.Sense.LE)
         self.assertEqual(lin[11].rhs, 2)
-        self.assertEqual(lin[11].linear.to_dict(), {4: 1, 5: 1, 7: 1, 8: 1, 10: 1, 11: 1})
+        self.assertEqual(
+            lin[11].linear.to_dict(), {4: 1, 5: 1, 7: 1, 8: 1, 10: 1, 11: 1}
+        )
 
     def test_interpret_nv3(self):
         """Test interpret for num_vehicles=3"""

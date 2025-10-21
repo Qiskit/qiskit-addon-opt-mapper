@@ -118,8 +118,13 @@ class EqualityToPenalty(OptimizationProblemConverter):
         offset = problem.objective.constant
         linear = problem.objective.linear.to_dict(use_name=True)
         quadratic = problem.objective.quadratic.to_dict(use_name=True)
-        ho = {d: expr.to_dict(use_name=True) for d, expr in problem.objective.higher_order.items()}
-        sense = 1 if problem.objective.sense == OptimizationObjective.Sense.MINIMIZE else -1
+        ho = {
+            d: expr.to_dict(use_name=True)
+            for d, expr in problem.objective.higher_order.items()
+        }
+        sense = (
+            1 if problem.objective.sense == OptimizationObjective.Sense.MINIMIZE else -1
+        )
 
         def add_poly_to_objective(poly: Poly, scale: float):
             """Add `scale * poly` into (offset, linear, quadratic, ho).

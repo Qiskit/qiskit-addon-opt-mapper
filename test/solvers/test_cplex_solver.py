@@ -37,7 +37,9 @@ class TestCplexSolver(OptimizationTestCase):
     @unittest.skipIf(not _optionals.HAS_CPLEX, "CPLEX not available.")
     def test_cplex_optimizer(self, config):
         """CPLEX Optimizer Test"""
-        cplex_optimizer = CplexSolver(disp=False, cplex_parameters={"threads": 1, "randomseed": 1})
+        cplex_optimizer = CplexSolver(
+            disp=False, cplex_parameters={"threads": 1, "randomseed": 1}
+        )
         # unpack configuration
         filename, x, fval = config
 

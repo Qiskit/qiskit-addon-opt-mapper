@@ -46,7 +46,11 @@ class Tsp(GraphOptimizationApplication):
         """
         mdl = Model(name="TSP")
         n = self._graph.num_nodes()
-        x = {(i, k): mdl.binary_var(name=f"x_{i}_{k}") for i in range(n) for k in range(n)}
+        x = {
+            (i, k): mdl.binary_var(name=f"x_{i}_{k}")
+            for i in range(n)
+            for k in range(n)
+        }
 
         # Only sum over existing edges in the graph
         tsp_func = mdl.sum(
@@ -202,7 +206,9 @@ class Tsp(GraphOptimizationApplication):
                     typ = line.split(":")[1]
                     typ = typ.strip()
                     if typ != "TSP":
-                        raise OptimizationError(f'This supports only "TSP" type. Actual: {typ}')
+                        raise OptimizationError(
+                            f'This supports only "TSP" type. Actual: {typ}'
+                        )
                 elif line.startswith("EOF"):
                     # End Of File tag
                     break
