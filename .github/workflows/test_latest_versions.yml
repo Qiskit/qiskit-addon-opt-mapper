@@ -42,12 +42,12 @@ jobs:
         run: |
           tox -e py,doctest --parallel --parallel-no-spinner
       - name: Run all notebook tests
-        if: matrix.python-version == '3.9' || matrix.python-version == '3.10'
+        if: matrix.python-version == '3.10' || matrix.python-version == '3.11'
         shell: bash
         run: |
           tox -e notebook
       - name: Run notebook tests (excluding CPLEX notebook)
-        if: matrix.python-version != '3.9' && matrix.python-version != '3.10'
+        if: matrix.python-version != '3.10' && matrix.python-version != '3.11'
         shell: bash
         run: |
           pytest --nbmake docs/ --nbmake-exclude docs/how_tos/04_special_case.ipynb
