@@ -205,11 +205,11 @@ class SolverResult:
             TypeError: if ``key`` is neither an integer nor a string.
         """
         if isinstance(key, int):
-            if self._x:
+            if self._x is not None:
                 return float(self._x[key])
             raise ValueError("Variable is empty")
         if isinstance(key, str):
-            if self._variables_dict:
+            if self._variables_dict is not None:
                 return float(self._variables_dict[key])
             raise ValueError("Variable dict. is empty")
         raise TypeError(f"Integer or string key required, instead {type(key)}({key}) provided.")
