@@ -12,6 +12,8 @@
 
 """Abstract Constraint."""
 
+from __future__ import annotations
+
 from abc import abstractmethod
 from enum import Enum
 from typing import Any
