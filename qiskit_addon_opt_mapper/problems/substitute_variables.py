@@ -172,7 +172,7 @@ class _SubstituteVariables:
 
     def _variables(self) -> bool:
         # copy variables that are not replaced
-        assert self._src and self._dst
+        assert self._src is not None and self._dst is not None
         feasible = True
         for var in self._src.variables:
             name = var.name
@@ -271,8 +271,7 @@ class _SubstituteVariables:
         return _poly_split(out)
 
     def _objective(self) -> bool:
-        if not self._src or not self._dst:
-            return False
+        assert self._src is not None and self._dst is not None
         obj = self._src.objective
         const, lin, quad, higher = self._poly_apply_substitution(
             obj.linear, obj.quadratic, getattr(obj, "higher_order", {})
@@ -301,8 +300,7 @@ class _SubstituteVariables:
         return True
 
     def _linear_constraints(self) -> bool:
-        if not self._src or not self._dst:
-            return False
+        assert self._src is not None and self._dst is not None
         feasible = True
         for lin_cst in self._src.linear_constraints:
             const, lin, _quad, _higher = self._poly_apply_substitution(
@@ -326,7 +324,7 @@ class _SubstituteVariables:
         return feasible
 
     def _quadratic_constraints(self) -> bool:
-        assert self._src and self._dst
+        assert self._src is not None and self._dst is not None
         feasible = True
         for quad_cst in self._src.quadratic_constraints:
             const, lin, quad, _higher = self._poly_apply_substitution(
@@ -356,7 +354,7 @@ class _SubstituteVariables:
         return feasible
 
     def _higher_order_constraints(self) -> bool:
-        assert self._src and self._dst
+        assert self._src is not None and self._dst is not None
         feasible = True
         for ho_cst in getattr(self._src, "higher_order_constraints", []):
             const, lin, quad, higher = self._poly_apply_substitution(

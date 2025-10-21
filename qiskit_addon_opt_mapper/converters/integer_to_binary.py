@@ -135,8 +135,7 @@ class IntegerToBinary(OptimizationProblemConverter):
     def _convert_linear_coefficients_dict(
         self, coefficients: dict[str, float]
     ) -> tuple[dict[str, float], float]:
-        if not self._src:
-            raise OptimizationError("Optimization problem not found.")
+        assert self._src is not None
         constant = 0.0
         linear: dict[str, float] = {}
         for name, v in coefficients.items():
@@ -153,7 +152,7 @@ class IntegerToBinary(OptimizationProblemConverter):
     def _convert_quadratic_coefficients_dict(
         self, coefficients: dict[tuple[str, str], float]
     ) -> tuple[dict[tuple[str, str], float], dict[str, float], float]:
-        assert self._src
+        assert self._src is not None
         constant = 0.0
         linear: dict[str, float] = {}
         quadratic = {}
@@ -199,7 +198,7 @@ class IntegerToBinary(OptimizationProblemConverter):
 
         We expand the polynomial by convolution across all variables in 'names'.
         """
-        assert self._src
+        assert self._src is not None
         constant = 0.0
         linear: dict[str, float] = {}
         higher_order: dict[int, dict[tuple[str, ...], float]] = {}
@@ -368,7 +367,7 @@ class IntegerToBinary(OptimizationProblemConverter):
             The result of the original problem.
         """
         # interpret integer values
-        assert self._dst and self._src
+        assert self._dst is not None and self._src is not None
         sol = {var.name: x[i] for i, var in enumerate(self._dst.variables)}
         new_x = np.zeros(self._src.get_num_vars())
         for i, var in enumerate(self._src.variables):

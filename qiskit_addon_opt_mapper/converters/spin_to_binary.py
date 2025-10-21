@@ -179,8 +179,7 @@ class SpinToBinary(OptimizationProblemConverter):
 
         Set it to the destination problem.
         """
-        if not self._src or not self._dst:
-            return
+        assert self._src is not None and self._dst is not None
         obj = self._src.objective
 
         # Build polynomial from original objective
@@ -205,8 +204,7 @@ class SpinToBinary(OptimizationProblemConverter):
 
     def _emit_constraint_from_poly(self, name: str, sense, rhs: float, poly: Poly) -> None:
         """Emit a constraint to the destination problem from a polynomial form."""
-        if not self._dst:
-            return
+        assert self._dst is not None
         c0, ldict, qdict, hdict = _poly_split(poly)
         rhs2 = rhs - c0
         if hdict:
