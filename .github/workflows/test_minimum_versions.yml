@@ -36,13 +36,13 @@ jobs:
       - name: Test using tox environment
         shell: bash
         run: |
-          tox -e py,doctest --parallel --parallel-no-spinner
-      - name: Run all notebook tests
+          tox -e py --parallel --parallel-no-spinner
+      - name: Run all notebook tests and doctest
         if: matrix.python-version == '3.10' || matrix.python-version == '3.11'
         shell: bash
         run: |
-          tox -e notebook
-      - name: Run notebook tests (excluding CPLEX notebook)
+          tox -e notebook,doctest
+      - name: Run notebook tests excluding CPLEX notebook
         if: matrix.python-version != '3.10' && matrix.python-version != '3.11'
         shell: bash
         run: |

@@ -41,7 +41,6 @@ Converters
    BinaryToSpin
    InequalityToEquality
    IntegerToBinary
-   LinearEqualityToPenalty
    LinearInequalityToPenalty
    MaximizeToMinimize
    MinimizeToMaximize

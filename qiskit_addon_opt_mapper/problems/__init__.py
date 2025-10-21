@@ -14,12 +14,12 @@
 """Optimization problem model elements.
 
 Optimization problems (:mod:`qiskit_addon_opt_mapper.problems`).
-===========================================================
+===================================================================
 
 .. currentmodule:: qiskit_addon_opt_mapper.problems
 
 Optimization problem
------------------
+----------------------
 Structures for defining an optimization problem.
 
 Note:
@@ -36,7 +36,7 @@ Note:
    LinearConstraint
    QuadraticExpression
    QuadraticConstraint
-   QuadraticProgramElement
+   OptimizationProblemElement
    Variable
    HigherOrderExpression
    HigherOrderConstraint
