@@ -34,7 +34,7 @@ dependencies = [
     "networkx>=3.1",
     "rustworkx",
     "scipy>=1.9.0",
-    "docplex>=2.30.0"
+    "docplex>=2.30.251"
 ]
 
 [project.optional-dependencies]
