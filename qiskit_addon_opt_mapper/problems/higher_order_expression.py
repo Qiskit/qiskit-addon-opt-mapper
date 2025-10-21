@@ -52,9 +52,7 @@ class HigherOrderExpression(OptimizationProblemElement):
     def __init__(
         self,
         optimization_problem: Any,
-        coefficients: (
-            ndarray | dict[Key, float] | list
-        ),  # nested list acting like ndarray
+        coefficients: (ndarray | dict[Key, float] | list),  # nested list acting like ndarray
     ) -> None:
         """Creates a new higher-order expression.
 
@@ -118,9 +116,7 @@ class HigherOrderExpression(OptimizationProblemElement):
             order = None
             for key in coefficients:
                 if not isinstance(key, tuple):
-                    raise ValueError(
-                        f"Dict keys must be tuples, got {type(key).__name__}: {key!r}"
-                    )
+                    raise ValueError(f"Dict keys must be tuples, got {type(key).__name__}: {key!r}")
                 k = len(key)
                 if order is None:
                     order = k
@@ -150,9 +146,7 @@ class HigherOrderExpression(OptimizationProblemElement):
             # all axes must match the number of variables
             expected = (self._n,) * arr.ndim
             if arr.shape != expected:
-                raise ValueError(
-                    f"coefficients shape must be {expected}, got {arr.shape}"
-                )
+                raise ValueError(f"coefficients shape must be {expected}, got {arr.shape}")
 
             self._order = int(arr.ndim)
 
@@ -171,9 +165,7 @@ class HigherOrderExpression(OptimizationProblemElement):
                 "expected dict, ndarray, list."
             )
 
-    def to_dict(
-        self, use_name: bool = False
-    ) -> dict[tuple[int, ...] | tuple[str, ...], float]:
+    def to_dict(self, use_name: bool = False) -> dict[tuple[int, ...] | tuple[str, ...], float]:
         """Returns the internal coefficients as a dictionary."""
         if not use_name:
             return dict(self._coeffs)  # type: ignore
@@ -347,18 +339,12 @@ class HigherOrderExpression(OptimizationProblemElement):
         if isinstance(x, dict):
             arr = np.zeros(self._n, dtype=float)
             for i, v in x.items():
-                ii = (
-                    self.optimization_problem.variables_index[i]
-                    if isinstance(i, str)
-                    else int(i)
-                )
+                ii = self.optimization_problem.variables_index[i] if isinstance(i, str) else int(i)
                 arr[ii] = float(v)
             return arr
         arr = np.asarray(x, dtype=float)  # type: ignore
         if arr.ndim != 1 or arr.shape[0] != self._n:
-            raise ValueError(
-                "x must be a 1D array with length equal to the number of variables"
-            )
+            raise ValueError("x must be a 1D array with length equal to the number of variables")
         return arr
 
     def __repr__(self):
@@ -367,9 +353,7 @@ class HigherOrderExpression(OptimizationProblemElement):
         from ..translators.prettyprint import DEFAULT_TRUNCATE, expr2str
 
         rep_str = f"<{self.__class__.__name__}(k={self._order}):"
-        rep_str += (
-            f"{expr2str(higher_order={self._order: self}, truncate=DEFAULT_TRUNCATE)}>"
-        )
+        rep_str += f"{expr2str(higher_order={self._order: self}, truncate=DEFAULT_TRUNCATE)}>"
         return rep_str
 
     def __str__(self):

@@ -59,8 +59,7 @@ class ExactCover(OptimizationApplication):
         mdl.minimize(mdl.sum(x[i] for i in x))
         for element in self._set:
             mdl.add_constraint(
-                mdl.sum(x[i] for i, sub in enumerate(self._subsets) if element in sub)
-                == 1
+                mdl.sum(x[i] for i, sub in enumerate(self._subsets) if element in sub) == 1
             )
         op = from_docplex_mp(mdl)
         return op

@@ -44,11 +44,7 @@ class HigherOrderConstraint(Constraint):
         # linear/quadratic
         linear: ndarray | spmatrix | list[float] | dict[str | int, float] | None = None,
         quadratic: (
-            ndarray
-            | spmatrix
-            | list[list[float]]
-            | dict[tuple[int | str, int | str], float]
-            | None
+            ndarray | spmatrix | list[list[float]] | dict[tuple[int | str, int | str], float] | None
         ) = None,
         # higher-order
         higher_order: dict[int, CoeffLike] | None = None,
@@ -69,9 +65,7 @@ class HigherOrderConstraint(Constraint):
         """
         super().__init__(optimization_problem, name, sense, rhs)
 
-        self._linear = LinearExpression(
-            optimization_problem, {} if linear is None else linear
-        )
+        self._linear = LinearExpression(optimization_problem, {} if linear is None else linear)
         self._quadratic = QuadraticExpression(
             optimization_problem, {} if quadratic is None else quadratic
         )
@@ -141,9 +135,7 @@ class HigherOrderConstraint(Constraint):
         self._higher_order = {}
 
         for k, coeffs in higher_order.items():
-            self._higher_order[k] = HigherOrderExpression(
-                self.optimization_problem, coeffs
-            )
+            self._higher_order[k] = HigherOrderExpression(self.optimization_problem, coeffs)
 
     def evaluate(self, x: ndarray | list | dict[str | int, float]) -> float:
         """Evaluate the left-hand-side of the constraint.

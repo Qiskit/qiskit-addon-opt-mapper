@@ -192,26 +192,16 @@ class TestInequalityToEqualityConverter(OptimizationTestCase):
         op.binary_var("y")
         op.linear_constraint(linear={"x": 1, "y": 1}, sense="LE", rhs=0, name="xy_leq1")
         op.linear_constraint(linear={"x": 1, "y": 1}, sense="GE", rhs=2, name="xy_geq1")
-        op.quadratic_constraint(
-            quadratic={("x", "x"): 1}, sense="LE", rhs=0, name="xy_leq2"
-        )
-        op.quadratic_constraint(
-            quadratic={("x", "y"): 1}, sense="GE", rhs=1, name="xy_geq2"
-        )
+        op.quadratic_constraint(quadratic={("x", "x"): 1}, sense="LE", rhs=0, name="xy_leq2")
+        op.quadratic_constraint(quadratic={("x", "y"): 1}, sense="GE", rhs=1, name="xy_geq2")
         ineq2eq = InequalityToEquality()
         new_op = ineq2eq.convert(op)
         self.assertEqual(new_op.get_num_vars(), 2)
         self.assertTrue(
-            all(
-                l_const.sense == Constraint.Sense.EQ
-                for l_const in new_op.linear_constraints
-            )
+            all(l_const.sense == Constraint.Sense.EQ for l_const in new_op.linear_constraints)
         )
         self.assertTrue(
-            all(
-                q_const.sense == Constraint.Sense.EQ
-                for q_const in new_op.quadratic_constraints
-            )
+            all(q_const.sense == Constraint.Sense.EQ for q_const in new_op.quadratic_constraints)
         )
 
     def test_inequality_mode_integer(self):
@@ -275,16 +265,12 @@ class TestInequalityToEqualityConverter(OptimizationTestCase):
         op_eq = InequalityToEquality().convert(op)
         self.assertEqual(op_eq.get_num_linear_constraints(), 2)
         lin0 = op_eq.get_linear_constraint(0)
-        self.assertEqual(
-            lin0.linear.to_dict(use_name=True), {"x": 1.0, "c0@int_slack": 1.0}
-        )
+        self.assertEqual(lin0.linear.to_dict(use_name=True), {"x": 1.0, "c0@int_slack": 1.0})
         self.assertEqual(lin0.sense, Constraint.Sense.EQ)
         self.assertEqual(lin0.rhs, 1)
         self.assertAlmostEqual(lin0.evaluate([1, 1, 1]), 2)
         lin1 = op_eq.get_linear_constraint(1)
-        self.assertEqual(
-            lin1.linear.to_dict(use_name=True), {"x": 1.0, "c1@int_slack": -1.0}
-        )
+        self.assertEqual(lin1.linear.to_dict(use_name=True), {"x": 1.0, "c1@int_slack": -1.0})
         self.assertEqual(lin1.sense, Constraint.Sense.EQ)
         self.assertEqual(lin1.rhs, 0)
         self.assertAlmostEqual(lin1.evaluate([1, 1, 1]), 0)

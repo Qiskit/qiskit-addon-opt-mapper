@@ -108,8 +108,7 @@ class BinPacking(OptimizationApplication):
         bins = x[:num_bins]
         items = np.array(x[num_bins:]).reshape((num_items, num_bins))
         items_in_bins = [
-            [i for i in range(num_items) if bins[j] and items[i, j]]
-            for j in range(num_bins)
+            [i for i in range(num_items) if bins[j] and items[i, j]] for j in range(num_bins)
         ]
         return items_in_bins
 

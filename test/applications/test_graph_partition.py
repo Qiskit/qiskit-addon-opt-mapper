@@ -67,6 +67,4 @@ class TestGraphPartition(OptimizationTestCase):
     def test_node_colors(self):
         """Test _node_colors"""
         graph_partitioning = GraphPartition(self.graph)
-        self.assertEqual(
-            graph_partitioning._node_colors(self.result), ["b", "r", "r", "b"]
-        )
+        self.assertEqual(graph_partitioning._node_colors(self.result), ["b", "r", "r", "b"])

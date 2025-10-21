@@ -52,9 +52,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
         mod.minimize(1 + x + 2 * y - x * y + 2 * z * z)
         mod.add(2 * x - z == 1, "c0")
         mod.add(2 * x - z + 3 * y * z == 1, "q0")
-        self.assertEqual(
-            to_docplex_mp(q_p).export_as_lp_string(), mod.export_as_lp_string()
-        )
+        self.assertEqual(to_docplex_mp(q_p).export_as_lp_string(), mod.export_as_lp_string())
 
     def test_from_without_variable_names(self):
         """test from_docplex_mp without explicit variable names"""
@@ -74,9 +72,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
         self.assertListEqual(var_names, ["x0", "x1", "x2"])
         senses = [Constraint.Sense.EQ, Constraint.Sense.GE, Constraint.Sense.LE]
         for i, c in enumerate(q_p.linear_constraints):
-            self.assertDictEqual(
-                c.linear.to_dict(use_name=True), {"x0": 1, "x1": 1, "x2": -1}
-            )
+            self.assertDictEqual(c.linear.to_dict(use_name=True), {"x0": 1, "x1": 1, "x2": -1})
             self.assertEqual(c.rhs, 0)
             self.assertEqual(c.sense, senses[i])
         for i, c in enumerate(q_p.quadratic_constraints):
@@ -157,17 +153,13 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=0, linear_ct=(y + 2 * z <= 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=0, linear_ct=(y + 2 * z <= 1), name="ind")
             quad_prog = from_docplex_mp(mod)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 1)
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": -5.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": -5.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 1)
 
         with self.subTest("active 0, sense >="):
@@ -175,17 +167,13 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=0, linear_ct=(y + 2 * z >= 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=0, linear_ct=(y + 2 * z >= 1), name="ind")
             quad_prog = from_docplex_mp(mod)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 1)
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind")
             self.assertEqual(ind.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": 4.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": 4.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 1)
 
         with self.subTest("active 1, sense <="):
@@ -193,17 +181,13 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=1, linear_ct=(y + 2 * z <= 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=1, linear_ct=(y + 2 * z <= 1), name="ind")
             quad_prog = from_docplex_mp(mod)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 1)
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": 5.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": 5.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 6)
 
         with self.subTest("active 1, sense >="):
@@ -211,17 +195,13 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=1, linear_ct=(y + 2 * z >= 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=1, linear_ct=(y + 2 * z >= 1), name="ind")
             quad_prog = from_docplex_mp(mod)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 1)
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind")
             self.assertEqual(ind.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": -4.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": -4.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, -3)
 
         with self.subTest("active 0, sense =="):
@@ -229,26 +209,20 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=0, linear_ct=(y + 2 * z == 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=0, linear_ct=(y + 2 * z == 1), name="ind")
             quad_prog = from_docplex_mp(mod)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 2)
 
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind_LE")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": -5.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": -5.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 1)
 
             ind = quad_prog.get_linear_constraint(1)
             self.assertEqual(ind.name, "ind_GE")
             self.assertEqual(ind.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": 4.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": 4.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 1)
 
         with self.subTest("active 1, sense =="):
@@ -256,26 +230,20 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=1, linear_ct=(y + 2 * z == 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=1, linear_ct=(y + 2 * z == 1), name="ind")
             quad_prog = from_docplex_mp(mod)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 2)
 
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind_LE")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": 5.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": 5.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 6)
 
             ind = quad_prog.get_linear_constraint(1)
             self.assertEqual(ind.name, "ind_GE")
             self.assertEqual(ind.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": -4.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": -4.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, -3)
 
         with self.subTest("active 0, sense <=, indicator_big_m"):
@@ -283,9 +251,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=0, linear_ct=(y + 2 * z <= 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=0, linear_ct=(y + 2 * z <= 1), name="ind")
             quad_prog = from_docplex_mp(mod, indicator_big_m=100)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 1)
             ind = quad_prog.get_linear_constraint(0)
@@ -301,9 +267,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=0, linear_ct=(y + 2 * z >= 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=0, linear_ct=(y + 2 * z >= 1), name="ind")
             quad_prog = from_docplex_mp(mod, indicator_big_m=100)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 1)
             ind = quad_prog.get_linear_constraint(0)
@@ -319,9 +283,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=1, linear_ct=(y + 2 * z <= 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=1, linear_ct=(y + 2 * z <= 1), name="ind")
             quad_prog = from_docplex_mp(mod, indicator_big_m=100)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 1)
             ind = quad_prog.get_linear_constraint(0)
@@ -337,9 +299,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=1, linear_ct=(y + 2 * z >= 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=1, linear_ct=(y + 2 * z >= 1), name="ind")
             quad_prog = from_docplex_mp(mod, indicator_big_m=100)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 1)
             ind = quad_prog.get_linear_constraint(0)
@@ -355,9 +315,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=0, linear_ct=(y + 2 * z == 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=0, linear_ct=(y + 2 * z == 1), name="ind")
             quad_prog = from_docplex_mp(mod, indicator_big_m=100)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 2)
 
@@ -382,9 +340,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=1, linear_ct=(y + 2 * z == 1), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=1, linear_ct=(y + 2 * z == 1), name="ind")
             quad_prog = from_docplex_mp(mod, indicator_big_m=100)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 2)
 
@@ -409,17 +365,13 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=0, linear_ct=(y + 2 * z <= 10), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=0, linear_ct=(y + 2 * z <= 10), name="ind")
             quad_prog = from_docplex_mp(mod)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 1)
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 10)
 
         with self.subTest("active 0, sense >=, obvious bound"):
@@ -435,9 +387,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind")
             self.assertEqual(ind.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, -10)
 
         with self.subTest("active 1, sense <=, obvious bound"):
@@ -445,17 +395,13 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=1, linear_ct=(y + 2 * z <= 10), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=1, linear_ct=(y + 2 * z <= 10), name="ind")
             quad_prog = from_docplex_mp(mod)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 1)
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 10)
 
         with self.subTest("active 1, sense >=, obvious bound"):
@@ -471,9 +417,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind")
             self.assertEqual(ind.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, -10)
 
         with self.subTest("active 0, sense ==, too small rhs"):
@@ -498,9 +442,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             ind = quad_prog.get_linear_constraint(1)
             self.assertEqual(ind.name, "ind_GE")
             self.assertEqual(ind.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, -10)
 
         with self.subTest("active 0, sense ==, too large rhs"):
@@ -508,26 +450,20 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=0, linear_ct=(y + 2 * z == 10), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=0, linear_ct=(y + 2 * z == 10), name="ind")
             quad_prog = from_docplex_mp(mod)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 2)
 
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind_LE")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 10)
 
             ind = quad_prog.get_linear_constraint(1)
             self.assertEqual(ind.name, "ind_GE")
             self.assertEqual(ind.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": 13, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": 13, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 10)
 
         with self.subTest("active 1, sense ==, too small rhs"):
@@ -544,17 +480,13 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind_LE")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": 16.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": 16.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 6)
 
             ind = quad_prog.get_linear_constraint(1)
             self.assertEqual(ind.name, "ind_GE")
             self.assertEqual(ind.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, -10)
 
         with self.subTest("active 1, sense ==, too large rhs"):
@@ -562,18 +494,14 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             x = mod.binary_var("x")
             y = mod.integer_var(lb=-1, ub=2, name="y")
             z = mod.continuous_var(lb=-1, ub=2, name="z")
-            mod.add_indicator(
-                binary_var=x, active_value=1, linear_ct=(y + 2 * z == 10), name="ind"
-            )
+            mod.add_indicator(binary_var=x, active_value=1, linear_ct=(y + 2 * z == 10), name="ind")
             quad_prog = from_docplex_mp(mod)
             self.assertEqual(quad_prog.get_num_linear_constraints(), 2)
 
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind_LE")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 10)
 
             ind = quad_prog.get_linear_constraint(1)
@@ -615,9 +543,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind0")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": 18.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": 18.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 7)
 
         with self.subTest("sense >=, binary_var is included as part of linear_ct too"):
@@ -649,17 +575,13 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             ind = quad_prog.get_linear_constraint(0)
             self.assertEqual(ind.name, "ind0_LE")
             self.assertEqual(ind.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": 8.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": 8.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, 7)
 
             ind = quad_prog.get_linear_constraint(1)
             self.assertEqual(ind.name, "ind0_GE")
             self.assertEqual(ind.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                ind.linear.to_dict(use_name=True), {"x": -2.0, "y": 1.0, "z": 2.0}
-            )
+            self.assertDictEqual(ind.linear.to_dict(use_name=True), {"x": -2.0, "y": 1.0, "z": 2.0})
             self.assertEqual(ind.rhs, -3)
 
     def test_logical_expressions(self):
@@ -678,9 +600,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             lin = q_p.get_linear_constraint(0)
             self.assertEqual(lin.name, "c0")
             self.assertEqual(lin.sense, Constraint.Sense.EQ)
-            self.assertDictEqual(
-                lin.linear.to_dict(use_name=True), {"x": 1, "_not1": 1}
-            )
+            self.assertDictEqual(lin.linear.to_dict(use_name=True), {"x": 1, "_not1": 1})
             self.assertAlmostEqual(lin.rhs, 1)
 
             lin = q_p.get_linear_constraint(1)
@@ -694,9 +614,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             self.assertEqual(quad.name, "q0")
             self.assertEqual(quad.sense, Constraint.Sense.EQ)
             self.assertDictEqual(quad.linear.to_dict(), {})
-            self.assertDictEqual(
-                quad.quadratic.to_dict(use_name=True), {("_not1", "_not1"): 1}
-            )
+            self.assertDictEqual(quad.quadratic.to_dict(use_name=True), {("_not1", "_not1"): 1})
             self.assertAlmostEqual(quad.rhs, 2)
 
         with self.subTest("logical AND"):
@@ -713,25 +631,19 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             lin = q_p.get_linear_constraint(0)
             self.assertEqual(lin.name, "c0")
             self.assertEqual(lin.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                lin.linear.to_dict(use_name=True), {"x": -1, "_and2": 1}
-            )
+            self.assertDictEqual(lin.linear.to_dict(use_name=True), {"x": -1, "_and2": 1})
             self.assertAlmostEqual(lin.rhs, 0)
 
             lin = q_p.get_linear_constraint(1)
             self.assertEqual(lin.name, "c1")
             self.assertEqual(lin.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                lin.linear.to_dict(use_name=True), {"y": -1, "_and2": 1}
-            )
+            self.assertDictEqual(lin.linear.to_dict(use_name=True), {"y": -1, "_and2": 1})
             self.assertAlmostEqual(lin.rhs, 0)
 
             lin = q_p.get_linear_constraint(2)
             self.assertEqual(lin.name, "c2")
             self.assertEqual(lin.sense, Constraint.Sense.GE)
-            self.assertDictEqual(
-                lin.linear.to_dict(use_name=True), {"x": -1, "y": -1, "_and2": 1}
-            )
+            self.assertDictEqual(lin.linear.to_dict(use_name=True), {"x": -1, "y": -1, "_and2": 1})
             self.assertAlmostEqual(lin.rhs, -1)
 
             lin = q_p.get_linear_constraint(3)
@@ -745,9 +657,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             self.assertEqual(quad.name, "q0")
             self.assertEqual(quad.sense, Constraint.Sense.EQ)
             self.assertDictEqual(quad.linear.to_dict(), {})
-            self.assertDictEqual(
-                quad.quadratic.to_dict(use_name=True), {("_and2", "_and2"): 1}
-            )
+            self.assertDictEqual(quad.quadratic.to_dict(use_name=True), {("_and2", "_and2"): 1})
             self.assertAlmostEqual(quad.rhs, 2)
 
         with self.subTest("logical OR"):
@@ -764,25 +674,19 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             lin = q_p.get_linear_constraint(0)
             self.assertEqual(lin.name, "c0")
             self.assertEqual(lin.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                lin.linear.to_dict(use_name=True), {"x": 1, "_or2": -1}
-            )
+            self.assertDictEqual(lin.linear.to_dict(use_name=True), {"x": 1, "_or2": -1})
             self.assertAlmostEqual(lin.rhs, 0)
 
             lin = q_p.get_linear_constraint(1)
             self.assertEqual(lin.name, "c1")
             self.assertEqual(lin.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                lin.linear.to_dict(use_name=True), {"y": 1, "_or2": -1}
-            )
+            self.assertDictEqual(lin.linear.to_dict(use_name=True), {"y": 1, "_or2": -1})
             self.assertAlmostEqual(lin.rhs, 0)
 
             lin = q_p.get_linear_constraint(2)
             self.assertEqual(lin.name, "c2")
             self.assertEqual(lin.sense, Constraint.Sense.LE)
-            self.assertDictEqual(
-                lin.linear.to_dict(use_name=True), {"x": -1, "y": -1, "_or2": 1}
-            )
+            self.assertDictEqual(lin.linear.to_dict(use_name=True), {"x": -1, "y": -1, "_or2": 1})
             self.assertAlmostEqual(lin.rhs, 0)
 
             lin = q_p.get_linear_constraint(3)
@@ -796,9 +700,7 @@ class TestDocplexMpTranslator(OptimizationTestCase):
             self.assertEqual(quad.name, "q0")
             self.assertEqual(quad.sense, Constraint.Sense.EQ)
             self.assertDictEqual(quad.linear.to_dict(), {})
-            self.assertDictEqual(
-                quad.quadratic.to_dict(use_name=True), {("_or2", "_or2"): 1}
-            )
+            self.assertDictEqual(quad.quadratic.to_dict(use_name=True), {("_or2", "_or2"): 1})
             self.assertAlmostEqual(quad.rhs, 2)
 
     def test_trivial_constraints_from_docplex_mp(self):

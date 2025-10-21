@@ -90,12 +90,10 @@ class VehicleRouting(GraphOptimizationApplication):
                 mdl.add_constraint(mdl.sum(x[i, j] for i in range(n) if i != j) == 1)
         # For the depot node
         mdl.add_constraint(
-            mdl.sum(x[i, self.depot] for i in range(n) if i != self.depot)
-            == self.num_vehicles
+            mdl.sum(x[i, self.depot] for i in range(n) if i != self.depot) == self.num_vehicles
         )
         mdl.add_constraint(
-            mdl.sum(x[self.depot, j] for j in range(n) if j != self.depot)
-            == self.num_vehicles
+            mdl.sum(x[self.depot, j] for j in range(n) if j != self.depot) == self.num_vehicles
         )
 
         # To eliminate sub-routes
@@ -106,8 +104,7 @@ class VehicleRouting(GraphOptimizationApplication):
                 clique_set.append(list(comb))
         for clique in clique_set:
             mdl.add_constraint(
-                mdl.sum(x[(i, j)] for i in clique for j in clique if i != j)
-                <= len(clique) - 1
+                mdl.sum(x[(i, j)] for i in clique for j in clique if i != j) <= len(clique) - 1
             )
         op = from_docplex_mp(mdl)
         return op
@@ -185,9 +182,7 @@ class VehicleRouting(GraphOptimizationApplication):
 
     def _edge_color(self, route_list: list[list[list[int]]]):
         # Arrange route_list and return the list of the colors of each route
-        return [
-            k / len(route_list) for k in range(len(route_list)) for _ in route_list[k]
-        ]
+        return [k / len(route_list) for k in range(len(route_list)) for _ in route_list[k]]
 
     @property
     def num_vehicles(self) -> int:

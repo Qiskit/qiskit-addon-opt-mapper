@@ -19,9 +19,7 @@ from dataclasses import dataclass
 # We use sparse polynomial representation {monomial: coefficient} throughout the converters.
 # Monomials are tuples of variable names, e.g., ('x', 'y') for xy term.
 # The empty tuple () represents the constant term.
-Monomial = tuple[
-    str, ...
-]  # ()=const, ('x',)=linear, ('x','y')=quadratic, ('x','y','z')=cubic, ...
+Monomial = tuple[str, ...]  # ()=const, ('x',)=linear, ('x','y')=quadratic, ('x','y','z')=cubic, ...
 # Poly represents a polynomial as a mapping from monomials to coefficients.
 Poly = dict[Monomial, float]
 

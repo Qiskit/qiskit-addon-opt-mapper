@@ -51,12 +51,8 @@ class _FlipProblemSense(OptimizationProblemConverter):
             desired_problem = copy.deepcopy(problem)
             desired_problem.objective.sense = desired_sense
             desired_problem.objective.constant = (-1) * problem.objective.constant
-            desired_problem.objective.linear = (
-                -1
-            ) * problem.objective.linear.coefficients
-            desired_problem.objective.quadratic = (
-                -1
-            ) * problem.objective.quadratic.coefficients
+            desired_problem.objective.linear = (-1) * problem.objective.linear.coefficients
+            desired_problem.objective.quadratic = (-1) * problem.objective.quadratic.coefficients
             desired_problem.objective.higher_order = {
                 degree: (-1) * ho.to_array()
                 for degree, ho in problem.objective.higher_order.items()

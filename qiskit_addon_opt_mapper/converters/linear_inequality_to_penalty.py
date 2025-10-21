@@ -151,10 +151,7 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
         offset = problem.objective.constant
         linear = problem.objective.linear.to_dict()
         quadratic = problem.objective.quadratic.to_dict()
-        ho = {
-            degree: expr.to_dict()
-            for degree, expr in problem.objective.higher_order.items()
-        }
+        ho = {degree: expr.to_dict() for degree, expr in problem.objective.higher_order.items()}
         sense = problem.objective.sense.value
 
         # convert linear constraints into penalty terms
@@ -169,9 +166,7 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
                 )
                 continue
 
-            conv_offset, conv_linear, conv_quadratic, varmap = self._conversion_table(
-                constraint
-            )
+            conv_offset, conv_linear, conv_quadratic, varmap = self._conversion_table(constraint)
 
             # constant part
             offset += sense * penalty * conv_offset
@@ -182,9 +177,7 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
                 # into existing value else create new key and value in the linear_term dict
 
                 if conv_linear[j] != 0:
-                    linear[j_2] = (
-                        linear.get(j_2, 0.0) + sense * penalty * conv_linear[j]
-                    )
+                    linear[j_2] = linear.get(j_2, 0.0) + sense * penalty * conv_linear[j]
 
             # quadratic parts of penalty
             for j, j_2 in varmap.items():
@@ -196,8 +189,7 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
                     if conv_quadratic[j][k] != 0:
                         tup = (j_2, varmap[k])
                         quadratic[tup] = (
-                            quadratic.get(tup, 0.0)
-                            + sense * penalty * conv_quadratic[j][k]
+                            quadratic.get(tup, 0.0) + sense * penalty * conv_quadratic[j][k]
                         )
 
         # Copy quadratic_constraints
@@ -285,9 +277,7 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
                 else:
                     linear[1] = 1
         else:
-            raise OptimizationError(
-                f"Internal error: invalid constraint {constraint.name}"
-            )
+            raise OptimizationError(f"Internal error: invalid constraint {constraint.name}")
 
         return offset, linear, quadratic, varmap
 
@@ -315,11 +305,7 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
                 # x-y>=0
                 return bool(coeff_array.min() == -1.0 and coeff_array.max() == 1.0)
         elif num_vars >= 2:
-            if (
-                sense == Constraint.Sense.LE
-                and rhs == 1
-                and all(i == 1 for i in params.values())
-            ):
+            if sense == Constraint.Sense.LE and rhs == 1 and all(i == 1 for i in params.values()):
                 # x1+x2+...<=1
                 return True
             if (
@@ -363,9 +349,7 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
         lin_b = problem.objective.linear.bounds
         quad_b = problem.objective.quadratic.bounds
         return float(
-            1.0
-            + (lin_b.upperbound - lin_b.lowerbound)
-            + (quad_b.upperbound - quad_b.lowerbound)
+            1.0 + (lin_b.upperbound - lin_b.lowerbound) + (quad_b.upperbound - quad_b.lowerbound)
         )
 
     def interpret(self, x: np.ndarray | list[float]) -> np.ndarray:

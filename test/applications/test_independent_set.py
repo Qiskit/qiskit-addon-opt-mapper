@@ -45,9 +45,7 @@ class TestIndependentSet(OptimizationTestCase):
         obj = op.objective
         self.assertEqual(obj.sense, OptimizationObjective.Sense.MAXIMIZE)
         self.assertEqual(obj.constant, 0)
-        self.assertDictEqual(
-            obj.linear.to_dict(), {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
-        )
+        self.assertDictEqual(obj.linear.to_dict(), {0: 1.0, 1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0})
         # Test constraint
         lin = op.linear_constraints
         self.assertEqual(len(lin), len(self.graph.edges))
