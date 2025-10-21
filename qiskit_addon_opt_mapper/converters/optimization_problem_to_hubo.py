@@ -30,22 +30,22 @@ from .optimization_problem_converter import OptimizationProblemConverter
 class OptimizationProblemToHubo(OptimizationProblemConverter):
     """Convert an optimization problem into a HUBO form.
 
-    HUBO stands for (higher-order objective function with no constraints).
-    The conversion is achieved by converting variables to binary and
-    eliminating constraints. The new problem has no constraints and the objective function is higher
-    order polynomial. This combines several converters: `IntegerToBinary`, `InequalityToPenalty`,
-    `EqualityToPenalty`, and `MaximizeToMinimize`, while preserving higher-order terms in the
-    objective function. The resulting HUBO problem can be directly mapped to an Ising Hamiltonian
-    using the `to_ising()` function.
+    HUBO stands for "higher-order unconstrained binary optimization".
+    The conversion is achieved by converting variables to binary and eliminating constraints.
+    The resulting problem has no constraints and a higher-order polynomial objective function.
+    This combines several converters: `IntegerToBinary`, `InequalityToPenalty`,
+    `EqualityToPenalty`, and `MaximizeToMinimize`, while preserving higher-order terms
+    in the objective function. The resulting HUBO problem can be directly mapped to
+    an Ising Hamiltonian using the `to_ising()` function.
 
+    **Examples**
 
-    Examples:
-        >>> from qiskit_addon_opt_mapper.problems import OptimizationProblem
-        >>> from qiskit_addon_opt_mapper.converters import OptimizationProblemToHubo
-        >>> problem = OptimizationProblem()
-        >>> # define a problem
-        >>> conv = OptimizationProblemToHubo()
-        >>> problem2 = conv.convert(problem)
+    >>> from qiskit_addon_opt_mapper.problems import OptimizationProblem
+    >>> from qiskit_addon_opt_mapper.converters import OptimizationProblemToHubo
+    >>> problem = OptimizationProblem()
+    >>> # define a problem
+    >>> conv = OptimizationProblemToHubo()
+    >>> problem2 = conv.convert(problem)
     """
 
     def __init__(self, penalty: float | None = None) -> None:
@@ -110,20 +110,18 @@ class OptimizationProblemToHubo(OptimizationProblemConverter):
 
     @staticmethod
     def get_compatibility_msg(problem: OptimizationProblem) -> str:
-        """Checks whether the given problem is compatible.
+        """Checks whether the given problem is compatible with HUBO conversion.
 
-        i.e., whether the problem can be converted to a HUBO, and otherwise,
-        returns a message explaining the incompatibility.
+        A problem is compatible if it can be converted to a HUBO (Higher-order Unconstrained Binary Optimization).
+        If not, this function returns a message explaining the incompatibility.
 
         The following problems are not compatible:
         - Continuous variables are not supported.
-        - If there are float coefficients in constraints, the problem is not compatible because
-          inequality constraints cannot be converted to equality constraints using integer slack
-          variables.
+        - Constraints with float coefficients are not supported, because inequality constraints cannot be
+        converted to equality constraints using integer slack variables.
 
         Args:
             problem: The optimization problem to check compatibility.
-
 
         Returns:
             A message describing the incompatibility.

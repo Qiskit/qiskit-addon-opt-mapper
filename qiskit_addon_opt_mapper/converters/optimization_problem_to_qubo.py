@@ -110,24 +110,21 @@ class OptimizationProblemToQubo(OptimizationProblemConverter):
 
     @staticmethod
     def get_compatibility_msg(problem: OptimizationProblem) -> str:
-        """Checks whether a given problem can be solved with this optimizer.
+        """Checks whether a given problem can be converted to a QUBO form.
 
-        Checks whether the given problem is compatible, i.e., whether the problem can be converted
-        to a QUBO, and otherwise, returns a message explaining the incompatibility.
+        If the problem is not compatible, this function returns a message explaining
+        the incompatibility.
 
         The following problems are not compatible:
         - Continuous variables are not supported.
-        - Higher order objective functions are not supported.
+        - Higher-order objective functions are not supported.
         - Quadratic constraints are not supported.
-        - Higher order constraints are not supported.
-        - If there are float coefficients in constraints, the problem is not compatible because
-          inequality constraints cannot be converted to equality constraints using integer slack
-          variables.
-
+        - Higher-order constraints are not supported.
+        - Constraints with float coefficients are not supported, because inequality constraints
+        cannot be converted to equality constraints using integer slack variables.
 
         Args:
             problem: The optimization problem to check compatibility.
-
 
         Returns:
             A message describing the incompatibility.

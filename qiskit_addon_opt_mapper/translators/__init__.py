@@ -28,7 +28,6 @@ Translators
 
    from_docplex_mp
    to_docplex_mp
-   from_ising
    to_ising
 """
 

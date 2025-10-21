@@ -36,8 +36,10 @@ from .util import (
 class SpinToBinary(OptimizationProblemConverter):
     """Convert all spin variables in the problem to binary variables.
 
-    The conversion is done by the relation
+    The conversion is done by the relation::
+
         s_i = 1 - 2 b_i
+
     where s_i is a spin variable (in {-1, +1}) and b_i is a binary variable (in {0, 1}).
     """
 

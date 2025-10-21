@@ -13,7 +13,7 @@
 """Optimization converters.
 
 Optimization converters (:mod:`qiskit_addon_opt_mapper.converters`).
-===============================================================
+======================================================================
 
 .. currentmodule:: qiskit_addon_opt_mapper.converters
 
@@ -23,7 +23,7 @@ result for the problem, based on the original problem before conversion, to retu
 :class:`~qiskit_addon_opt_mapper.solvers.SolverResult`.
 
 Base class for converters
--------------------------
+------------------------------
 
 .. autosummary::
    :toctree: ../stubs/
@@ -32,7 +32,7 @@ Base class for converters
    OptimizationProblemConverter
 
 Converters
-----------
+---------------
 
 .. autosummary::
    :toctree: ../stubs/

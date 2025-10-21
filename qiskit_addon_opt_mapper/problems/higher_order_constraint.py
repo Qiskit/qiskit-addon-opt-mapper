@@ -27,9 +27,8 @@ CoeffLike = ndarray | dict[tuple[str | int, ...], float] | list
 class HigherOrderConstraint(Constraint):
     """Constraint in higher order form.
 
-    e.g. linear(x) + x^T Q x + sum_{k>=3}  sum_{|t|=k} C_k[t] * prod_{i in t} x[i]  `sense` `rhs`
-    where `sense` is one of the ConstraintSense values (e.g., LE, <=) and `rhs` is a float.
-
+    e.g. ``linear(x) + x^T Q x + sum_{k>=3}  sum_{|t|=k} C_k[t] * prod_{i in t} x[i]`` ``sense`` ``rhs``
+    where ``sense`` is one of the ConstraintSense values (e.g., LE, <=) and ``rhs`` is a float.
 
     Supports both a single higher-order term (order+coeffs) and multiple via
     higher_orders={k: coeffs}.
@@ -56,10 +55,9 @@ class HigherOrderConstraint(Constraint):
         Args:
             optimization_problem: The optimization problem this constraint belongs to.
             name: The name of the constraint.
-            linear: The coefficients for the linear part of the constraint.
-            quadratic: The coefficients for the quadratic part of the constraint.
-            higher_order: A single higher-order expression or a dictionary of {order: coeffs}
-                for multiple orders (k>=3).
+            linear: Coefficients for the linear part.
+            quadratic: Coefficients for the quadratic part.
+            higher_order: A single higher-order expression or a dictionary of {order: coeffs} for multiple orders (k≥3).
             sense: The sense of the constraint (e.g., LE, <=).
             rhs: The right-hand-side value of the constraint.
         """

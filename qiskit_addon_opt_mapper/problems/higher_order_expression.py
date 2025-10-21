@@ -39,14 +39,16 @@ class HigherOrderExpression(OptimizationProblemElement):
     r"""Representation of a symmetric k-th order expression by its coefficients.
 
     We represent a symmetric polynomial term of order k as
-        f(x) = sum_{t} C[t] * prod_{i in t} x[i],
+    ``f(x) = sum_{t} C[t] * prod_{i in t} x[i]``,
     where t is a multiset of variable indices of length k.
 
     When dealing with multidimensional array indices, the value is stored only at the
     lexicographically smallest permutation of the indices (obtained by sorting them in ascending
     order).
-    For example, for a 4th-order term 2⋅x1⋅x2⋅x3⋅x4, the coefficient "2" is stored at
-    dict((1,2,3,4))Other permutations like dict((2,1,4,3)) or dict((4,3,2,1)) are left empty.
+
+    For example, for a 4th-order term ``2⋅x1⋅x2⋅x3⋅x4``, the coefficient "2" is stored at
+    ``dict((1, 2, 3, 4))``. Other permutations like ``dict((2, 1, 4, 3))`` or
+    ``dict((4, 3, 2, 1))`` are left empty.
     """
 
     def __init__(
@@ -57,12 +59,11 @@ class HigherOrderExpression(OptimizationProblemElement):
         """Creates a new higher-order expression.
 
         Args:
-            optimization_problem: The parent OptimizationProblem.
-            order: Polynomial order (k >= 3).
-            coefficients: Coefficients as:
-                - dense ndarray/list with shape (n,)*k, or
-                - dict mapping tuple of variable indices/names (len=k) to float.
-                  Keys are canonicalized to ascending order and summed.
+            optimization_problem (Any): The parent OptimizationProblem.
+            coefficients (ndarray | dict[Key, float] | list): Coefficients as either:
+                - A dense ndarray or list with shape (n,)*k, or
+                - A dict mapping a tuple of variable indices/names (length k) to float.
+                Keys are canonicalized to ascending order and summed.
         """
         super().__init__(optimization_problem)
         self._n = int(self.optimization_problem.get_num_vars())
