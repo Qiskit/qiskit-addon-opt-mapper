@@ -28,13 +28,13 @@ classifiers = [
 requires-python = ">=3.10"
 
 dependencies = [
-    "numpy>=1.23",
+    "numpy",
     "cvxpy",
     "qiskit<3",
-    "networkx>=3.1",
+    "networkx",
     "rustworkx",
-    "scipy>=1.9.0",
-    "docplex>=2.30.251"
+    "scipy",
+    "docplex"
 ]
 
 [project.optional-dependencies]
