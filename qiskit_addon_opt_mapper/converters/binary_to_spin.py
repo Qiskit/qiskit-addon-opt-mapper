@@ -110,11 +110,13 @@ class BinaryToSpin(OptimizationProblemConverter):
 
         return self._dst
 
-    def interpret(self, x: np.ndarray | list[float]) -> np.ndarray:
+    def interpret(self, x: np.ndarray | list[float]) -> np.ndarray | None:
         """Convert a solution of the converted problem back to a solution of the original problem.
 
         For binaries that became spins, we use b = (1 - s)/2.
         """
+        if not self._dst or not self._src_num_vars:
+            return None
         # Build a name->value map from dst solution order
         if len(x) != self._dst.get_num_vars():
             raise OptimizationError("Result length does not match converted problem.")
@@ -123,7 +125,7 @@ class BinaryToSpin(OptimizationProblemConverter):
             dst_vals[var.name] = float(x[i])
 
         # Compose original vector order
-        out = np.zeros(self._src_num_vars, dtype=float)
+        out = np.zeros(self._src_num_vars)
         for i, var in enumerate(self._src.variables):
             if var.vartype == Variable.Type.BINARY:
                 s = dst_vals[self._b2s[var.name]]
@@ -174,6 +176,8 @@ class BinaryToSpin(OptimizationProblemConverter):
 
     def _convert_objective(self) -> None:
         """Convert the objective of the source problem and set it to the destination problem."""
+        if not self._src or not self._dst:
+            return
         obj = self._src.objective
 
         # Build polynomial f from original objective

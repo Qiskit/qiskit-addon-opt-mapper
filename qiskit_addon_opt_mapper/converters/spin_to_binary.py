@@ -122,7 +122,7 @@ class SpinToBinary(OptimizationProblemConverter):
         for i, var in enumerate(self._dst.variables):  # type: ignore[union-attr]
             dst_vals[var.name] = float(x[i])
 
-        out = np.zeros(self._src_num_vars, dtype=float)
+        out = np.zeros(self._src_num_vars)
         for i, var in enumerate(self._src.variables):  # type: ignore[union-attr]
             if var.vartype == Variable.Type.SPIN:
                 b = dst_vals[self._s2b[var.name]]
@@ -177,6 +177,8 @@ class SpinToBinary(OptimizationProblemConverter):
 
         Set it to the destination problem.
         """
+        if not self._src or not self._dst:
+            return
         obj = self._src.objective
 
         # Build polynomial from original objective
@@ -201,6 +203,8 @@ class SpinToBinary(OptimizationProblemConverter):
 
     def _emit_constraint_from_poly(self, name: str, sense, rhs: float, poly: Poly) -> None:
         """Emit a constraint to the destination problem from a polynomial form."""
+        if not self._dst:
+            return
         c0, ldict, qdict, hdict = _poly_split(poly)
         rhs2 = rhs - c0
         if hdict:

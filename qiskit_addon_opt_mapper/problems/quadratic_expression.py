@@ -12,7 +12,7 @@
 
 """Quadratic expression interface."""
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from numpy import ndarray
@@ -64,7 +64,7 @@ class QuadraticExpression(OptimizationProblemElement):
             i = self.optimization_problem.variables_index[i]
         if isinstance(j, str):
             j = self.optimization_problem.variables_index[j]
-        return self.coefficients[min(i, j), max(i, j)]
+        return float(self.coefficients[min(i, j), max(i, j)])
 
     def __setitem__(self, key: tuple[str | int, str | int], value: float) -> None:
         """Sets the coefficient where i, j can be a variable names or indices.
@@ -129,11 +129,9 @@ class QuadraticExpression(OptimizationProblemElement):
             n = self.optimization_problem.get_num_vars()
             coeffs = dok_matrix((n, n))
             for (i, j), value in coefficients.items():
-                if isinstance(i, str):
-                    i = self.optimization_problem.variables_index[i]
-                if isinstance(j, str):
-                    j = self.optimization_problem.variables_index[j]
-                coeffs[i, j] = value
+                i_idx = self.optimization_problem.variables_index[i] if isinstance(i, str) else i
+                j_idx = self.optimization_problem.variables_index[j] if isinstance(j, str) else j
+                coeffs[i_idx, j_idx] = value
             coefficients = coeffs
         else:
             raise OptimizationError(f"Unsupported format for coefficients: {coefficients}")
@@ -185,7 +183,7 @@ class QuadraticExpression(OptimizationProblemElement):
             An array with the coefficients corresponding to the quadratic expression.
         """
         coeffs = self._symmetric_matrix(self._coefficients) if symmetric else self._coefficients
-        return coeffs.toarray()
+        return cast(ndarray, coeffs.toarray())
 
     def to_dict(
         self, symmetric: bool = False, use_name: bool = False
@@ -230,7 +228,7 @@ class QuadraticExpression(OptimizationProblemElement):
         val = x @ self.coefficients @ x
 
         # return the result
-        return val
+        return float(val)
 
     def evaluate_gradient(self, x: ndarray | list | dict[str | int, float]) -> ndarray:
         """Evaluate the gradient of the quadratic expression for given variables.
@@ -248,7 +246,7 @@ class QuadraticExpression(OptimizationProblemElement):
         val = (self.coefficients.transpose() + self.coefficients) @ x
 
         # return the result
-        return val
+        return cast(ndarray, val)
 
     def _cast_as_array(self, x: ndarray | list | dict[str | int, float]) -> dok_matrix | np.ndarray:
         """Converts input to an array if it is a dictionary or list."""

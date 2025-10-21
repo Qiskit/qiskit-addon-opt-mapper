@@ -13,7 +13,7 @@
 """Linear expression interface."""
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 from numpy import array, ndarray
 from scipy.sparse import dok_matrix, spmatrix
@@ -68,7 +68,7 @@ class LinearExpression(OptimizationProblemElement):
         """
         if isinstance(i, str):
             i = self.optimization_problem.variables_index[i]
-        return self.coefficients[0, i]
+        return float(self.coefficients[0, i])
 
     def __setitem__(self, i: int | str, value: float) -> None:
         """Set item for LinearExpression."""
@@ -159,7 +159,7 @@ class LinearExpression(OptimizationProblemElement):
         Returns:
             An array with the coefficients corresponding to the linear expression.
         """
-        return self._coefficients.toarray()[0]
+        return cast(ndarray, self._coefficients.toarray()[0])
 
     def to_dict(self, use_name: bool = False) -> dict[int | str, float]:
         """Returns the coefficients of the linear expression as dictionary.
@@ -198,7 +198,7 @@ class LinearExpression(OptimizationProblemElement):
         val = (x @ self.coefficients.transpose())[0, 0]
 
         # return the result
-        return val
+        return float(val)
 
     # pylint: disable=unused-argument
     def evaluate_gradient(self, x: ndarray | list | dict[int | str, float]) -> ndarray:

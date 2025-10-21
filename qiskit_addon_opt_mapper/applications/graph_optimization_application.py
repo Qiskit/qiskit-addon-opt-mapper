@@ -61,7 +61,7 @@ class GraphOptimizationApplication(OptimizationApplication):
     @_optionals.HAS_MATPLOTLIB.require_in_call
     def draw(
         self,
-        result: np.ndarray = None,
+        result: np.ndarray | None = None,
         pos: dict[int, np.ndarray] | None = None,
     ) -> None:
         """Draw a graph with the result.

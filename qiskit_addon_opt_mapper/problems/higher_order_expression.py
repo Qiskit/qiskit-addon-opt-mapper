@@ -108,6 +108,7 @@ class HigherOrderExpression(OptimizationProblemElement):
                 Keys are canonicalized to ascending order and summed.
         """
         # --- dict path ---
+        acc: dict[_IntKey, float] = {}
         if isinstance(coefficients, dict):
             if len(coefficients) == 0:
                 raise ValueError("Cannot infer order from empty dict coefficients.")
@@ -128,7 +129,6 @@ class HigherOrderExpression(OptimizationProblemElement):
                 raise ValueError(f"order must be >= 3, got {order}")
             self._order = order
 
-            acc: dict[_IntKey, float] = {}
             for key, v in coefficients.items():
                 idx = self._normalize_key(key)
                 fv = float(v)
@@ -150,7 +150,6 @@ class HigherOrderExpression(OptimizationProblemElement):
 
             self._order = int(arr.ndim)
 
-            acc: dict[_IntKey, float] = {}
             nz = np.argwhere(arr != 0.0)
             for idx_tuple in map(tuple, nz):
                 val = float(arr[idx_tuple])

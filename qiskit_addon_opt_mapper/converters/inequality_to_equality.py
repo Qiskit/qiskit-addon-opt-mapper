@@ -19,6 +19,7 @@ import numpy as np
 
 from ..exceptions import OptimizationError
 from ..problems.constraint import Constraint
+from ..problems.higher_order_constraint import HigherOrderConstraint
 from ..problems.linear_constraint import LinearConstraint
 from ..problems.optimization_objective import OptimizationObjective
 from ..problems.optimization_problem import OptimizationProblem
@@ -79,6 +80,7 @@ class InequalityToEquality(OptimizationProblemConverter):
             raise OptimizationError(f"Unsupported mode is selected: {mode}")
 
         # Copy variables
+        assert self._dst is not None
         for x in self._src.variables:
             if x.vartype == Variable.Type.BINARY:
                 self._dst._add_variable(
@@ -186,10 +188,12 @@ class InequalityToEquality(OptimizationProblemConverter):
         constant = self._src.objective.constant
         linear = self._src.objective.linear.to_dict(use_name=True)
         quadratic = self._src.objective.quadratic.to_dict(use_name=True)
+
         ho = {
-            degree: expr.to_dict(use_name=True)
+            degree: dict(expr.to_dict(use_name=True))  # Ensure it's a plain dict
             for degree, expr in self._src.objective.higher_order.items()
         }
+
         if self._src.objective.sense == OptimizationObjective.Sense.MINIMIZE:
             self._dst.minimize(constant, linear, quadratic, ho)
         else:
@@ -252,6 +256,7 @@ class InequalityToEquality(OptimizationProblemConverter):
             # Add a slack variable.
             mode_name = {"integer": "int", "continuous": "continuous"}
             slack_name = f"{name}{self._delimiter}{mode_name[mode]}_slack"
+            assert self._dst is not None
             if mode == "integer":
                 self._dst._add_variable(
                     name=slack_name,
@@ -317,6 +322,7 @@ class InequalityToEquality(OptimizationProblemConverter):
             # Add a slack variable.
             mode_name = {"integer": "int", "continuous": "continuous"}
             slack_name = f"{name}{self._delimiter}{mode_name[mode]}_slack"
+            assert self._dst is not None
             if mode == "integer":
                 self._dst._add_variable(
                     name=slack_name,
@@ -336,7 +342,7 @@ class InequalityToEquality(OptimizationProblemConverter):
             new_linear[slack_name] = sign
         return new_linear, quadratic.coefficients, "==", new_rhs, name
 
-    def _add_slack_var_higher_order_constraint(self, constraint: Constraint):
+    def _add_slack_var_higher_order_constraint(self, constraint: HigherOrderConstraint):
         higher_order = constraint.higher_order
         quadratic = constraint.quadratic
         linear = constraint.linear
@@ -391,6 +397,7 @@ class InequalityToEquality(OptimizationProblemConverter):
             # Add a slack variable.
             mode_name = {"integer": "int", "continuous": "continuous"}
             slack_name = f"{name}{self._delimiter}{mode_name[mode]}_slack"
+            assert self._dst is not None
             if mode == "integer":
                 self._dst._add_variable(
                     name=slack_name,
@@ -424,9 +431,11 @@ class InequalityToEquality(OptimizationProblemConverter):
             The result of the original problem.
         """
         # convert back the optimization result into that of the original problem
+        assert self._dst is not None
         names = [var.name for var in self._dst.variables]
 
         # interpret slack variables
+        assert self._src is not None
         sol = {name: x[i] for i, name in enumerate(names)}
         new_x = np.zeros(self._src.get_num_vars())
         for i, var in enumerate(self._src.variables):

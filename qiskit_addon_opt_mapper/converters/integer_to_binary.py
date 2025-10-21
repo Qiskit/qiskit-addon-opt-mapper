@@ -135,6 +135,8 @@ class IntegerToBinary(OptimizationProblemConverter):
     def _convert_linear_coefficients_dict(
         self, coefficients: dict[str, float]
     ) -> tuple[dict[str, float], float]:
+        if not self._src:
+            raise OptimizationError("Optimization problem not found.")
         constant = 0.0
         linear: dict[str, float] = {}
         for name, v in coefficients.items():

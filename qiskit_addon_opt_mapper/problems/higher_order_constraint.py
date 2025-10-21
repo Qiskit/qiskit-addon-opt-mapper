@@ -21,7 +21,7 @@ from .higher_order_expression import HigherOrderExpression
 from .linear_expression import LinearExpression
 from .quadratic_expression import QuadraticExpression
 
-CoeffLike = ndarray | dict[tuple[str | int], float] | list
+CoeffLike = ndarray | dict[tuple[str | int, ...], float] | list
 
 
 class HigherOrderConstraint(Constraint):
@@ -149,7 +149,7 @@ class HigherOrderConstraint(Constraint):
         val = self.linear.evaluate(x) + self.quadratic.evaluate(x)
         for expr in self._higher_order.values():
             val += expr.evaluate(x)
-        return val
+        return float(val)
 
     def __repr__(self):
         """Repr for higher order constraint."""
