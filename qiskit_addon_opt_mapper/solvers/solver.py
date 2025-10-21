@@ -155,7 +155,7 @@ class SolverResult:
                 SolutionSample(x=cast(np.ndarray, x), fval=fval, status=status, probability=1.0)
             ]
         else:
-            raise OptimizationError("Cannot intialize without fval or samples.")
+            raise OptimizationError("Cannot initialize without fval or samples.")
 
     def __repr__(self) -> str:
         """Repr. method."""

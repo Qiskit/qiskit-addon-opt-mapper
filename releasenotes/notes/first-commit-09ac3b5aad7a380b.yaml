@@ -8,7 +8,7 @@ features:
 
     Core modules include:
       - **applications**: Provides model implementations for common optimization problems.
-      - **converters**: Coverters facilitate transformations between different representations and interpretation of solutions. 
+      - **converters**: Converters facilitate transformations between different representations and interpretation of solutions. 
       - **problems**: Defines optimization problems including objective functions, constraints, and variable types.
       - **solvers**: Implements interfaces for modelling validation using classical solvers.
       - **translators**: Converts optimization problem into additional optimization models.

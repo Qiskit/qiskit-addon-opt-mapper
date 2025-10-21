@@ -195,3 +195,4 @@ notice-rgx = """
 convention = "google"
 
 [tool.typos.default.extend-words]
+MIS = "MIS" # acronym for maximum independent set

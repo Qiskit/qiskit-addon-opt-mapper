@@ -185,14 +185,14 @@ class TestIntegerToBinaryConverter(OptimizationTestCase):
             [x.name for x in op2.variables],
             ["x0@0", "x0@1", "x0@2", "x1", "x2", "x3"],
         )
-        expected_qubic = {
+        expected_cubic = {
             (0, 3, 4): 2.0,
             (1, 3, 4): 4.0,
             (2, 3, 4): 8.0,
             (3, 4, 5): 30.0,
         }
         self.assertDictEqual(
-            op2.higher_order_constraints[0].higher_order[3].to_dict(), expected_qubic
+            op2.higher_order_constraints[0].higher_order[3].to_dict(), expected_cubic
         )
         expected_quartic = {
             (0, 3, 4, 5): 3.0,
