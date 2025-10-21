@@ -50,6 +50,8 @@ class EqualityToPenalty(OptimizationProblemConverter):
         self._src_num_vars: int | None = None
         self._penalty: float | None = penalty
         self._should_define_penalty: bool = penalty is None
+        self._src = OptimizationProblem()
+        self._dst = OptimizationProblem()
 
     def convert(self, problem: OptimizationProblem) -> OptimizationProblem:
         """Convert a problem with equality constraints into an unconstrained problem.
@@ -142,7 +144,7 @@ class EqualityToPenalty(OptimizationProblemConverter):
                         tgt[names] = tgt.get(names, 0.0) + sense * scale * c
 
         # --- Handle each equality constraint (linear, quadratic, higher order) ---
-        def handle_eq_constraint(constraint):
+        def handle_eq_constraint(constraint: Constraint):
             # Check sense of constraint
             if con.sense != Constraint.Sense.EQ:
                 raise OptimizationError(
@@ -174,16 +176,16 @@ class EqualityToPenalty(OptimizationProblemConverter):
         for con in problem.linear_constraints:
             handle_eq_constraint(con)
 
-        for con in problem.quadratic_constraints:
-            handle_eq_constraint(con)
+        for con in problem.quadratic_constraints:  # type: ignore
+            handle_eq_constraint(con)  # type: ignore
 
-        for con in problem.higher_order_constraints:
-            handle_eq_constraint(con)
+        for con in problem.higher_order_constraints:  # type: ignore
+            handle_eq_constraint(con)  # type: ignore
 
         if problem.objective.sense == OptimizationObjective.Sense.MINIMIZE:
-            self._dst.minimize(offset, linear, quadratic, ho)
+            self._dst.minimize(offset, linear, quadratic, ho)  # type: ignore
         else:
-            self._dst.maximize(offset, linear, quadratic, ho)
+            self._dst.maximize(offset, linear, quadratic, ho)  # type: ignore
 
         # Update the penalty to the one just used
         self._penalty = penalty

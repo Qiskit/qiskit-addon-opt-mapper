@@ -140,8 +140,8 @@ def expr2str(
     # --- collect higher-order terms into {k: {tuple[str,...]: coeff}} ---
     ho_by_k: dict[int, dict[tuple[str, ...], float]] = {}
     if higher_order is not None:
-        for k, expr in higher_order.items():
-            ho_by_k[k] = expr.to_dict(use_name=True)
+        for k, expr in higher_order.items():  # type: ignore
+            ho_by_k[k] = expr.to_dict(use_name=True)  # type: ignore
 
     # --- higher-order (descending by order k) ---
     for k in sorted(ho_by_k.keys(), reverse=True):

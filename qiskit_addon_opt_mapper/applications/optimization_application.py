@@ -80,7 +80,7 @@ class OptimizationApplication(ABC):
             binary_string = max(probabilities.items(), key=lambda kv: kv[1])[0]
             x = np.asarray([int(y) for y in reversed(list(binary_string))])
             return x
-        elif isinstance(state_vector, Statevector):
+        if isinstance(state_vector, Statevector):
             probabilities = state_vector.probabilities()
             n = state_vector.num_qubits
             k = np.argmax(np.abs(probabilities))
@@ -89,12 +89,12 @@ class OptimizationApplication(ABC):
                 x[i] = k % 2
                 k >>= 1
             return x
-        elif isinstance(state_vector, OrderedDict | dict):
+        if isinstance(state_vector, OrderedDict | dict):
             # get the binary string with the largest count
             binary_string = max(state_vector.items(), key=lambda kv: kv[1])[0]
             x = np.asarray([int(y) for y in reversed(list(binary_string))])
             return x
-        elif isinstance(state_vector, np.ndarray):
+        if isinstance(state_vector, np.ndarray):
             n = int(np.log2(state_vector.shape[0]))
             k = np.argmax(np.abs(state_vector))
             x = np.zeros(n)
@@ -102,8 +102,7 @@ class OptimizationApplication(ABC):
                 x[i] = k % 2
                 k >>= 1
             return x
-        else:
-            raise ValueError(
-                "state vector should be QuasiDistribution, Statevector, ndarray, or dict. "
-                f"But it is {type(state_vector)}."
-            )
+        raise ValueError(
+            "state vector should be QuasiDistribution, Statevector, ndarray, or dict. "
+            f"But it is {type(state_vector)}."
+        )

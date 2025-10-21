@@ -132,13 +132,12 @@ class CplexSolver(OptimizationSolver):
                 status=SolverResultStatus.FAILURE,
                 raw_results=None,
             )
-        else:
-            # a solution is found
-            x = sol.get_values(mod.iter_variables())
-            return SolverResult(
-                x=x,
-                fval=sol.get_objective_value(),
-                variables=problem.variables,
-                status=self._get_feasibility_status(problem, x),
-                raw_results=sol,
-            )
+        # a solution is found
+        x = sol.get_values(mod.iter_variables())
+        return SolverResult(
+            x=x,
+            fval=sol.get_objective_value(),
+            variables=problem.variables,
+            status=self._get_feasibility_status(problem, x),
+            raw_results=sol,
+        )

@@ -18,6 +18,7 @@ from abc import abstractmethod
 import networkx as nx
 import numpy as np
 import rustworkx as rx
+from rustworkx import visualization as rx_visualization
 
 import qiskit_addon_opt_mapper.optionals as _optionals
 
@@ -74,7 +75,7 @@ class GraphOptimizationApplication(OptimizationApplication):
             pos: The positions of nodes
         """
         if result is None:
-            rx.visualization.mpl_draw(self._graph, pos=pos, with_labels=True)
+            rx_visualization.mpl_draw(self._graph, pos=pos, with_labels=True)  # type: ignore
         else:
             self._draw_result(result, pos)
 

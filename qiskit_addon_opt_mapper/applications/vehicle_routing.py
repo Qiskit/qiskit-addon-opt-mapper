@@ -19,6 +19,7 @@ import networkx as nx
 import numpy as np
 import rustworkx as rx
 from docplex.mp.model import Model
+from rustworkx import visualization as rx_visualization
 
 from qiskit_addon_opt_mapper.problems.optimization_problem import OptimizationProblem
 from qiskit_addon_opt_mapper.translators import from_docplex_mp
@@ -164,11 +165,11 @@ class VehicleRouting(GraphOptimizationApplication):
         import matplotlib as mpl
 
         route_list = self.interpret(result)
-        rx.visualization.mpl_draw(
+        rx_visualization.mpl_draw(
             self._graph,
             edge_list=self._edgelist(route_list),
             with_labels=True,
-            pos=pos,
+            pos=pos,  # type: ignore
             width=8,
             alpha=0.5,
             edge_color=self._edge_color(route_list),
@@ -245,7 +246,7 @@ class VehicleRouting(GraphOptimizationApplication):
         """
         random.seed(seed)
         pos = [(random.randint(low, high), random.randint(low, high)) for i in range(n)]
-        graph = rx.random_geometric_graph(n, np.hypot(high - low, high - low) + 1, pos=pos)
+        graph = rx.random_geometric_graph(n, np.hypot(high - low, high - low) + 1, pos=pos)  # type: ignore
         threshold = np.hypot(high - low, high - low) + 1
         for i in range(n):
             for j in range(i + 1, n):

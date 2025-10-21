@@ -64,10 +64,9 @@ class ConstraintSense(Enum):
             raise OptimizationError(f"Invalid sense: {sense}")
         if sense in ["E", "EQ", "=", "=="]:
             return ConstraintSense.EQ
-        elif sense in ["L", "LE", "<=", "<"]:
+        if sense in ["L", "LE", "<=", "<"]:
             return ConstraintSense.LE
-        else:
-            return ConstraintSense.GE
+        return ConstraintSense.GE
 
     @property
     def label(self) -> str:
@@ -78,10 +77,9 @@ class ConstraintSense(Enum):
         """
         if self is ConstraintSense.LE:
             return "<="
-        elif self is ConstraintSense.GE:
+        if self is ConstraintSense.GE:
             return ">="
-        else:
-            return "=="
+        return "=="
 
 
 class Constraint(OptimizationProblemElement):

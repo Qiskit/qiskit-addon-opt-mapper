@@ -16,6 +16,7 @@ import networkx as nx
 import numpy as np
 import rustworkx as rx
 from docplex.mp.model import Model
+from rustworkx import visualization as rx_visualization
 
 from qiskit_addon_opt_mapper.problems.optimization_problem import OptimizationProblem
 from qiskit_addon_opt_mapper.translators import from_docplex_mp
@@ -101,8 +102,11 @@ class Clique(GraphOptimizationApplication):
             pos: The positions of nodes
         """
         x = self._result_to_x(result)
-        rx.visualization.mpl_draw(
-            self._graph, node_color=self._node_colors(x), pos=pos, with_labels=True
+        rx_visualization.mpl_draw(
+            self._graph,
+            node_color=self._node_colors(x),
+            pos=pos,  # type: ignore
+            with_labels=True,
         )
 
     def _node_colors(self, x: np.ndarray) -> list[str]:

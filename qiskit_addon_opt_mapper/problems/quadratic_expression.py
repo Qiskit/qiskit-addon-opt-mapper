@@ -128,7 +128,7 @@ class QuadraticExpression(OptimizationProblemElement):
         elif isinstance(coefficients, dict):
             n = self.optimization_problem.get_num_vars()
             coeffs = dok_matrix((n, n))
-            for (i, j), value in coefficients.items():
+            for (i, j), value in coefficients.items():  # type: ignore
                 i_idx = self.optimization_problem.variables_index[i] if isinstance(i, str) else i
                 j_idx = self.optimization_problem.variables_index[j] if isinstance(j, str) else j
                 coeffs[i_idx, j_idx] = value
@@ -209,8 +209,7 @@ class QuadraticExpression(OptimizationProblemElement):
                 ): v
                 for (i, j), v in coeffs.items()
             }
-        else:
-            return {(int(i), int(j)): v for (i, j), v in coeffs.items()}
+        return {(int(i), int(j)): v for (i, j), v in coeffs.items()}
 
     def evaluate(self, x: ndarray | list | dict[str | int, float]) -> float:
         """Evaluate the quadratic expression for given variables: x * Q * x.

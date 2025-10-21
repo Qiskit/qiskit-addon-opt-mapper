@@ -13,7 +13,7 @@
 """Optimization Objective."""
 
 from enum import Enum
-from typing import Any
+from typing import Any, cast
 
 from numpy import ndarray
 from scipy.sparse import spmatrix
@@ -233,7 +233,7 @@ class OptimizationObjective(OptimizationProblemElement):
         g = self.linear.evaluate_gradient(x) + self.quadratic.evaluate_gradient(x)
         for expr in self._higher_order.values():
             g = g + expr.evaluate_gradient(x)
-        return g
+        return cast(ndarray, g)
 
     def __repr__(self):
         """Repr. for OptimizationObjective."""

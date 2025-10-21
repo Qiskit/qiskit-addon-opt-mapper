@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test from_ising and to_ising"""
+"""Test to_ising"""
 
 import numpy as np
 from qiskit.quantum_info import SparsePauliOp
@@ -39,7 +39,7 @@ OFFSET_MAXIMIZE_SAMPLE = 1149998
 
 
 class TestIsingTranslator(OptimizationTestCase):
-    """Test from_ising and to_ising"""
+    """Test to_ising"""
 
     def test_to_ising(self):
         """test to_ising"""

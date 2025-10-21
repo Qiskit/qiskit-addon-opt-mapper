@@ -168,7 +168,7 @@ class HigherOrderExpression(OptimizationProblemElement):
     def to_dict(self, use_name: bool = False) -> dict[tuple[int, ...] | tuple[str, ...], float]:
         """Returns the internal coefficients as a dictionary."""
         if not use_name:
-            return dict(self._coeffs)
+            return dict(self._coeffs)  # type: ignore
         # map index -> name
         return {
             tuple(self.optimization_problem.variables[i].name for i in k): v
@@ -342,7 +342,7 @@ class HigherOrderExpression(OptimizationProblemElement):
                 ii = self.optimization_problem.variables_index[i] if isinstance(i, str) else int(i)
                 arr[ii] = float(v)
             return arr
-        arr = np.asarray(x, dtype=float)
+        arr = np.asarray(x, dtype=float)  # type: ignore
         if arr.ndim != 1 or arr.shape[0] != self._n:
             raise ValueError("x must be a 1D array with length equal to the number of variables")
         return arr

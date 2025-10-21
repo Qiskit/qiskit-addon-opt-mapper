@@ -110,13 +110,12 @@ class BinaryToSpin(OptimizationProblemConverter):
 
         return self._dst
 
-    def interpret(self, x: np.ndarray | list[float]) -> np.ndarray | None:
+    def interpret(self, x: np.ndarray | list[float]) -> np.ndarray:
         """Convert a solution of the converted problem back to a solution of the original problem.
 
         For binaries that became spins, we use b = (1 - s)/2.
         """
-        if not self._dst or not self._src_num_vars:
-            return None
+        assert self._dst and self._src_num_vars and self._src
         # Build a name->value map from dst solution order
         if len(x) != self._dst.get_num_vars():
             raise OptimizationError("Result length does not match converted problem.")
@@ -176,10 +175,8 @@ class BinaryToSpin(OptimizationProblemConverter):
 
     def _convert_objective(self) -> None:
         """Convert the objective of the source problem and set it to the destination problem."""
-        if not self._src or not self._dst:
-            return
+        assert self._dst and self._src
         obj = self._src.objective
-
         # Build polynomial f from original objective
         f: Poly = {}
         _poly_add(f, _poly_from_linear(obj.linear))
@@ -190,7 +187,7 @@ class BinaryToSpin(OptimizationProblemConverter):
             for _, expr in obj.higher_order.items():
                 for names, coef in expr.to_dict(use_name=True).items():
                     if coef != 0.0:
-                        _poly_add(f, {tuple(names): float(coef)})
+                        _poly_add(f, {tuple(names): float(coef)})  # type: ignore
 
         # Apply substitution
         g = self._apply_b2s_subst(f)
@@ -205,6 +202,7 @@ class BinaryToSpin(OptimizationProblemConverter):
 
     def _emit_constraint_from_poly(self, name: str, sense, rhs: float, poly: Poly) -> None:
         """Emit a constraint to the destination problem from a polynomial form."""
+        assert self._dst
         c0, ldict, qdict, hdict = _poly_split(poly)
         rhs2 = rhs - c0
         if hdict:
@@ -219,6 +217,7 @@ class BinaryToSpin(OptimizationProblemConverter):
 
         Add them to the destination problem.
         """
+        assert self._src
         for c in self._src.linear_constraints:
             f: Poly = _poly_from_linear(c.linear)
             g = self._apply_b2s_subst(f)
@@ -229,6 +228,7 @@ class BinaryToSpin(OptimizationProblemConverter):
 
         Add them to the destination problem.
         """
+        assert self._src
         for c in self._src.quadratic_constraints:
             f: Poly = {}
             _poly_add(f, _poly_from_linear(c.linear))

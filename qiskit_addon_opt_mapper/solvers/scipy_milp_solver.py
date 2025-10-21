@@ -34,10 +34,9 @@ def _conv_inf(val):
     # while scipy treats np.inf as infinity
     if val <= -INFINITY:
         return -np.inf
-    elif val >= INFINITY:
+    if val >= INFINITY:
         return np.inf
-    else:
-        return val
+    return val
 
 
 class ScipyMilpSolver(OptimizationSolver):

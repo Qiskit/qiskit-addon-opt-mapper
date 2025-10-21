@@ -195,9 +195,9 @@ class InequalityToEquality(OptimizationProblemConverter):
         }
 
         if self._src.objective.sense == OptimizationObjective.Sense.MINIMIZE:
-            self._dst.minimize(constant, linear, quadratic, ho)
+            self._dst.minimize(constant, linear, quadratic, ho)  # type: ignore
         else:
-            self._dst.maximize(constant, linear, quadratic, ho)
+            self._dst.maximize(constant, linear, quadratic, ho)  # type: ignore
 
         # Add linear constraints
         for lin_const_args in new_linear_constraints:
@@ -208,7 +208,7 @@ class InequalityToEquality(OptimizationProblemConverter):
             self._dst.quadratic_constraint(*quad_const_args)
 
         for ho_const_args in new_higher_order_constraints:
-            self._dst.higher_order_constraint(*ho_const_args)
+            self._dst.higher_order_constraint(*ho_const_args)  # type: ignore
 
         return self._dst
 
@@ -416,7 +416,8 @@ class InequalityToEquality(OptimizationProblemConverter):
                 )
             new_linear[slack_name] = sign
         higher_order = {
-            degree: expr.to_dict(use_name=True) for degree, expr in higher_order.items()
+            degree: expr.to_dict(use_name=True)  # type: ignore
+            for degree, expr in higher_order.items()  # type: ignore
         }
         return new_linear, quadratic.coefficients, higher_order, "==", new_rhs, name
 

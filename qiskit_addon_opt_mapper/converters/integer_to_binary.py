@@ -153,6 +153,7 @@ class IntegerToBinary(OptimizationProblemConverter):
     def _convert_quadratic_coefficients_dict(
         self, coefficients: dict[tuple[str, str], float]
     ) -> tuple[dict[tuple[str, str], float], dict[str, float], float]:
+        assert self._src
         constant = 0.0
         linear: dict[str, float] = {}
         quadratic = {}
@@ -198,6 +199,7 @@ class IntegerToBinary(OptimizationProblemConverter):
 
         We expand the polynomial by convolution across all variables in 'names'.
         """
+        assert self._src
         constant = 0.0
         linear: dict[str, float] = {}
         higher_order: dict[int, dict[tuple[str, ...], float]] = {}
@@ -209,7 +211,7 @@ class IntegerToBinary(OptimizationProblemConverter):
             higher_order[d][key] = higher_order[d].get(key, 0.0) + val
 
         for _degree, terms in coefficients.items():
-            for names, v in terms.to_dict(use_name=True).items():
+            for names, v in terms.to_dict(use_name=True).items():  # type: ignore
                 # Build candidate monomials for each variable in 'names'
                 # Each entry is a list of (vars_tuple, coeff)
                 factor_options: list[list[tuple[tuple[str, ...], float]]] = []
@@ -366,6 +368,7 @@ class IntegerToBinary(OptimizationProblemConverter):
             The result of the original problem.
         """
         # interpret integer values
+        assert self._dst and self._src
         sol = {var.name: x[i] for i, var in enumerate(self._dst.variables)}
         new_x = np.zeros(self._src.get_num_vars())
         for i, var in enumerate(self._src.variables):

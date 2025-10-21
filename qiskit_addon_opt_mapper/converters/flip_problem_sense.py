@@ -76,8 +76,7 @@ class _FlipProblemSense(OptimizationProblemConverter):
         """
         if problem.objective.sense == ObjSense.MAXIMIZE:
             return ObjSense.MINIMIZE
-        else:
-            return ObjSense.MAXIMIZE
+        return ObjSense.MAXIMIZE
 
     def interpret(self, x: np.ndarray | list[float]) -> np.ndarray:
         """Convert the result of the converted problem back to that of the original problem.

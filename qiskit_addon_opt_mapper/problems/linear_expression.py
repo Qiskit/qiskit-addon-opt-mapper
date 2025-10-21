@@ -178,8 +178,7 @@ class LinearExpression(OptimizationProblemElement):
                 self.optimization_problem.variables[k].name: float(v)
                 for (_, k), v in self._coefficients.items()
             }
-        else:
-            return {k: float(v) for (_, k), v in self._coefficients.items()}
+        return {k: float(v) for (_, k), v in self._coefficients.items()}
 
     def evaluate(self, x: ndarray | list | dict[int | str, float]) -> float:
         """Evaluate the linear expression for given variables.

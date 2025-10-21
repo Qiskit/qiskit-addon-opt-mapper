@@ -15,6 +15,7 @@
 import numpy as np
 import rustworkx as rx
 from docplex.mp.model import Model
+from rustworkx import visualization as rx_visualization
 
 from qiskit_addon_opt_mapper.exceptions import OptimizationError
 from qiskit_addon_opt_mapper.problems import OptimizationProblem
@@ -120,11 +121,11 @@ class Tsp(GraphOptimizationApplication):
             pos: The positions of nodes
         """
         x = self._result_to_x(result)
-        rx.visualization.mpl_draw(
+        rx_visualization.mpl_draw(
             self._graph,
             edge_list=self._edgelist(x),
             with_labels=True,
-            pos=pos,
+            pos=pos,  # type: ignore
             width=8,
             alpha=0.5,
             edge_color="tab:red",
@@ -267,4 +268,4 @@ class Tsp(GraphOptimizationApplication):
         for i in range(len(z) - 1):
             ret += adj_matrix[z[i], z[i + 1]]
         ret += adj_matrix[z[-1], z[0]]
-        return ret
+        return float(ret)

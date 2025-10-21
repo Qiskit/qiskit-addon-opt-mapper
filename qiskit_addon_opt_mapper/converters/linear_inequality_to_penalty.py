@@ -108,7 +108,7 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
         if self._should_define_penalty:
             penalty = self._auto_define_penalty(problem)
         else:
-            penalty = self._penalty
+            penalty = self._penalty  # type: ignore
 
         # Set variables
         for x in problem.variables:
@@ -206,16 +206,16 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
             self._dst.higher_order_constraint(
                 ho_constraint.linear.coefficients,
                 ho_constraint.quadratic.coefficients,
-                {degree: expr.to_dict() for degree, expr in ho_constraint.higher_order.items()},
+                {degree: expr.to_dict() for degree, expr in ho_constraint.higher_order.items()},  # type: ignore
                 ho_constraint.sense,
                 ho_constraint.rhs,
                 ho_constraint.name,
             )
 
-        if problem.objective.sense == OptimizationObjective.Sense.MINIMIZE:
-            self._dst.minimize(offset, linear, quadratic, ho)
+        if problem.objective.sense == OptimizationObjective.Sense.MINIMIZE:  # type: ignore
+            self._dst.minimize(offset, linear, quadratic, ho)  # type: ignore
         else:
-            self._dst.maximize(offset, linear, quadratic, ho)
+            self._dst.maximize(offset, linear, quadratic, ho)  # type: ignore
 
         # Update the penalty to the one just used
         self._penalty = penalty
@@ -303,12 +303,12 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
             if sense in (Constraint.Sense.LE, Constraint.Sense.GE):
                 # x-y<=0
                 # x-y>=0
-                return coeff_array.min() == -1.0 and coeff_array.max() == 1.0
+                return bool(coeff_array.min() == -1.0 and coeff_array.max() == 1.0)
         elif num_vars >= 2:
             if sense == Constraint.Sense.LE and rhs == 1 and all(i == 1 for i in params.values()):
                 # x1+x2+...<=1
                 return True
-            elif (
+            if (
                 sense == Constraint.Sense.GE
                 and rhs == num_vars - 1
                 and all(i == 1 for i in params.values())
@@ -348,7 +348,9 @@ class LinearInequalityToPenalty(OptimizationProblemConverter):
 
         lin_b = problem.objective.linear.bounds
         quad_b = problem.objective.quadratic.bounds
-        return 1.0 + (lin_b.upperbound - lin_b.lowerbound) + (quad_b.upperbound - quad_b.lowerbound)
+        return float(
+            1.0 + (lin_b.upperbound - lin_b.lowerbound) + (quad_b.upperbound - quad_b.lowerbound)
+        )
 
     def interpret(self, x: np.ndarray | list[float]) -> np.ndarray:
         """Convert the result of the converted problem back to that of the original problem.

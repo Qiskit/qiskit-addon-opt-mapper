@@ -172,8 +172,7 @@ class _SubstituteVariables:
 
     def _variables(self) -> bool:
         # copy variables that are not replaced
-        if not self._src:
-            return False
+        assert self._src and self._dst
         feasible = True
         for var in self._src.variables:
             name = var.name
@@ -204,7 +203,7 @@ class _SubstituteVariables:
                     new_ub_i = (ub_i - expr.const) / expr.coeff
                 else:
                     new_ub_i = ub_i if expr.coeff > 0 else -ub_i
-                var_j = self._dst.get_variable(expr.variable)
+                var_j = self._dst.get_variable(expr.variable)  # type: ignore
                 lb_j = var_j.lowerbound
                 ub_j = var_j.upperbound
                 if expr.coeff > 0:
@@ -327,8 +326,7 @@ class _SubstituteVariables:
         return feasible
 
     def _quadratic_constraints(self) -> bool:
-        if not self._src:
-            return False
+        assert self._src and self._dst
         feasible = True
         for quad_cst in self._src.quadratic_constraints:
             const, lin, quad, _higher = self._poly_apply_substitution(
@@ -358,8 +356,7 @@ class _SubstituteVariables:
         return feasible
 
     def _higher_order_constraints(self) -> bool:
-        if not self._src:
-            return False
+        assert self._src and self._dst
         feasible = True
         for ho_cst in getattr(self._src, "higher_order_constraints", []):
             const, lin, quad, higher = self._poly_apply_substitution(

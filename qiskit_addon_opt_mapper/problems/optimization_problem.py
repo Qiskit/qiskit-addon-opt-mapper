@@ -23,7 +23,6 @@ from warnings import warn
 import numpy as np
 from numpy import ndarray
 from qiskit.quantum_info import SparsePauliOp
-from qiskit.quantum_info.operators.base_operator import BaseOperator
 from scipy.sparse import spmatrix
 
 from ..exceptions import OptimizationError
@@ -710,8 +709,7 @@ class OptimizationProblem:
         """
         if isinstance(i, int | np.integer):
             return self.variables[i]
-        else:
-            return self.variables[self._variables_index[i]]
+        return self.variables[self._variables_index[i]]
 
     def get_num_vars(self, vartype: VarType | None = None) -> int:
         """Returns the total number of variables or the number of variables of the specified type.
@@ -725,8 +723,7 @@ class OptimizationProblem:
         """
         if vartype:
             return sum(variable.vartype == vartype for variable in self._variables)
-        else:
-            return len(self._variables)
+        return len(self._variables)
 
     def get_num_continuous_vars(self) -> int:
         """Returns the total number of continuous variables.
@@ -842,8 +839,7 @@ class OptimizationProblem:
         """
         if isinstance(i, int):
             return self._linear_constraints[i]
-        else:
-            return self._linear_constraints[self._linear_constraints_index[i]]
+        return self._linear_constraints[self._linear_constraints_index[i]]
 
     def get_num_linear_constraints(self) -> int:
         """Returns the number of linear constraints.
@@ -942,8 +938,7 @@ class OptimizationProblem:
         """
         if isinstance(i, int):
             return self._quadratic_constraints[i]
-        else:
-            return self._quadratic_constraints[self._quadratic_constraints_index[i]]
+        return self._quadratic_constraints[self._quadratic_constraints_index[i]]
 
     def get_num_quadratic_constraints(self) -> int:
         """Returns the number of quadratic constraints.
@@ -1037,8 +1032,7 @@ class OptimizationProblem:
         """
         if isinstance(i, int):
             return self._higher_order_constraints[i]
-        else:
-            return self._higher_order_constraints[self._higher_order_constraints_index[i]]
+        return self._higher_order_constraints[self._higher_order_constraints_index[i]]
 
     def get_num_higher_order_constraints(self) -> int:
         """Returns the number of higher-order constraints.
@@ -1128,7 +1122,7 @@ class OptimizationProblem:
             linear=linear,
             quadratic=quadratic,
             sense=OptimizationObjective.Sense.MINIMIZE,
-            higher_order=higher_order,
+            higher_order=higher_order,  # type: ignore
         )
 
     def maximize(
@@ -1147,7 +1141,7 @@ class OptimizationProblem:
             linear=linear,
             quadratic=quadratic,
             sense=OptimizationObjective.Sense.MAXIMIZE,
-            higher_order=higher_order,
+            higher_order=higher_order,  # type: ignore
         )
 
     def _copy_from(self, other: "OptimizationProblem", include_name: bool) -> None:
@@ -1224,37 +1218,6 @@ class OptimizationProblem:
         from ..translators.ising import to_ising
 
         return to_ising(self)
-
-    def from_ising(
-        self,
-        qubit_op: BaseOperator,
-        offset: float = 0.0,
-        linear: bool = False,
-    ) -> None:
-        r"""Create a optimization problem from a qubit operator and a shift value.
-
-        Variables are mapped to qubits in the same order, i.e.,
-        i-th variable is mapped to i-th qubit.
-        See https://github.com/Qiskit/qiskit-terra/issues/1148 for details.
-
-        Args:
-            qubit_op: The qubit operator of the problem.
-            offset: The constant value in the Ising Hamiltonian.
-            linear: If linear is True, :math:`x^2` is treated as a linear term
-                since :math:`x^2 = x` for :math:`x \in \{0,1\}`.
-                Else, :math:`x^2` is treated as a quadratic term.
-                The default value is False.
-
-        Raises:
-            OptimizationError: If there are Pauli Xs in any Pauli term
-            OptimizationError: If there are more than 2 Pauli Zs in any Pauli term
-            NotImplementedError: If the input operator is a ListOp
-        """
-        # pylint: disable=cyclic-import
-        from ..translators.ising import from_ising
-
-        other = from_ising(qubit_op, offset, linear)
-        self._copy_from(other, include_name=False)
 
     def get_feasibility_info(
         self, x: list[float] | np.ndarray

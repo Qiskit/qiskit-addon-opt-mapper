@@ -122,7 +122,7 @@ class SpinToBinary(OptimizationProblemConverter):
         for i, var in enumerate(self._dst.variables):  # type: ignore[union-attr]
             dst_vals[var.name] = float(x[i])
 
-        out = np.zeros(self._src_num_vars)
+        out = np.zeros(self._src_num_vars)  # type: ignore[arg-type]
         for i, var in enumerate(self._src.variables):  # type: ignore[union-attr]
             if var.vartype == Variable.Type.SPIN:
                 b = dst_vals[self._s2b[var.name]]
@@ -189,7 +189,7 @@ class SpinToBinary(OptimizationProblemConverter):
             for _, expr in obj.higher_order.items():
                 for names, coef in expr.to_dict(use_name=True).items():
                     if coef != 0.0:
-                        _poly_add(f, {tuple(names): float(coef)})
+                        _poly_add(f, {tuple(names): float(coef)})  # type: ignore[arg-type]
 
         # Apply substitution
         g = self._apply_s2b_subst(f)
