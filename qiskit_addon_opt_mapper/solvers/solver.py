@@ -53,7 +53,7 @@ class SolutionSample:
 
     x: np.ndarray
     """The values of the variables"""
-    fval: float
+    fval: float | None
     """The objective function value"""
     probability: float
     """The probability of this sample"""
@@ -104,7 +104,7 @@ class SolverResult:
     def __init__(  # pylint: disable=too-many-positional-arguments
         self,
         x: list[float] | np.ndarray | None,
-        fval: float | None,
+        fval: float,
         variables: list[Variable],
         status: SolverResultStatus,
         raw_results: Any | None = None,
@@ -150,12 +150,10 @@ class SolverResult:
             if not np.isclose(sum_prob, 1.0):
                 logger.debug("The sum of probability of samples is not close to 1: %f", sum_prob)
             self._samples = samples
-        elif fval:
+        else:
             self._samples = [
                 SolutionSample(x=cast(np.ndarray, x), fval=fval, status=status, probability=1.0)
             ]
-        else:
-            raise OptimizationError("Cannot initialize without fval or samples.")
 
     def __repr__(self) -> str:
         """Repr. method."""
@@ -549,7 +547,7 @@ class OptimizationSolver(ABC):
 
         sorted_samples = sorted(
             samples,
-            key=lambda v: (v.status.value, problem.objective.sense.value * v.fval),
+            key=lambda v: (v.status.value, problem.objective.sense.value * v.fval),  # type: ignore
         )
         best_raw = raw_samples[index[tuple(sorted_samples[0].x)]]
         return sorted_samples, best_raw

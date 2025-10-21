@@ -33,7 +33,7 @@ class ConstraintSense(Enum):
     EQ = 2
 
     @staticmethod
-    def convert(sense: str | "ConstraintSense") -> "ConstraintSense":
+    def convert(sense: str | ConstraintSense) -> ConstraintSense:
         """Convert a string into a corresponding sense of constraints.
 
         Args:
