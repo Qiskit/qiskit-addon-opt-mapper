@@ -36,7 +36,7 @@ Typically, this implies creating a Hamiltonian operator whose ground state corre
 
 ### Documentation
 
-All documentation is available at **TODO**.
+All documentation is available at [https://qiskit.github.io/qiskit-addon-opt-mapper](https://qiskit.github.io/qiskit-addon-opt-mapper)
 
 ----------------------------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ All documentation is available at **TODO**.
 We encourage installing this package via `pip`, when possible:
 
 ```bash
-**TODO**
+pip install qiskit-addon-opt-mapper
 ```
 
 For more installation information refer to these [installation instructions](docs/install.rst).
@@ -66,7 +66,7 @@ We may occasionally make breaking changes in order to improve the user experienc
 When possible, we will keep old interfaces and mark them as deprecated, as long as they can co-exist with the
 new ones.
 Each substantial improvement, breaking change, or deprecation will be documented in the
-[release notes](https://qiskit.github.io/qiskit-addon-opt-mapper/release-notes.html). **TODO** check name.
+[release notes](https://qiskit.github.io/qiskit-addon-opt-mapper/release-notes.html).
 
 ----------------------------------------------------------------------------------------------------
 
