@@ -46,11 +46,6 @@ By participating, you are expected to uphold Qiskit's `code of conduct <https://
 
 We use `GitHub issues <https://github.com/Qiskit/qiskit-addon-opt-mapper/issues/new/choose>`_ for tracking requests and bugs.
 
-Citation
---------
-
-If you use this package in your research, please cite it according to the `CITATION.bib <https://github.com/Qiskit/qiskit-addon-opt-mapper/blob/main/CITATION.bib>`_ file.
-
 License
 -------
 
