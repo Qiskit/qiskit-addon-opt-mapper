@@ -9,6 +9,8 @@ on:
     branches:
       - main
       - 'stable/**'
+  merge_group:
+    types: [checks_requested]
 
 jobs:
   lint:
