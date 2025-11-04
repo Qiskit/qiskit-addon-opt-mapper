@@ -11,7 +11,9 @@ on:
       - 'stable/**'
   schedule:
     - cron: '0 1 * * *'
-
+  merge_group:
+    types: [checks_requested]
+    
 jobs:
   tests:
     name: latest version tests (${{ matrix.os }}, ${{ matrix.python-version }})
