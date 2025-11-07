@@ -4,7 +4,7 @@ Qiskit addon optimization mapper
 
 `Qiskit addons <https://quantum.cloud.ibm.com/docs/guides/addons>`_ are a collection of modular tools for building utility-scale workloads powered by Qiskit.
 
-This package contains functionality to model optimization problems and map them operators.
+This package contains functionality to model optimization problems and map them to operators.
 For example, this package contains functions for creating model of binary optimization problems to solve with Qiskit.
 
 Documentation
