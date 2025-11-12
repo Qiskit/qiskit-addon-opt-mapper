@@ -38,6 +38,7 @@ Converters
    :toctree: ../stubs/
    :nosignatures:
 
+   BinaryToLinearBinary
    BinaryToSpin
    InequalityToEquality
    IntegerToBinary
@@ -50,6 +51,7 @@ Converters
 
 """
 
+from .binary_to_linear_binary import BinaryToLinearBinary
 from .binary_to_spin import BinaryToSpin
 from .equality_to_penalty import EqualityToPenalty
 from .flip_problem_sense import MaximizeToMinimize, MinimizeToMaximize
@@ -62,6 +64,7 @@ from .optimization_problem_to_qubo import OptimizationProblemToQubo
 from .spin_to_binary import SpinToBinary
 
 __all__ = [
+    "BinaryToLinearBinary",
     "BinaryToSpin",
     "EqualityToPenalty",
     "InequalityToEquality",
