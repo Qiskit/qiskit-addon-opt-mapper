@@ -46,13 +46,13 @@ class keydefaultdict(defaultdict[_KT, _VT]):
         """Handling of missing data. Calls the default_factory."""
         if self.default_factory is None:
             raise KeyError(key)
-        else:
-            ret = self[key] = self.default_factory(key)
-            return ret
+
+        ret = self[key] = self.default_factory(key)
+        return ret
 
 
 class BinaryToLinearBinary(OptimizationProblemConverter):
-    """Convert all high-degree terms to linear terms, both in objective and constraints.
+    """Convert all high-degree terms to linear terms, both in objective and constraints. The converter assumes that the problem only contains binary variables.
 
     The conversion of a term `x1*x2` is done through the additional binary variable `x1ANDx2 = x1*x2` defined via:
     ```
@@ -79,6 +79,7 @@ class BinaryToLinearBinary(OptimizationProblemConverter):
     def __init__(self) -> None:
         """Initialize converter."""
         self._dst: OptimizationProblem | None = None
+        self._new_vars: keydefaultdict[tuple[str, ...], Variable]
 
     # ---- public API ----
 
@@ -95,7 +96,7 @@ class BinaryToLinearBinary(OptimizationProblemConverter):
             self._dst.binary_var(v.name)
 
         # 2) Prepare structure for new vars
-        self._new_vars: keydefaultdict[tuple[str, ...], Variable] = keydefaultdict(
+        self._new_vars = keydefaultdict(
             lambda x: self._dst.binary_var(self._CONCAT_SEPARATOR.join(x))  # type: ignore
         )
 
@@ -110,16 +111,12 @@ class BinaryToLinearBinary(OptimizationProblemConverter):
 
         # 4) Constraints
         for lc in problem.linear_constraints:
-            self._dst.linear_constraint(
-                lc.linear.to_dict(use_name=True), lc.sense, lc.rhs, lc.name
-            )
+            self._dst.linear_constraint(lc.linear.to_dict(use_name=True), lc.sense, lc.rhs, lc.name)
         for qc in problem.quadratic_constraints:
             lin_constr_dict = self._convert_expr(qc.linear, qc.quadratic, None)
             self._dst.linear_constraint(lin_constr_dict, qc.sense, qc.rhs, qc.name)
         for hoc in problem.higher_order_constraints:
-            lin_constr_dict = self._convert_expr(
-                hoc.linear, hoc.quadratic, hoc.higher_order
-            )
+            lin_constr_dict = self._convert_expr(hoc.linear, hoc.quadratic, hoc.higher_order)
             self._dst.linear_constraint(lin_constr_dict, hoc.sense, hoc.rhs, hoc.name)
 
         # 5) Additional constraints defining the new variables
@@ -185,17 +182,17 @@ class BinaryToLinearBinary(OptimizationProblemConverter):
         linear: LinearExpression,
         quadratic: QuadraticExpression | None,
         ho: dict[int, HigherOrderExpression] | None,
-    ) -> dict[str, float]:
-        lin_dict = defaultdict(float)
-        lin_dict.update(linear.to_dict(use_name=True))
+    ) -> defaultdict[str, float]:
+        lin_dict: defaultdict[str, float] = defaultdict(float)
+        lin_dict.update(linear.to_dict(use_name=True))  # type: ignore
         if quadratic is not None:
-            for orig_vars, coef in quadratic.to_dict(use_name=True).items():
-                new_var = self._new_vars[orig_vars]  # type: ignore
+            for orig_vars_q, coef in quadratic.to_dict(use_name=True).items():
+                new_var = self._new_vars[orig_vars_q]  # type: ignore
                 lin_dict[new_var.name] += coef
         if ho is not None:
             for hoe in ho.values():
-                for orig_vars, coef in hoe.to_dict(use_name=True).items():
-                    new_var = self._new_vars[orig_vars]  # type: ignore
+                for orig_vars_h, coef in hoe.to_dict(use_name=True).items():
+                    new_var = self._new_vars[orig_vars_h]  # type: ignore
                     lin_dict[new_var.name] += coef
 
         return lin_dict

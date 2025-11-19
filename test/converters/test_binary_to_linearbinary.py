@@ -27,6 +27,14 @@ from ..optimization_test_case import OptimizationTestCase
 class TestBinaryToLinearBinaryConverter(OptimizationTestCase):
     """Test BinaryToLinearBinary Converters"""
 
+    def check_constraint(self, op2, constr_id: int, lhs: dict, rhs: float, cs: ConstraintSense):
+        self.assertDictEqual(
+            op2.get_linear_constraint(constr_id).linear.to_dict(use_name=True),
+            lhs,
+        )
+        self.assertEqual(op2.get_linear_constraint(constr_id).rhs, rhs)
+        self.assertEqual(op2.get_linear_constraint(constr_id).sense, cs)
+
     def test_binary_to_linear_binary_obj(self):
         """Test binary to linear_binary"""
         op = OptimizationProblem()
@@ -41,6 +49,7 @@ class TestBinaryToLinearBinaryConverter(OptimizationTestCase):
         op2 = conv.convert(op)
 
         self.assertEqual(op2.get_num_vars(), 5)
+
         self.assertListEqual([x.vartype for x in op2.variables], [Variable.Type.BINARY] * 5)
         self.assertListEqual(
             [x.name for x in op2.variables], ["x0", "x1", "x2", "x0ANDx2", "x0ANDx1ANDx2"]
@@ -56,58 +65,22 @@ class TestBinaryToLinearBinaryConverter(OptimizationTestCase):
         )
         self.assertDictEqual(op2.objective.higher_order, {})
 
-        self.assertEqual(op2.get_num_linear_constraints(), 7)
+        constraints = [
+            ({"x0ANDx2": 1, "x0": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx2": 1, "x2": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx2": 1, "x0": -1, "x2": -1}, -1, ConstraintSense.GE),
+            ({"x0ANDx1ANDx2": 1, "x0": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx1ANDx2": 1, "x1": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx1ANDx2": 1, "x2": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx1ANDx2": 1, "x0": -1, "x1": -1, "x2": -1}, -2, ConstraintSense.GE),
+        ]
+
+        self.assertEqual(op2.get_num_linear_constraints(), len(constraints))
         self.assertEqual(op2.get_num_quadratic_constraints(), 0)
         self.assertEqual(op2.get_num_higher_order_constraints(), 0)
 
-        self.assertDictEqual(
-            op2.get_linear_constraint(0).linear.to_dict(use_name=True),
-            {"x0ANDx2": 1, "x0": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(0).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(0).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(1).linear.to_dict(use_name=True),
-            {"x0ANDx2": 1, "x2": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(1).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(1).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(2).linear.to_dict(use_name=True),
-            {"x0ANDx2": 1, "x0": -1, "x2": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(2).rhs, -1)
-        self.assertEqual(op2.get_linear_constraint(2).sense, ConstraintSense.GE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(3).linear.to_dict(use_name=True),
-            {"x0ANDx1ANDx2": 1, "x0": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(3).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(3).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(4).linear.to_dict(use_name=True),
-            {"x0ANDx1ANDx2": 1, "x1": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(4).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(4).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(5).linear.to_dict(use_name=True),
-            {"x0ANDx1ANDx2": 1, "x2": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(5).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(5).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(6).linear.to_dict(use_name=True),
-            {"x0ANDx1ANDx2": 1, "x0": -1, "x1": -1, "x2": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(6).rhs, -2)
-        self.assertEqual(op2.get_linear_constraint(6).sense, ConstraintSense.GE)
+        for idx, constr in enumerate(constraints):
+            self.check_constraint(op2, idx, *constr)
 
     def test_binary_to_linear_binary_constr(self):
         """Test binary to linear_binary"""
@@ -146,93 +119,27 @@ class TestBinaryToLinearBinaryConverter(OptimizationTestCase):
         )
         self.assertDictEqual(op2.objective.higher_order, {})
 
-        self.assertEqual(op2.get_num_linear_constraints(), 12)
+        constraints = [
+            ({"x0": 7, "x0ANDx1": 3}, 0, ConstraintSense.LE),
+            ({"x0ANDx1ANDx2": 4}, 0, ConstraintSense.LE),
+            ({"x0ANDx2": 1, "x0": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx2": 1, "x2": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx2": 1, "x0": -1, "x2": -1}, -1, ConstraintSense.GE),
+            ({"x0ANDx1ANDx2": 1, "x0": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx1ANDx2": 1, "x1": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx1ANDx2": 1, "x2": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx1ANDx2": 1, "x0": -1, "x1": -1, "x2": -1}, -2, ConstraintSense.GE),
+            ({"x0ANDx1": 1, "x0": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx1": 1, "x1": -1}, 0, ConstraintSense.LE),
+            ({"x0ANDx1": 1, "x0": -1, "x1": -1}, -1, ConstraintSense.GE),
+        ]
+
+        self.assertEqual(op2.get_num_linear_constraints(), len(constraints))
         self.assertEqual(op2.get_num_quadratic_constraints(), 0)
         self.assertEqual(op2.get_num_higher_order_constraints(), 0)
 
-        self.assertDictEqual(
-            op2.get_linear_constraint(0).linear.to_dict(use_name=True),
-            {"x0": 7, "x0ANDx1": 3},
-        )
-        self.assertEqual(op2.get_linear_constraint(0).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(0).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(1).linear.to_dict(use_name=True),
-            {"x0ANDx1ANDx2": 4},
-        )
-        self.assertEqual(op2.get_linear_constraint(1).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(1).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(2).linear.to_dict(use_name=True),
-            {"x0ANDx2": 1, "x0": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(2).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(2).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(3).linear.to_dict(use_name=True),
-            {"x0ANDx2": 1, "x2": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(3).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(3).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(4).linear.to_dict(use_name=True),
-            {"x0ANDx2": 1, "x0": -1, "x2": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(4).rhs, -1)
-        self.assertEqual(op2.get_linear_constraint(4).sense, ConstraintSense.GE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(5).linear.to_dict(use_name=True),
-            {"x0ANDx1ANDx2": 1, "x0": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(5).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(5).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(6).linear.to_dict(use_name=True),
-            {"x0ANDx1ANDx2": 1, "x1": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(6).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(6).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(7).linear.to_dict(use_name=True),
-            {"x0ANDx1ANDx2": 1, "x2": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(7).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(7).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(8).linear.to_dict(use_name=True),
-            {"x0ANDx1ANDx2": 1, "x0": -1, "x1": -1, "x2": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(8).rhs, -2)
-        self.assertEqual(op2.get_linear_constraint(8).sense, ConstraintSense.GE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(9).linear.to_dict(use_name=True),
-            {"x0ANDx1": 1, "x0": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(9).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(9).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(10).linear.to_dict(use_name=True),
-            {"x0ANDx1": 1, "x1": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(10).rhs, 0)
-        self.assertEqual(op2.get_linear_constraint(10).sense, ConstraintSense.LE)
-
-        self.assertDictEqual(
-            op2.get_linear_constraint(11).linear.to_dict(use_name=True),
-            {"x0ANDx1": 1, "x0": -1, "x1": -1},
-        )
-        self.assertEqual(op2.get_linear_constraint(11).rhs, -1)
-        self.assertEqual(op2.get_linear_constraint(11).sense, ConstraintSense.GE)
+        for idx, constr in enumerate(constraints):
+            self.check_constraint(op2, idx, *constr)
 
 
 if __name__ == "__main__":
