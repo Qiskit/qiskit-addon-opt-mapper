@@ -52,4 +52,4 @@ jobs:
         if: matrix.python-version != '3.10' && matrix.python-version != '3.11'
         shell: bash
         run: |
-          tox -e notebook -- docs/how_tos/01_optimization_problem.ipynb docs/how_tos/02_converters_for_optimization_problems.ipynb
+          tox -e notebook -- docs/how_tos/01_optimization_problem.ipynb docs/how_tos/02_converters_for_optimization_problems.ipynb docs/how_tos/04_translate_docplex.ipynb
