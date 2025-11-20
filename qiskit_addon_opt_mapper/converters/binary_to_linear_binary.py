@@ -72,6 +72,8 @@ class BinaryToLinearBinary(OptimizationProblemConverter):
     The definition of the new variables always depends directly on the original variables. For instance, even if `x1ANDx2` is included in a problem,
     the definition of `x1ANDx2ANDx3` will be based on individual `x1`, `x2` and `x3`, and will not exploit `x1ANDx2`. Such an optimization may
     be handled by pre-solvers of commercial solvers, according to the specific needs.
+
+    Note that during the conversion, powers of a single variable are removed: for instance, the expression `x0^2 + x1*x2^3` is treated as `x0 + x1*x2`
     """
 
     _CONCAT_SEPARATOR = "AND"
@@ -177,6 +179,20 @@ class BinaryToLinearBinary(OptimizationProblemConverter):
 
     # ---- private methods ----
 
+    def _update_vars_and_lin_dict(
+        self, lin_dict: defaultdict[str, float], orig_vars: list[str], coef
+    ):
+        # remove duplicates while keeping order
+        orig_vars_tuple = tuple(dict.fromkeys(orig_vars))
+
+        # add variable to self._new_vars if needed
+        new_var_name = (
+            self._new_vars[orig_vars_tuple].name if len(orig_vars_tuple) > 1 else orig_vars_tuple[0]
+        )
+
+        # update lin_dict
+        lin_dict[new_var_name] += coef
+
     def _convert_expr(
         self,
         linear: LinearExpression,
@@ -185,14 +201,13 @@ class BinaryToLinearBinary(OptimizationProblemConverter):
     ) -> defaultdict[str, float]:
         lin_dict: defaultdict[str, float] = defaultdict(float)
         lin_dict.update(linear.to_dict(use_name=True))  # type: ignore
+
         if quadratic is not None:
             for orig_vars_q, coef in quadratic.to_dict(use_name=True).items():
-                new_var = self._new_vars[orig_vars_q]  # type: ignore
-                lin_dict[new_var.name] += coef
+                self._update_vars_and_lin_dict(lin_dict, orig_vars_q, coef)  # type: ignore
         if ho is not None:
             for hoe in ho.values():
                 for orig_vars_h, coef in hoe.to_dict(use_name=True).items():
-                    new_var = self._new_vars[orig_vars_h]  # type: ignore
-                    lin_dict[new_var.name] += coef
+                    self._update_vars_and_lin_dict(lin_dict, orig_vars_h, coef)  # type: ignore
 
         return lin_dict
