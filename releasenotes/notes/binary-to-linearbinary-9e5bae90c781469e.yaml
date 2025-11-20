@@ -1,4 +1,4 @@
 ---
 features:
   - |
-    Added BinaryToLinearBinary converter, that converts a binary problem into a constrained linear binary problem.
+    Added ``BinaryToLinearBinary`` converter, that converts a binary problem into a constrained linear binary problem.
