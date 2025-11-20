@@ -54,7 +54,7 @@ class keydefaultdict(defaultdict[_KT, _VT]):
 class BinaryToLinearBinary(OptimizationProblemConverter):
     """Convert all high-degree terms to linear terms, both in objective and constraints. The converter assumes that the problem only contains binary variables.
 
-    The conversion of a term `x1*x2` is done through the additional binary variable `x1ANDx2 = x1*x2` defined via:
+    The conversion of a term ``x1*x2`` is done through the additional binary variable ``x1ANDx2 = x1*x2`` defined via:
     ```
     x1ANDx2 <= x1
     x1ANDx2 <= x2
