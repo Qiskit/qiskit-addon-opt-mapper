@@ -69,11 +69,11 @@ class BinaryToLinearBinary(OptimizationProblemConverter):
     x1ANDx2ANDx3 >= x1 + x2 + x3 - 2
     ```
 
-    The definition of the new variables always depends directly on the original variables. For instance, even if `x1ANDx2` is included in a problem,
-    the definition of `x1ANDx2ANDx3` will be based on individual `x1`, `x2` and `x3`, and will not exploit `x1ANDx2`. Such an optimization may
+    The definition of the new variables always depends directly on the original variables. For instance, even if ``x1ANDx2`` is included in a problem,
+    the definition of ``x1ANDx2ANDx3`` will be based on individual ``x1``, ``x2`` and ``x3``, and will not exploit ``x1ANDx2``. Such an optimization may
     be handled by pre-solvers of commercial solvers, according to the specific needs.
 
-    Note that during the conversion, powers of a single variable are removed: for instance, the expression `x0^2 + x1*x2^3` is treated as `x0 + x1*x2`
+    Note that during the conversion, powers of a single variable are removed: for instance, the expression ``x0^2 + x1*x2^3`` is treated as ``x0 + x1*x2``
     """
 
     _CONCAT_SEPARATOR = "AND"
