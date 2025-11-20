@@ -61,7 +61,7 @@ class BinaryToLinearBinary(OptimizationProblemConverter):
     x1ANDx2 >= x1 + x2 - 1
     ```
 
-    Similarly, a term `x1*x2*x3` is converted via the additional binary variable `x1ANDx2ANDx3 = x1*x2*x3` defined via:
+    Similarly, a term ``x1*x2*x3`` is converted via the additional binary variable ``x1ANDx2ANDx3 = x1*x2*x3`` defined via:
     ```
     x1ANDx2ANDx3 <= x1
     x1ANDx2ANDx3 <= x2
