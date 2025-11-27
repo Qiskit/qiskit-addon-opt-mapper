@@ -20,9 +20,9 @@ from importlib.metadata import version as metadata_version
 # be documented.
 sys.path.insert(0, os.path.abspath(".."))
 
-project = "Qiskit addon optimization mapping"
+project = "Qiskit addon, optimization mapper"
 project_copyright = "2025, Qiskit addons team"
-description = "Utilities to support workflows leveraging Qiskit addons"
+description = "Quantum optimization modeling package for Qiskit"
 author = "Qiskit addons team"
 language = "en"
 release = metadata_version("qiskit-addon-opt-mapper")

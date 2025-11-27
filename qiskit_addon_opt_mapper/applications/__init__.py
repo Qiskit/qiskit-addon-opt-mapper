@@ -10,11 +10,43 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Applications module for Optimization Add-on.
+"""Optimization applications.
 
-===================================================================
-Applications module (:mod:`qiskit_addon_opt_mapper.applications`)
-===================================================================
+Optimization applications (:mod:`qiskit_addon_opt_mapper.applications`).
+========================================================================
+
+.. currentmodule:: qiskit_addon_opt_mapper.applications
+
+Applications for common optimization problems.
+
+Base classes for applications
+---------------------------------------
+
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   OptimizationApplication
+   GraphOptimizationApplication
+
+Applications
+--------------------
+.. autosummary::
+   :toctree: ../stubs/
+   :nosignatures:
+
+   BinPacking
+   Clique
+   ExactCover
+   GraphPartition
+   Knapsack
+   Maxcut
+   NumberPartition
+   SetPacking
+   SKModel
+   Tsp
+   VehicleRouting
+   VertexCover
 """
 
 from .bin_packing import BinPacking

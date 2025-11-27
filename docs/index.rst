@@ -1,10 +1,10 @@
-#########################
-Qiskit addon optimization
-#########################
+################################
+Qiskit addon optimization mapper
+################################
 
 `Qiskit addons <https://quantum.cloud.ibm.com/docs/guides/addons>`_ are a collection of modular tools for building utility-scale workloads powered by Qiskit.
 
-This package contains functionality to model optimization problems.
+This package contains functionality to model optimization problems and map them to operators.
 For example, this package contains functions for creating model of binary optimization problems to solve with Qiskit.
 
 Documentation
@@ -45,11 +45,6 @@ in the root of this project's repository.
 By participating, you are expected to uphold Qiskit's `code of conduct <https://github.com/Qiskit/qiskit/blob/main/CODE_OF_CONDUCT.md>`_.
 
 We use `GitHub issues <https://github.com/Qiskit/qiskit-addon-opt-mapper/issues/new/choose>`_ for tracking requests and bugs.
-
-Citation
---------
-
-If you use this package in your research, please cite it according to the `CITATION.bib <https://github.com/Qiskit/qiskit-addon-opt-mapper/blob/main/CITATION.bib>`_ file.
 
 License
 -------
