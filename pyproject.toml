@@ -62,8 +62,7 @@ test = [
 ]
 doctest = [
     "qiskit-addon-opt-mapper[basetest,notebook-dependencies]",
-    "pytest-doctestplus>=1.2.1",
-    "setuptools",
+    "pytest-doctestplus>=1.3.0",
 ]
 nbtest = [
     "qiskit-addon-opt-mapper[basetest]",
