@@ -32,13 +32,14 @@ class GraphOptimizationApplication(OptimizationApplication):
         """Init method.
 
         Args:
-            graph: A graph representing a problem. It can be specified in the following
-                formats:
-                    - A Rustworkx undirected graph (`rx.PyGraph``)
-                    - A NetworkX undirected graph (`nx.Graph`)
-                    - A NumPy adjacency matrix (`np.ndarray`)
-                    - A list of edges or adjacency list (`List`)
-                The input graph will be internally normalized to a `rx.PyGraph`.
+            graph: A graph representing a problem. It can be specified in the following formats:
+
+                - A Rustworkx undirected graph (``rx.PyGraph``)
+                - A NetworkX undirected graph (``nx.Graph``)
+                - A NumPy adjacency matrix (``np.ndarray``)
+                - A list of edges or adjacency list (``list``)
+
+            The input graph will be internally normalized to a ``rx.PyGraph``.
         """
         if isinstance(graph, rx.PyGraph):
             self._graph = copy.deepcopy(graph)

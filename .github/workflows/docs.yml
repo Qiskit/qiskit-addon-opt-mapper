@@ -54,14 +54,14 @@ jobs:
           cp -a docs/_build/html artifact/qiskit-addon-opt-mapper-htmldocs
       - name: Upload nice docs artifact
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: qiskit-addon-opt-mapper-htmldocs
           path: ./artifact
 
   deploy:
     name: deploy docs
-    if: startsWith(github.ref, 'refs/heads/stable/')
+    if: ${{ github.ref == 'refs/heads/stable/0.1' }}
     needs: build
     permissions:
       pages: write
