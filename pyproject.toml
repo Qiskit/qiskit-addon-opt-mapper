@@ -62,14 +62,14 @@ test = [
 ]
 doctest = [
     "qiskit-addon-opt-mapper[basetest,notebook-dependencies]",
-    "pytest-doctestplus>=1.2.1",
+    "pytest-doctestplus>=1.3.0",
 ]
 nbtest = [
     "qiskit-addon-opt-mapper[basetest]",
     "nbmake>=1.5.0",
 ]
 style = [
-    "ruff==0.14.14",
+    "ruff==0.15.8",
     "nbqa>=1.8.5",
     "typos>=1.20.0",
 ]
@@ -196,3 +196,5 @@ convention = "google"
 
 [tool.typos.default.extend-words]
 MIS = "MIS" # acronym for maximum independent set
+IZ = "IZ"   # Pauli string (Identity-Z)
+CPY = "CPY" # ruff rule code for copyright checks
