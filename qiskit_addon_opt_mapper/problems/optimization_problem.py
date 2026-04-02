@@ -1201,9 +1201,9 @@ class OptimizationProblem:
     def to_ising(self) -> tuple[SparsePauliOp, float]:
         """Return the Ising Hamiltonian of this problem.
 
-        Variables are mapped to qubits in the same order, i.e.,
-        i-th variable is mapped to i-th qubit.
-        See https://github.com/Qiskit/qiskit-terra/issues/1148 for details.
+        Variables are mapped to qubits in qiskit order, i.e.,
+        i-th variable is mapped to index n-i in the pauli string, where
+        n is the total number of variables.
 
 
         Returns:
