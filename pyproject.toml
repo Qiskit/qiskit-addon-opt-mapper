@@ -38,7 +38,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-cplex = ["cplex; (python_version < '3.13' and platform_system != 'Darwin') or (python_version < '3.12' and platform_system == 'Darwin')"]
+cplex = ["cplex; python_version < '3.15'"]
 cvx = ["cvxpy"]
 matplotlib = ["matplotlib"]
 gurobi = ["gurobipy"]
