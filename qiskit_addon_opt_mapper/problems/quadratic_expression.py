@@ -1,6 +1,6 @@
 # This code is a Qiskit project.
 #
-# (C) Copyright IBM 2025.
+# (C) Copyright IBM 2025, 2026.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -12,11 +12,12 @@
 
 """Quadratic expression interface."""
 
+from collections import defaultdict
 from typing import Any, cast
 
 import numpy as np
 from numpy import ndarray
-from scipy.sparse import dok_matrix, spmatrix, tril, triu
+from scipy.sparse import coo_matrix, dok_matrix, spmatrix, tril, triu
 
 from ..exceptions import OptimizationError
 from ..infinity import INFINITY
@@ -98,9 +99,18 @@ class QuadraticExpression(OptimizationProblemElement):
         Raises:
             OptimizationError: if coefficients are given in unsupported format.
         """
+
+        def _dict_to_dok(n: int, coeffs: dict[tuple[int, int], float]) -> dok_matrix:
+            if coeffs:
+                rows, cols, values = zip(*((i, j, v) for (i, j), v in coeffs.items()), strict=True)
+                ret = dok_matrix(coo_matrix((values, (rows, cols)), shape=(n, n)).todok())
+            else:
+                ret = dok_matrix((n, n))
+            return ret
+
         if isinstance(coefficients, list):
             n = self.optimization_problem.get_num_vars()
-            coeffs = dok_matrix((n, n))
+            coeffs = defaultdict(float)
             if len(coefficients) != n:
                 raise OptimizationError(
                     f"The coefficient list for the quadratic expression must be a list of {n} "
@@ -114,7 +124,7 @@ class QuadraticExpression(OptimizationProblemElement):
                     )
                 for j, value in enumerate(row):
                     coeffs[i, j] = value
-            coefficients = coeffs
+            coefficients = _dict_to_dok(n, coeffs)
         elif isinstance(coefficients, ndarray):
             n = self.optimization_problem.get_num_vars()
             if coefficients.ndim != 2 or coefficients.shape != (n, n):
@@ -127,12 +137,14 @@ class QuadraticExpression(OptimizationProblemElement):
             coefficients = dok_matrix(coefficients)
         elif isinstance(coefficients, dict):
             n = self.optimization_problem.get_num_vars()
-            coeffs = dok_matrix((n, n))
+            coeffs = defaultdict(float)
             for (i, j), value in coefficients.items():  # type: ignore
                 i_idx = self.optimization_problem.variables_index[i] if isinstance(i, str) else i
                 j_idx = self.optimization_problem.variables_index[j] if isinstance(j, str) else j
-                coeffs[i_idx, j_idx] = value
-            coefficients = coeffs
+                if i_idx > j_idx:
+                    i_idx, j_idx = i_idx, j_idx
+                coeffs[i_idx, j_idx] += value
+            coefficients = _dict_to_dok(n, coeffs)
         else:
             raise OptimizationError(f"Unsupported format for coefficients: {coefficients}")
         return self._triangle_matrix(coefficients)
