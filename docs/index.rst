@@ -1,16 +1,11 @@
 ################################
-Qiskit addon optimization mapper
+Optimization Mapper Qiskit addon
 ################################
 
 `Qiskit addons <https://quantum.cloud.ibm.com/docs/guides/addons>`_ are a collection of modular tools for building utility-scale workloads powered by Qiskit.
 
 This package contains functionality to model optimization problems and map them to operators.
-For example, this package contains functions for creating model of binary optimization problems to solve with Qiskit.
-
-Documentation
--------------
-
-All documentation is available `here <https://qiskit.github.io/qiskit-addon-opt-mapper/>`_.
+For example, this package contains functions for creating models of binary optimization problems to solve with Qiskit.
 
 Installation
 ------------
@@ -22,14 +17,14 @@ We encourage installing this package via ``pip``, when possible:
    pip install 'qiskit-addon-opt-mapper'
 
 
-For more installation information refer to the `installation instructions <install.rst>`_ in the documentation.
+For more installation information, refer to the `installation instructions <install.rst>`_ in the documentation.
 
-Deprecation Policy
+Deprecation policy
 ------------------
 
 We follow `semantic versioning <https://semver.org/>`_ and are guided by the principles in
 `Qiskit's deprecation policy <https://github.com/Qiskit/qiskit/blob/main/DEPRECATION.md>`_.
-We may occasionally make breaking changes in order to improve the user experience.
+We might occasionally make breaking changes in order to improve the user experience.
 When possible, we will keep old interfaces and mark them as deprecated, as long as they can co-exist with the
 new ones.
 Each substantial improvement, breaking change, or deprecation will be documented in the
