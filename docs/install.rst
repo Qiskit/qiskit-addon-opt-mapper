@@ -1,14 +1,12 @@
-Installation Instructions
+Installation instructions
 =========================
 
-Let's see how to install the package. The first
-thing to do is choose how you're going to run and install the
-packages. There are two primary ways to do this:
+There are two primary ways to run and install the packages:
 
 - :ref:`Option 1`
 - :ref:`Option 2`
 
-Pre-Installation
+Pre-installation
 ^^^^^^^^^^^^^^^^
 
 First, create a minimal environment with only Python installed in it. We recommend using `Python virtual environments <https://docs.python.org/3.10/tutorial/venv.html>`__.
@@ -45,18 +43,18 @@ The most straightforward way to install the ``qiskit-addon-opt-mapper`` package 
 
 .. _Option 2:
 
-Option 2: Install from Source
+Option 2: Install from source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Users who wish to develop in the repository or run the notebooks locally may want to install from source.
+To develop in the repository or run the notebooks locally, install from source.
 
-If so, the first step is to clone the ``qiskit-addon-opt-mapper`` repository.
+The first step is to clone the ``qiskit-addon-opt-mapper`` repository.
 
 .. code:: sh
 
     git clone git@github.com:Qiskit/qiskit-addon-opt-mapper.git
 
-Next, upgrade pip and enter the repository.
+Next, upgrade ``pip`` and enter the repository.
 
 .. code:: sh
 
@@ -65,7 +63,7 @@ Next, upgrade pip and enter the repository.
 
 The next step is to install ``qiskit-addon-opt-mapper`` to the virtual environment. If you plan on running the notebooks, install the
 notebook dependencies in order to run all the visualizations in the notebooks. If you plan on developing in the repository, you
-may want to install the ``dev`` dependencies.
+should also install the ``dev`` dependencies.
 
 Adjust the options below to suit your needs.
 
