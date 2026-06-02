@@ -41,3 +41,13 @@ License
 -------
 
 `Apache License 2.0 <https://github.com/Qiskit/qiskit-addon-opt-mapper/blob/main/LICENSE.txt>`_
+
+.. toctree::
+  :hidden:
+
+   Documentation Home <self>
+   Installation Instructions <install>
+   How-To Guides <how_tos/index>
+   API Reference <apidocs/index>
+   GitHub <https://github.com/qiskit/qiskit-addon-opt-mapper>
+   Release Notes <release-notes>
