@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Test OptimizationApplication class"""
+"""Test GraphOptimizationApplication class"""
 
 import unittest
 from unittest.mock import patch
@@ -29,7 +29,6 @@ from qiskit_addon_opt_mapper.applications import GraphOptimizationApplication
     ],
     ids=["from0", "from1", "from1_extra"],
 )
-
 @patch.multiple(GraphOptimizationApplication, __abstractmethods__=set())
 def test_from_nx_graph(nodes, edges):
     graph = nx.Graph()
