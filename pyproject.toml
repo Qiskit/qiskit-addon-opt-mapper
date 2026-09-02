@@ -82,7 +82,7 @@ lint = [
 ]
 notebook-dependencies = [
     "qiskit-addon-opt-mapper",
-    "rustworkx[graphviz]>=0.18.0",
+    "rustworkx[graphviz]>=0.18.1",
     "matplotlib",
     "ipywidgets",
     "pylatexenc",
