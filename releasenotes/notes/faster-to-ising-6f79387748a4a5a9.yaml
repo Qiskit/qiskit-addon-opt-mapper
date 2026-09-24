@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    ``to_ising`` now combines its Pauli terms in one step, so its run time grows
+    linearly rather than quadratically with the number of terms.

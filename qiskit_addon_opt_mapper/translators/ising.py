@@ -174,7 +174,7 @@ def to_ising(optimization_problem: OptimizationProblem) -> tuple[SparsePauliOp, 
 
     if pauli_list:
         # Remove paulis whose coefficients are zeros.
-        qubit_op = sum(pauli_list).simplify(atol=0)
+        qubit_op = SparsePauliOp.sum(pauli_list).simplify(atol=0)
     else:
         # If there is no variable, we set num_nodes=1 so that qubit_op should be an operator.
         # If num_nodes=0, I^0 = 1 (int).
