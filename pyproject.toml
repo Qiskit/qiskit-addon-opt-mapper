@@ -53,7 +53,7 @@ dev = [
 basetest = [
     "ddt",
     "pytest>=8.0",
-    "pytest-cov>=5.0",
+    "pytest-cov>=7.1.0",
     "pytest-subtests>=0.13",
     "qiskit-addon-opt-mapper[dynamic]",
 ]
@@ -69,20 +69,20 @@ nbtest = [
     "nbmake>=1.5.5",
 ]
 style = [
-    "ruff==0.15.8",
+    "ruff==0.16.5",
     "nbqa>=1.9.1",
     "typos>=1.20.0",
 ]
 lint = [
     "qiskit-addon-opt-mapper[style]",
-    "mypy==2.1.0",
+    "mypy==2.3.1",
     "pylint==4.0.5",
     "reno>=4.1",
-    "toml>=0.9.6",
+    "toml>=0.10.2",
 ]
 notebook-dependencies = [
     "qiskit-addon-opt-mapper",
-    "rustworkx[graphviz]>=0.18.0",
+    "rustworkx[graphviz]>=0.18.1",
     "matplotlib",
     "ipywidgets",
     "pylatexenc",
