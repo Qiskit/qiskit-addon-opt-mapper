@@ -44,7 +44,8 @@ class EqualityToPenalty(OptimizationProblemConverter):
                      If None is passed, a penalty factor will be automatically calculated on
                      every conversion.
                      The penalty factor is calculated as follows:
-                        1 + (upperbound - lowerbound) of objective function.
+
+                         1 + (upperbound - lowerbound) of objective function.
 
         """
         self._src_num_vars: int | None = None

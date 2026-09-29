@@ -40,6 +40,7 @@ Converters
 
    BinaryToLinearBinary
    BinaryToSpin
+   EqualityToPenalty
    InequalityToEquality
    IntegerToBinary
    LinearInequalityToPenalty

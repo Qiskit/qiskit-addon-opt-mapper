@@ -40,8 +40,8 @@ Note:
    Variable
    HigherOrderExpression
    HigherOrderConstraint
-   HigherOrderExpression
    OptimizationObjective
+   OptimizationProblem
 """
 
 from .constraint import Constraint

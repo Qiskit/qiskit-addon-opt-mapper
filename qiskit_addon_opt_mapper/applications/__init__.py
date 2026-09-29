@@ -39,6 +39,7 @@ Applications
    Clique
    ExactCover
    GraphPartition
+   IndependentSet
    Knapsack
    Maxcut
    NumberPartition

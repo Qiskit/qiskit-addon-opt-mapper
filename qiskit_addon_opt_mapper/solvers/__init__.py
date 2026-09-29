@@ -26,6 +26,7 @@ Base class for solvers and results
 
    OptimizationSolver
    SolverResult
+   SolverResultStatus
 
 Classical Solvers
 ---------------------
