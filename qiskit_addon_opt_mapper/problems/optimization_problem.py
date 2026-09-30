@@ -969,9 +969,9 @@ class OptimizationProblem:
         rhs: float = 0.0,
         name: str | None = None,
     ) -> HigherOrderConstraint:
-        """Adds a higher-order constraint.
+        r"""Adds a higher-order constraint.
 
-        e.g. linear(x) + x^T Q x + sum_{k>=3}  sum_{|t|=k} C_k[t] * prod_{i in t} x[i] `sense` `rhs`
+        e.g. linear(x) + x^T Q x + sum_{k>=3}  sum_{\|t\|=k} C_k[t] * prod_{i in t} x[i] `sense` `rhs`
         where `sense` is one of the ConstraintSense values (e.g., LE, <=) and `rhs` is a float.
         Supports both a single higher-order term (order+coeffs) and multiple via
         higher_orders={k: coeffs}.
