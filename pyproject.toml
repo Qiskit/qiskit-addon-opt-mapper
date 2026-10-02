@@ -54,7 +54,7 @@ basetest = [
     "ddt",
     "pytest>=8.0",
     "pytest-cov>=7.1.0",
-    "pytest-subtests>=0.13",
+    "pytest-subtests>=0.15.0",
     "qiskit-addon-opt-mapper[dynamic]",
 ]
 test = [
