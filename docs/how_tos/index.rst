@@ -10,4 +10,3 @@ How-To Guides
    02_converters_for_optimization_problems.ipynb
    03_validate_with_solvers.ipynb
    04_translate_docplex.ipynb
-   05_labs.ipynb
