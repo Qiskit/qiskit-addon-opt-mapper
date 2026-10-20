@@ -15,7 +15,7 @@
 import itertools
 
 import numpy as np
-from qiskit.quantum_info import Pauli, SparsePauliOp
+from qiskit.quantum_info import PauliList, SparsePauliOp
 
 from qiskit_addon_opt_mapper.exceptions import OptimizationError
 from qiskit_addon_opt_mapper.problems.optimization_problem import OptimizationProblem
@@ -48,122 +48,71 @@ def to_ising(optimization_problem: OptimizationProblem) -> tuple[SparsePauliOp, 
             "to convert constraints to penalty terms of the objective function."
         )
 
-    if optimization_problem.get_num_vars() == optimization_problem.get_num_binary_vars():
-        # if all variables are binary variables
-        # initialize Hamiltonian.
-        num_vars = optimization_problem.get_num_vars()
-        pauli_list = []
-        offset = 0.0
-        zero = np.zeros(num_vars, dtype=bool)
+    num_vars = optimization_problem.get_num_vars()
+    objective = optimization_problem.objective
 
-        # set a sign corresponding to a maximized or minimized problem.
-        # sign == 1 is for minimized problem. sign == -1 is for maximized problem.
-        sense = optimization_problem.objective.sense.value
+    # set a sign corresponding to a maximized or minimized problem.
+    # sign == 1 is for minimized problem. sign == -1 is for maximized problem.
+    sense = objective.sense.value
 
-        # convert a constant part of the objective function into Hamiltonian.
-        offset += optimization_problem.objective.constant * sense
+    # convert a constant part of the objective function into Hamiltonian.
+    offset = objective.constant * sense
 
-        # convert linear terms of the objective function into Hamiltonian.
-        for idx, coef in optimization_problem.objective.linear.to_dict().items():
-            z_p = zero.copy()
-            weight = coef * sense / 2
-            z_p[idx] = True
+    linear = objective.linear.coefficients.tocoo()
+    lin_idx, lin_coef = linear.col, linear.data * sense
+    quadratic = objective.quadratic.coefficients.tocoo()
+    diag = quadratic.row == quadratic.col
+    quad_idx = np.column_stack((quadratic.row, quadratic.col))[~diag]
+    quad_coef = quadratic.data[~diag] * sense
+    diag_idx, diag_coef = quadratic.row[diag], quadratic.data[diag] * sense
 
-            pauli_list.append(SparsePauliOp(Pauli((z_p, zero)), -weight))
-            offset += weight
+    # Each block holds the variable indices of a set of Pauli Z strings, one row per
+    # string, and their coefficients. A variable appearing twice in a row cancels out.
+    blocks: list[tuple[np.ndarray, np.ndarray]] = []
 
-        # convert quadratic terms of the objective function into Hamiltonian.
-        for (
-            i,
-            j,
-        ), quadratic_exp in optimization_problem.objective.quadratic.to_dict().items():
-            weight = quadratic_exp * sense / 4
+    if num_vars == optimization_problem.get_num_binary_vars():
+        # if all variables are binary variables, substitute x = (1 - z) / 2.
+        # Linear terms x_i = x_i^2 come from both the linear and the diagonal quadratic
+        # part. Each off-diagonal quadratic term x_i x_j contributes to Z_i and Z_j.
+        z_coef = np.zeros(num_vars)
+        np.add.at(z_coef, lin_idx, -lin_coef / 2)
+        np.add.at(z_coef, diag_idx, -diag_coef / 2)
+        np.add.at(z_coef, quad_idx.ravel(), -np.repeat(quad_coef, 2) / 4)
+        offset += lin_coef.sum() / 2 + diag_coef.sum() / 2 + quad_coef.sum() / 4
 
-            if i == j:
-                offset += weight
-            else:
-                z_p = zero.copy()
-                z_p[i] = True
-                z_p[j] = True
-                pauli_list.append(SparsePauliOp(Pauli((z_p, zero)), weight))
-
-            z_p = zero.copy()
-            z_p[i] = True
-            pauli_list.append(SparsePauliOp(Pauli((z_p, zero)), -weight))
-
-            z_p = zero.copy()
-            z_p[j] = True
-            pauli_list.append(SparsePauliOp(Pauli((z_p, zero)), -weight))
-
-            offset += weight
+        blocks.append((np.arange(num_vars)[:, None], z_coef))
+        blocks.append((quad_idx, quad_coef / 4))
 
         # convert higher order terms of the objective function into Hamiltonian.
-        for (  # type: ignore
-            degree,
-            high_order_exp,
-        ) in optimization_problem.objective.higher_order.items():
-            # For each binary term of order k we get Pauli spins with orders ranging from 0 to k due
-            # to the expansion (1-z0)(1-z1)(1-z2) ... / 2**k for a term x0x1x2..., for example.
-            for variables, coef in high_order_exp.to_dict().items():  # type: ignore
-                for i in range(1, degree + 1):
-                    for comb in itertools.combinations(variables, i):
-                        weight = coef * sense * (-1) ** (i) / (2 ** (degree))
-                        # enumerate all combinations of i elements in variables
-                        # and add corresponding Pauli terms.
-                        # For example, if variables=(0,1,2) and i=1,
-                        # comb takes (0,), (1,), and (2,)
-                        # and we add IIZ, IZI, and ZII to pauli_list.
-                        z_p = zero.copy()
-                        for idx in comb:  # type: ignore
-                            z_p[idx] = not z_p[idx]
-                        pauli_list.append(SparsePauliOp(Pauli((z_p, zero)), weight))
-                offset += coef * sense / (2 ** (degree))
+        # For each binary term of order k we get Pauli spins with orders ranging from 0 to k due
+        # to the expansion (1-z0)(1-z1)(1-z2) ... / 2**k for a term x0x1x2..., for example.
+        for degree, high_order_exp in objective.higher_order.items():
+            coeffs = high_order_exp.to_dict()
+            if not coeffs:
+                continue
+            indices = np.array(list(coeffs), dtype=int).reshape(-1, degree)
+            values = np.fromiter(coeffs.values(), dtype=float, count=len(coeffs)) * sense
+            for i in range(1, degree + 1):
+                # enumerate all combinations of i positions in the terms. For example,
+                # for the term (0, 1, 2) and i=1 this adds IIZ, IZI, and ZII.
+                weight = values * (-1) ** i / 2**degree
+                for comb in itertools.combinations(range(degree), i):
+                    blocks.append((indices[:, comb], weight))
+            offset += values.sum() / 2**degree
 
-    elif optimization_problem.get_num_vars() == optimization_problem.get_num_spin_vars():
-        # if all variables are spin variables
-        # initialize Hamiltonian.
-        num_vars = optimization_problem.get_num_vars()
-        pauli_list = []
-        offset = 0.0
-        zero = np.zeros(num_vars, dtype=bool)
+    elif num_vars == optimization_problem.get_num_spin_vars():
+        # if all variables are spin variables, z_i^2 = 1 goes into the offset.
+        blocks.append((lin_idx[:, None], lin_coef))
+        blocks.append((quad_idx, quad_coef))
+        offset += diag_coef.sum()
 
-        # set a sign corresponding to a maximized or minimized problem.
-        # sign == 1 is for minimized problem. sign == -1 is for maximized problem.
-        sense = optimization_problem.objective.sense.value
-
-        # convert a constant part of the objective function into Hamiltonian.
-        offset += optimization_problem.objective.constant * sense
-
-        # convert linear terms of the objective function into Hamiltonian.
-        for idx, coef in optimization_problem.objective.linear.to_dict().items():
-            z_p = zero.copy()
-            z_p[idx] = True
-
-            pauli_list.append(SparsePauliOp(Pauli((z_p, zero)), coef * sense))
-
-        # convert quadratic terms of the objective function into Hamiltonian.
-        for (
-            i,
-            j,
-        ), coef in optimization_problem.objective.quadratic.to_dict().items():
-            if i == j:
-                offset += coef * sense
-            else:
-                z_p = zero.copy()
-                z_p[i] = True
-                z_p[j] = True
-                pauli_list.append(SparsePauliOp(Pauli((z_p, zero)), coef * sense))
-
-        # convert higher order terms of the objective function into Hamiltonian.
-        for (  # type: ignore
-            _degree,
-            high_order_exp,
-        ) in optimization_problem.objective.higher_order.items():
-            for variables, coef in high_order_exp.to_dict().items():  # type: ignore
-                z_p = zero.copy()
-                for idx in variables:
-                    z_p[idx] = not z_p[idx]
-                pauli_list.append(SparsePauliOp(Pauli((z_p, zero)), coef * sense))
+        for degree, high_order_exp in objective.higher_order.items():
+            coeffs = high_order_exp.to_dict()
+            if not coeffs:
+                continue
+            indices = np.array(list(coeffs), dtype=int).reshape(-1, degree)
+            values = np.fromiter(coeffs.values(), dtype=float, count=len(coeffs)) * sense
+            blocks.append((indices, values))
 
     else:
         raise OptimizationError(
@@ -172,13 +121,37 @@ def to_ising(optimization_problem: OptimizationProblem) -> tuple[SparsePauliOp, 
             "to convert integer variables to binary variables. "
         )
 
-    if pauli_list:
-        # Remove paulis whose coefficients are zeros.
-        qubit_op = SparsePauliOp.sum(pauli_list).simplify(atol=0)
-    else:
+    coeffs = np.concatenate([coef for _, coef in blocks])
+    keep = coeffs != 0
+    if not np.any(keep):
         # If there is no variable, we set num_nodes=1 so that qubit_op should be an operator.
         # If num_nodes=0, I^0 = 1 (int).
-        num_vars = max(1, num_vars)
-        qubit_op = SparsePauliOp("I" * num_vars, 0)
+        return SparsePauliOp("I" * max(1, num_vars), 0), float(offset)
 
-    return qubit_op, offset
+    z = np.concatenate([_z_mask(num_vars, idx) for idx, _ in blocks])[keep]
+    qubit_op = SparsePauliOp(
+        PauliList.from_symplectic(z, np.zeros_like(z)), coeffs[keep].astype(complex)
+    )
+    if objective.higher_order:
+        # Higher order terms may repeat a Pauli string, so combine them and drop zeros.
+        qubit_op = qubit_op.simplify(atol=0)
+
+    return qubit_op, float(offset)
+
+
+def _z_mask(num_vars: int, indices: np.ndarray) -> np.ndarray:
+    """Return the Z part of the Pauli strings given by rows of variable indices.
+
+    Args:
+        num_vars: The number of qubits.
+        indices: An ``(m, k)`` array of the variable indices in each of the ``m`` strings.
+
+    Returns:
+        An ``(m, num_vars)`` boolean array. A variable that appears an even number of
+        times in a row is not set since ``Z^2 = I``.
+    """
+    z = np.zeros((len(indices), num_vars), dtype=bool)
+    rows = np.arange(len(indices))
+    for col in indices.T:
+        z[rows, col] ^= True
+    return z
