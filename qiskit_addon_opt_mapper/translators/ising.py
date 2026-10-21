@@ -129,8 +129,12 @@ def to_ising(optimization_problem: OptimizationProblem) -> tuple[SparsePauliOp, 
         return SparsePauliOp("I" * max(1, num_vars), 0), float(offset)
 
     z = np.concatenate([_z_mask(num_vars, idx) for idx, _ in blocks])[keep]
+    # The operator has only Z strings, so there is no Pauli phase for qiskit to work out.
     qubit_op = SparsePauliOp(
-        PauliList.from_symplectic(z, np.zeros_like(z)), coeffs[keep].astype(complex)
+        PauliList.from_symplectic(z, np.zeros_like(z)),
+        coeffs[keep].astype(complex),
+        ignore_pauli_phase=True,
+        copy=False,
     )
     if objective.higher_order:
         # Higher order terms may repeat a Pauli string, so combine them and drop zeros.
