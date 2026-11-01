@@ -75,7 +75,7 @@ style = [
 ]
 lint = [
     "qiskit-addon-opt-mapper[style]",
-    "mypy==2.3.1",
+    "mypy==2.4.1",
     "pylint==4.0.5",
     "reno>=4.1",
     "toml>=0.10.2",
