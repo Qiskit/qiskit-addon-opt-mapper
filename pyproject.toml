@@ -48,7 +48,7 @@ dynamic = [
 ]
 dev = [
     "qiskit-addon-opt-mapper[test,doctest,nbtest,lint,docs]",
-    "tox>=4.64.4",
+    "tox>=4.65.0",
 ]
 basetest = [
     "ddt",
