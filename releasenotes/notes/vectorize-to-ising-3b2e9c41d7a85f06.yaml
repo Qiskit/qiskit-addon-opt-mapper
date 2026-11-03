@@ -3,5 +3,5 @@ fixes:
   - |
     ``to_ising`` now builds the Ising Hamiltonian with vectorized NumPy operations
     instead of creating one ``SparsePauliOp`` per term. This makes the translation
-    roughly 50 to 200 times faster, e.g., about 1.4 s down to 12 ms for a dense
+    roughly 50 to 250 times faster, e.g., about 1.3 s down to 6 ms for a dense
     200-variable QUBO.
