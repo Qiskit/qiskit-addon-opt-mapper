@@ -54,9 +54,10 @@ class GraphOptimizationApplication(OptimizationApplication):
     def _from_networkx(self, nx_graph: nx.Graph) -> rx.PyGraph:
         """Convert a NetworkX graph to a Rustworkx PyGraph."""
         rx_graph = rx.PyGraph()
-        rx_graph.add_nodes_from([None] * nx_graph.number_of_nodes())
+        nodes = list(nx_graph.nodes())
+        n_idx = dict(zip(nodes, rx_graph.add_nodes_from([None] * nx_graph.number_of_nodes())))
         # Use 1 as default edge weight
-        edges = [(u, v, d.get("weight", 1)) for u, v, d in nx_graph.edges(data=True)]
+        edges = [(n_idx[u], n_idx[v], d.get("weight", 1)) for u, v, d in nx_graph.edges(data=True)]
         rx_graph.add_edges_from(edges)
         return rx_graph
 
