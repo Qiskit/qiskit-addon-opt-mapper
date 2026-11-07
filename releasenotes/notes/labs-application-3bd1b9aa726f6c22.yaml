@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Added :class:`~qiskit_addon_opt_mapper.applications.LABS` for modeling the
+    low autocorrelation binary sequences problem with spin variables and a
+    higher-order objective. The application provides spin-result interpretation,
+    classical energy and merit-factor evaluation, and a full cost Hamiltonian.
+    The ``applications.labs`` module also provides direct energy evaluation,
+    exact small-instance energy statistics, and sampled energy distributions.

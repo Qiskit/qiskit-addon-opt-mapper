@@ -41,6 +41,7 @@ Applications
    GraphPartition
    IndependentSet
    Knapsack
+   LABS
    Maxcut
    NumberPartition
    SetPacking
@@ -57,6 +58,7 @@ from .graph_optimization_application import GraphOptimizationApplication
 from .graph_partition import GraphPartition
 from .independent_set import IndependentSet
 from .knapsack import Knapsack
+from .labs import LABS
 from .max_cut import Maxcut
 from .number_partition import NumberPartition
 from .optimization_application import OptimizationApplication
@@ -67,6 +69,7 @@ from .vehicle_routing import VehicleRouting
 from .vertex_cover import VertexCover
 
 __all__ = [
+    "LABS",
     "BinPacking",
     "Clique",
     "ExactCover",
